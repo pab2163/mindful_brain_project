@@ -99,11 +99,27 @@ prefix = visual.TextStim(win=win, ori=0, name='prefix',
     pos=[0, 0], height=0.2, wrapWidth=None,
     color=u'white', colorSpace='rgb', opacity=1,
     depth=0.0)
+
+
 word = visual.TextStim(win=win, ori=0, name='word',
     text='default text',    font=u'Arial',
     pos=[0, 0], height=0.2, wrapWidth=None,
     color=u'white', colorSpace='rgb', opacity=1,
     depth=-1.0)
+
+
+yes = visual.TextStim(win=win, ori=0, name='word',
+    text='yes',    font=u'Arial',
+    pos=[0.7, 0.5], height=0.2, wrapWidth=None,
+    color=u'white', colorSpace='rgb', opacity=1,
+    depth=-1.0)
+
+no = visual.TextStim(win=win, ori=0, name='word',
+    text='no',    font=u'Arial',
+    pos=[-0.7, 0.5], height=0.2, wrapWidth=None,
+    color=u'white', colorSpace='rgb', opacity=1,
+    depth=-1.0)
+    
 
 block_type_text = visual.TextStim(win=win, ori=0, name='word',
     text='block_text',    font=u'Arial',
@@ -195,6 +211,8 @@ def run_trial():
     word.setText(trial_word)
     endExpNow = False
     word.draw()
+    yes.draw()
+    no.draw()
     block_type_text.draw()
     win.flip()
     write_to_tsv([expInfo['participant'],expInfo['session'], expInfo['date'], 
@@ -217,6 +235,8 @@ def run_trial():
                 # change color of target word
                 word.color = 'RoyalBlue'
                 word.draw()
+                yes.draw()
+                no.draw()
                 block_type_text.draw()
                 win.flip()
             if endExpNow:
