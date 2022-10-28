@@ -1,0 +1,45 @@
+---
+title: "select_emote_words"
+output: html_document
+date: "2022-10-28"
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+
+```{r}
+library(tidyverse)
+library(corrplot)
+emote = read_csv('EMOTE_raw.csv')
+
+
+pos = emote %>%
+    dplyr::filter(adjective == 1, adim1 != -99) %>%
+    dplyr::arrange(adim1) %>%
+    top_n(250, adim1) %>%
+    dplyr::arrange(freq_TV) %>%
+    top_n(150, freq_TV)
+
+
+neg = emote %>%
+    dplyr::filter(adjective == 1, adim9 != -99) %>%
+    dplyr::arrange(adim9) %>%
+    top_n(250, desc(adim9)) %>%
+    dplyr::arrange(freq_TV) %>%
+    top_n(150, freq_TV)
+
+
+emote %>%
+    dplyr::filter(adjective == 1) %>%
+    dplyr::select(contains('adim')) %>%
+    cor() %>%
+    corrplot(addCoef.col = 'black', method = 'color')
+
+
+# balance on arousal and valence
+# make 100 random orders in files, pull one for each participant at random
+# write in checks
+```
