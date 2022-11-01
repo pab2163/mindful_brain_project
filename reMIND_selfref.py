@@ -23,9 +23,7 @@ _thisDir = os.path.dirname(os.path.abspath(__file__))
 os.chdir(_thisDir)
 
 block_order = pd.DataFrame({'block': [1,2,3], 'block_type': ['self', 'other', 'positive']})
-word_list = list(pd.read_csv('anderson_1999_norms_combined.csv').target_stim)
-shuffle(word_list)
-print(word_list)
+word_list = pd.read_csv('emote_240_words_stratified.csv')
 
 
 
@@ -43,7 +41,23 @@ if not os.path.exists(f'{_thisDir}/reMIND/'):
 if not os.path.exists(f"{_thisDir}/reMIND/{expInfo['participant']}"):
     os.mkdir(f"{_thisDir}/reMIND/{expInfo['participant']}")
 
-print(expInfo)
+# counterbalance order of word sets (pre/post based on participant ID [even, odd])
+if float(expInfo['participant']) % 2 == 0:
+    print('set 1 first')
+    if expInfo['run'] in [1,2]:
+        word_list = word_list[word_list.set ==1]
+    else:
+        word_list = word_list[word_list.set ==2]
+else:
+    print('set 2 first')
+    if expInfo['run'] in [3,4]:
+        word_list = word_list[word_list.set ==1]
+    else:
+        word_list = word_list[word_list.set ==2]
+
+negative_words = list(word_list.word[word_list.valence_condition == 'negative'])
+positive_words = list(word_list.word[word_list.valence_condition == 'positive'])
+
 filename = f"{_thisDir}/reMIND/{expInfo['participant']}/reMIND_ses{expInfo['session']}_task-selfref_run_{expInfo['run']}"
 
 
@@ -55,7 +69,6 @@ def write_to_tsv(row_info:list):
 write_to_tsv(['participant','session', 'date', 'exp_name', 'frame_rate', 'absolute_time', 'trigger_time', 'trial_type', 'trial_num', 'word', 'response_time','reponse_key'])
 
 # Data file name stem = absolute path + name; later add .psyexp, .csv, .log, etc
-#filename = _thisDir + os.sep + u'data/''reMIND/%s_%s_%s/' %(expInfo['participant'],expInfo['session'] ,expName) + os.sep + 'rtBANDA%s_%s_%s' %(expInfo['participant'],expInfo['session'] ,expName)
 logFile = logging.LogFile(filename+'.log', level=logging.EXP)
 logging.console.setLevel(logging.WARNING)
 trial_duration = 3.5
@@ -106,7 +119,6 @@ word = visual.TextStim(win=win, ori=0, name='word',
     pos=[0, 0], height=0.2, wrapWidth=None,
     color=u'white', colorSpace='rgb', opacity=1,
     depth=-1.0)
-
 
 yes = visual.TextStim(win=win, ori=0, name='word',
     text='yes',    font=u'Arial',
@@ -181,7 +193,7 @@ Run a block of trials
 def run_block(n_trials, block_type):
     block_type_text.setText(f'Condition: {block_type}')
     for trial_num in range(n_trials):
-        run_trial()
+        run_trial(trial_type = 'positive')
 
 '''
 Show a fixation cross 
@@ -200,14 +212,16 @@ def run_fixation(duration):
 '''
 Run a single trial
 '''
-def run_trial():
+def run_trial(trial_type):
     # fixation at beginning of trial
     run_fixation(duration=1)
     
     # present word 
     trial_clock.reset()
-    word.color = 'White'
-    trial_word = word_list.pop(0)
+    if trial_type == 'negative':
+        trial_word = negative_words.pop(0)
+    elif trial_type == 'positive':
+        trial_word = positive_words.pop(0)
     word.setText(trial_word)
     endExpNow = False
     word.draw()
@@ -232,8 +246,11 @@ def run_trial():
                 write_to_tsv([expInfo['participant'],expInfo['session'], expInfo['date'], 
                                 expName, expInfo['frameRate'], time.time(), triggerClock.getTime(), 'response', 1, 
                                 trial_word, trial_clock.getTime(), theseKeys[0]])
-                # change color of target word
-                word.color = 'RoyalBlue'
+                # change color of selected word
+                if '1' in theseKeys:
+                    no.bold = True
+                elif '2' in theseKeys:
+                    yes.bold = True
                 word.draw()
                 yes.draw()
                 no.draw()
@@ -249,7 +266,7 @@ run_instructions()
 get_trigger()
 
 for block_num in range(block_order.shape[0]):
-    run_block(n_trials = 2, block_type = block_order.block_type[block_num])
+    run_block(n_trials = 10, block_type = block_order.block_type[block_num])
 
 
 win.close()
