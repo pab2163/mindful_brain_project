@@ -11,34 +11,149 @@ knitr::opts_chunk$set(echo = TRUE)
 
 
 ```{r}
+library(splitstackshape)
 library(tidyverse)
 library(corrplot)
+library(naniar)
 emote = read_csv('EMOTE_raw.csv')
 
-
-pos = emote %>%
+freq_data = emote %>%
     dplyr::filter(adjective == 1, adim1 != -99) %>%
+    dplyr::select(contains('freq'))
+
+freq_data[freq_data == -99] <- NA
+
+freq_data %>%
+    naniar::gg_miss_upset()
+
+freq_data %>%
+    cor(use = 'pairwise.complete.obs')
+```
+
+
+```{r}
+pos = emote %>%
+    dplyr::filter(adjective == 1, adim1 != -99, freq_BNC != -99) %>%
     dplyr::arrange(adim1) %>%
-    top_n(250, adim1) %>%
-    dplyr::arrange(freq_TV) %>%
-    top_n(150, freq_TV)
+    slice_max(n=250, adim1) %>%
+    slice_max(n =200, freq_BNC)
 
 
 neg = emote %>%
-    dplyr::filter(adjective == 1, adim9 != -99) %>%
+    dplyr::filter(adjective == 1, adim9 != -99, freq_BNC != -99) %>%
     dplyr::arrange(adim9) %>%
-    top_n(250, desc(adim9)) %>%
-    dplyr::arrange(freq_TV) %>%
-    top_n(150, freq_TV)
+    slice_min(n = 250, adim1) %>%
+    slice_max(n = 200, freq_BNC)
 
 
+
+top_200_each = rbind(pos, neg) %>%
+    dplyr::select(word, freq_BNC, valence=adim1) %>%
+    mutate(researcher_remove = '')
+    
+
+
+write.csv(top_200_each, file = 'emote_top_200_positive_negative.csv', row.names = FALSE)
+```
+
+
+# With vetting from Mia Kyler
+```{r}
+top_200_selections = read_csv('emote_top_200_positive_negative_marked.csv') 
+
+top_200_selections = top_200_selections %>%
+    mutate(valence_condition = ifelse(valence <4, 'negative', 'positive')) %>%
+    dplyr::filter(is.na(researcher_remove), is.na(state_remove)) 
+
+top_240 = top_200_selections %>%
+    group_by(valence_condition) %>%
+    slice_max(n = 120, order_by = freq_BNC, with_ties = FALSE)
+
+
+top_240 = top_240 %>%
+    dplyr::select(word, valence_condition) %>%
+    left_join(emote) %>%
+    group_by(valence_condition) %>%
+    mutate(freq_BNC_strat = ntile(freq_BNC, n = 3)) %>%
+    group_by(valence_condition, freq_BNC_strat) %>%
+    mutate(valence_strat = ntile(adim1, n = 2)) %>%
+    group_by(valence_condition, freq_BNC_strat, valence_strat) %>%
+    mutate(arousal_strat = ntile(adim2, n = 2))
+
+ 
+set.seed(11291993)
+
+
+
+
+
+# t.test(strast$SAMP1$adim1, strast$SAMP2$adim1)
+# t.test(strast$SAMP1$adim2, strast$SAMP2$adim2)
+# t.test(strast$SAMP1$freq_BNC, strast$SAMP2$freq_BNC)
+# 
+# table(strast$SAMP1$valence)
+# table(strast$SAMP1$freq_BNC_strat)
+# 
+
+# top_240 %>%
+#     group_by(valence_condition, valence_strat, freq_BNC_strat, arousal_strat) %>%
+#     count()
+
+
+for (i in 1:10){
+    strast = stratified(indt = top_240,
+                    group = c('valence_condition', 'valence_strat', 'freq_BNC_strat', 'arousal_strat'), size = 5, bothSets = TRUE)
+    
+    stratified_sets = rbind(dplyr::mutate(strast$SAMP1, set = 1), dplyr::mutate(strast$SAMP2, set = 2)) %>%
+        mutate(iter = i)
+    
+    difference_summary = stratified_sets %>%
+        pivot_longer(cols = c(freq_BNC, adim1, adim2)) %>%
+        group_by(valence_condition, name) %>%
+        nest() %>%
+        mutate(diff_model = purrr::map(data, ~lm(data = ., value ~ set) %>% broom::tidy())) %>%
+        unnest(diff_model) %>%
+        dplyr::filter(term == 'set') %>%
+        mutate(iter = i)
+    
+    if (i == 1){
+        many_stratifications = stratified_sets
+        many_summaries = difference_summary
+    }else{
+        many_stratifications = rbind(many_stratifications, stratified_sets)
+        many_summaries = rbind(many_summaries, difference_summary)
+    }
+}
+
+
+
+best_iter = many_summaries %>%
+    group_by(iter) %>%
+    summarise(mean_pval = mean(p.value)) %>%
+    top_n(n = 1, wt = mean_pval)
+
+
+ggplot(many_summaries, aes(x = factor(iter), y = p.value)) +
+    stat_summary(fun.data = mean_cl_boot)
+
+best_stratification = many_stratifications %>%
+    dplyr::filter(iter == best_iter$iter[1])
+
+write.csv(best_stratification, file = 'emote_240_words_stratified.csv', row.names = FALSE)
+```
+
+
+```{r}
 emote %>%
     dplyr::filter(adjective == 1) %>%
     dplyr::select(contains('adim')) %>%
     cor() %>%
     corrplot(addCoef.col = 'black', method = 'color')
+```
 
 
+
+```{r}
 # balance on arousal and valence
 # make 100 random orders in files, pull one for each participant at random
 # write in checks
