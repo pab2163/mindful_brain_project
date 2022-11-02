@@ -50,7 +50,7 @@ negative_words = list(word_list.word[word_list.valence_condition == 'negative'])
 positive_words = list(word_list.word[word_list.valence_condition == 'positive']) 
 random.shuffle(positive_words)
 random.shuffle(negative_words)
-
+practice_words = ['polite', 'bossy', 'rude', 'cool', 'nice', 'jealous']
 
 print(negative_words)
 print(positive_words)
@@ -69,6 +69,7 @@ write_to_tsv(['participant','session', 'date', 'exp_name', 'frame_rate', 'absolu
 logFile = logging.LogFile(filename+'.log', level=logging.EXP)
 logging.console.setLevel(logging.WARNING)
 trial_duration = 2.5
+block_intro_time = 2
 
 # Setup the Window
 win = visual.Window(size=(1920, 1080), fullscr=True, screen=1, allowGUI=False, allowStencil=False,
@@ -79,7 +80,7 @@ win = visual.Window(size=(1920, 1080), fullscr=True, screen=1, allowGUI=False, a
 # Initialize components for Routine "instruct"
 instructClock = core.Clock()
 instruct_text = visual.TextStim(win=win, ori=0, name='instruct_text',
-    text=u'Next you will see a set of adjectives.\n\nPlease make judgments about the presented words\ndepending on the current TASK:\n\n1) Self-condition: judge whether the word describes you. \n\n2) Other-condition: judge whether the word describes Abraham Lincoln.\n\n3) Positive-condition: judge if the word is positive.\n\nAnd then answer "YES -index or "NO" -middle finger. \n\n                            Press any button to start!',    font='Arial',
+    text=u'Welcome!\n\n Next, you will see a set of adjectives.\n\n Then please make a yes / no decision about each word', font='Arial',
     pos=[0.0, 0], height=0.08, wrapWidth=1.5,
     color='white', colorSpace='rgb', opacity=1,
     depth=0.0)
@@ -88,7 +89,7 @@ instruct_text = visual.TextStim(win=win, ori=0, name='instruct_text',
 triggerClock = core.Clock()
 trial_clock = core.Clock()
 text_3 = visual.TextStim(win=win, ori=0, name='text_3',
-    text=u'waiting for trigger',    font=u'Arial',
+    text=u'waiting for scanner to begin...',    font=u'Arial',
     pos=[0, 0], height=0.1, wrapWidth=2,
     color=u'white', colorSpace='rgb', opacity=1,
     depth=0.0)
@@ -153,14 +154,19 @@ else:
 def run_instructions():
     instruct_text.draw()
     win.flip()
+    wait_for_keypress(['space'])
+    write_to_tsv([expInfo['participant'],expInfo['session'], expInfo['date'], 
+                    expName, expInfo['frameRate'], time.time(), '', 'instructions', '', '', '',''])
+
+
+def wait_for_keypress(key_list:list):
     continueRoutine = True
     while continueRoutine:
-        theseKeys = event.getKeys(keyList=['b'])
+        theseKeys = event.getKeys(keyList=key_list)
         if len(theseKeys) > 0:  # at least one key was pressed
                 # a response ends the routine
                 continueRoutine = False
-    write_to_tsv([expInfo['participant'],expInfo['session'], expInfo['date'], 
-                    expName, expInfo['frameRate'], time.time(), '', 'instructions', '', '', '',''])
+
 
 '''
 Get trigger
@@ -187,7 +193,7 @@ def get_trigger():
 '''
 Run a block of trials
 '''
-def run_block(n_trials, block_type, block_number):
+def run_block(n_trials, block_type, block_number, practice=False):
     if block_type == 'positive':
         block_type_text.setText(f'Is the word positive?')
     elif block_type == 'self':
@@ -197,14 +203,16 @@ def run_block(n_trials, block_type, block_number):
 
     block_type_text.draw()
     win.flip()
-    core.wait(1)
-    # get timings just for the current block
-    block_timing_frame = all_block_timings[all_block_timings.block == block_number]
-    block_timing_frame.reset_index(inplace = True)
+    core.wait(block_intro_time)
 
-    # run each trial in the block, pulling the word type (positive vs. negative) and fixation duration (ISI) from the block_timing_frame
-    for trial_num in range(n_trials):
-        run_trial(trial_type = block_timing_frame.stim_type[trial_num], fixation_duration= block_timing_frame.fix_duration[trial_num])
+    if not practice:
+        # get timings just for the current block
+        block_timing_frame = all_block_timings[all_block_timings.block == block_number]
+        block_timing_frame.reset_index(inplace = True)
+
+        # run each trial in the block, pulling the word type (positive vs. negative) and fixation duration (ISI) from the block_timing_frame
+        for trial_num in range(n_trials):
+            run_trial(trial_type = block_timing_frame.stim_type[trial_num], fixation_duration= block_timing_frame.fix_duration[trial_num])
 
 '''
 Show a fixation cross 
@@ -223,16 +231,19 @@ def run_fixation(duration):
 '''
 Run a single trial
 '''
-def run_trial(trial_type, fixation_duration):
+def run_trial(trial_type, fixation_duration, practice=False):
+    
     # fixation at beginning of trial
     run_fixation(duration=fixation_duration)
-    
     # present word 
     trial_clock.reset()
-    if trial_type == 'negative':
-        trial_word = negative_words.pop(0)
-    elif trial_type == 'positive':
-        trial_word = positive_words.pop(0)
+    if not practice:
+        if trial_type == 'negative':
+            trial_word = negative_words.pop(0)
+        elif trial_type == 'positive':
+            trial_word = positive_words.pop(0)
+    elif practice:
+        trial_word = practice_words.pop(0)
     word.setText(trial_word)
     endExpNow = False
     no.bold = False
@@ -242,8 +253,9 @@ def run_trial(trial_type, fixation_duration):
     no.draw()
     block_type_text.draw()
     win.flip()
-    write_to_tsv([expInfo['participant'],expInfo['session'], expInfo['date'], 
-                    expName, expInfo['frameRate'], time.time(), triggerClock.getTime(), 'word_presentation', 1, trial_word, '', ''])
+    if not practice:
+        write_to_tsv([expInfo['participant'],expInfo['session'], expInfo['date'], 
+                        expName, expInfo['frameRate'], time.time(), triggerClock.getTime(), 'word_presentation', 1, trial_word, '', ''])
     
     # get participant button press response for word
     continueRoutine = True
@@ -256,10 +268,10 @@ def run_trial(trial_type, fixation_duration):
 
             # if participant has pressed a button    
             if len(theseKeys) > 0:
-                print(theseKeys)   
-                write_to_tsv([expInfo['participant'],expInfo['session'], expInfo['date'], 
-                                expName, expInfo['frameRate'], time.time(), triggerClock.getTime(), 'response', 1, 
-                                trial_word, trial_clock.getTime(), theseKeys[0]])
+                if not practice:  
+                    write_to_tsv([expInfo['participant'],expInfo['session'], expInfo['date'], 
+                                    expName, expInfo['frameRate'], time.time(), triggerClock.getTime(), 'response', 1, 
+                                    trial_word, trial_clock.getTime(), theseKeys[0]])
                 # change color of selected word
                 if '1' in theseKeys:
                     no.bold = True
@@ -280,13 +292,70 @@ def run_trial(trial_type, fixation_duration):
                 core.quit()      
 
 
+def run_practice():
+    instruct_text.setText('Each time you see a word, you will be asked to make one of the following decisions:\
+        \n\n\n1) Does the word describe you? \
+        \n\n 2) Does the word describe your friend? \
+        \n\n 3) Is the word positive?')
+    instruct_text.draw()
+    win.flip()
+    wait_for_keypress(key_list=['space'])
+    instruct_text.setText('Each time you see a word:\
+        \n\n\npress with your index finger to answer NO\n\npress with your middle finger to answer YES')
+    instruct_text.draw()
+    win.flip()
+    wait_for_keypress(key_list=['space'])
+    instruct_text.setText('Just to make sure everything is working with the buttons.\
+        \n\nPlease press your index finger to answer NO')
+    instruct_text.draw()
+    win.flip()
+    wait_for_keypress(key_list=['1'])
+    instruct_text.setText('Just to make sure everything is working with the buttons.\
+        \n\nPlease press your middle finger to answer YES')
+    instruct_text.draw()
+    win.flip()
+    wait_for_keypress(key_list=['2'])
+    instruct_text.setText('Great! We will go through a few practice trials of each type now.\
+        \n\nTry to make your decision quickly!')
+    instruct_text.draw()
+    win.flip()
+    wait_for_keypress(key_list=['space'])
+    run_block(n_trials = 0, block_type = 'self', block_number = 0, practice = True)
+    run_trial(trial_type = 'self', fixation_duration=1, practice = True)
+    run_trial(trial_type = 'self', fixation_duration=1, practice = True)
+    run_block(n_trials = 0, block_type = 'other', block_number = 0, practice = True)
+    run_trial(trial_type = 'other', fixation_duration=1, practice = True)
+    run_trial(trial_type = 'other', fixation_duration=1, practice = True)
+    run_block(n_trials = 0, block_type = 'positive', block_number = 0, practice = True)
+    run_trial(trial_type = 'positive', fixation_duration=1, practice = True)
+    run_trial(trial_type = 'positive', fixation_duration=1, practice = True)
+    instruct_text.setText('Great job! Any questions on what to do?')
+    instruct_text.draw()
+    win.flip()
+    wait_for_keypress(key_list=['space'])
+
+
+
+'''
+Actually run everything!
+'''
+
 run_instructions()
+
+# only run practice if it is run 1
+if expInfo['run'] == 1:
+    run_practice()
 get_trigger()
 
 for block_num in range(block_order.shape[0]):
     run_fixation(8)
     run_block(n_trials = 6, block_type = block_order.block_type[block_num], block_number = block_num)
 
-
+instruct_text.setText('Great job! You have finished this run')
+instruct_text.draw()
+win.flip()
+core.wait(3)
 win.close()
 core.quit()
+
+
