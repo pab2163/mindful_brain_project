@@ -12,20 +12,18 @@ from psychopy.constants import *  # things like STARTED, FINISHED
 import numpy as np  # whole numpy lib is available, prepend 'np.'
 from numpy import sin, cos, tan, log, log10, pi, average, sqrt, std, deg2rad, rad2deg, linspace, asarray
 from numpy.random import random, randint, normal, shuffle
+from pull_timings import *
 import pandas as pd
-from random import shuffle
+import random
 import os  # handy system and path functions
 import csv
 import time
-
 # Ensure that relative paths start from the same directory as this script
 _thisDir = os.path.dirname(os.path.abspath(__file__))
 os.chdir(_thisDir)
 
-block_order = pd.DataFrame({'block': [1,2,3], 'block_type': ['self', 'other', 'positive']})
-word_list = pd.read_csv('emote_240_words_stratified.csv')
-
-
+block_order = pd.DataFrame({'block': np.arange(10), 
+    'block_type': ['positive', 'self', 'other',  'other', 'self',  'other', 'self',  'self', 'other','positive']})
 
 # Store info about the experiment session
 expName = 'task-selfref_run-01'  # from the Builder filename that created this script
@@ -41,25 +39,24 @@ if not os.path.exists(f'{_thisDir}/reMIND/'):
 if not os.path.exists(f"{_thisDir}/reMIND/{expInfo['participant']}"):
     os.mkdir(f"{_thisDir}/reMIND/{expInfo['participant']}")
 
-# counterbalance order of word sets (pre/post based on participant ID [even, odd])
-if float(expInfo['participant']) % 2 == 0:
-    print('set 1 first')
-    if expInfo['run'] in [1,2]:
-        word_list = word_list[word_list.set ==1]
-    else:
-        word_list = word_list[word_list.set ==2]
-else:
-    print('set 2 first')
-    if expInfo['run'] in [3,4]:
-        word_list = word_list[word_list.set ==1]
-    else:
-        word_list = word_list[word_list.set ==2]
+# pull word order for the participant
+participant_number = int(expInfo['participant'].replace('remind-', ''))
+word_order_file = f"word_list_splits/word_order_{participant_number}.csv"
+word_order = pd.read_csv(word_order_file)
+word_list = word_order[word_order.run == expInfo['run']]
+#print(word_list)
 
 negative_words = list(word_list.word[word_list.valence_condition == 'negative'])
-positive_words = list(word_list.word[word_list.valence_condition == 'positive'])
+positive_words = list(word_list.word[word_list.valence_condition == 'positive']) 
+random.shuffle(positive_words)
+random.shuffle(negative_words)
 
+
+print(negative_words)
+print(positive_words)
+
+# output file setm
 filename = f"{_thisDir}/reMIND/{expInfo['participant']}/reMIND_ses{expInfo['session']}_task-selfref_run_{expInfo['run']}"
-
 
 def write_to_tsv(row_info:list):
     with open(filename+'_events.csv', 'a') as csvfile:
@@ -71,7 +68,7 @@ write_to_tsv(['participant','session', 'date', 'exp_name', 'frame_rate', 'absolu
 # Data file name stem = absolute path + name; later add .psyexp, .csv, .log, etc
 logFile = logging.LogFile(filename+'.log', level=logging.EXP)
 logging.console.setLevel(logging.WARNING)
-trial_duration = 3.5
+trial_duration = 2.5
 
 # Setup the Window
 win = visual.Window(size=(1920, 1080), fullscr=True, screen=1, allowGUI=False, allowStencil=False,
@@ -83,7 +80,7 @@ win = visual.Window(size=(1920, 1080), fullscr=True, screen=1, allowGUI=False, a
 instructClock = core.Clock()
 instruct_text = visual.TextStim(win=win, ori=0, name='instruct_text',
     text=u'Next you will see a set of adjectives.\n\nPlease make judgments about the presented words\ndepending on the current TASK:\n\n1) Self-condition: judge whether the word describes you. \n\n2) Other-condition: judge whether the word describes Abraham Lincoln.\n\n3) Positive-condition: judge if the word is positive.\n\nAnd then answer "YES -index or "NO" -middle finger. \n\n                            Press any button to start!',    font='Arial',
-    pos=[0.1, 0], height=0.08, wrapWidth=1.5,
+    pos=[0.0, 0], height=0.08, wrapWidth=1.5,
     color='white', colorSpace='rgb', opacity=1,
     depth=0.0)
 
@@ -135,7 +132,7 @@ no = visual.TextStim(win=win, ori=0, name='word',
 
 block_type_text = visual.TextStim(win=win, ori=0, name='word',
     text='block_text',    font=u'Arial',
-    pos=[0.0, -0.5], height=0.2, wrapWidth=None,
+    pos=[0.0, -0.7], height=0.2, wrapWidth=None,
     color=u'white', colorSpace='rgb', opacity=1,
     depth=-1.0)
 
@@ -190,10 +187,24 @@ def get_trigger():
 '''
 Run a block of trials
 '''
-def run_block(n_trials, block_type):
-    block_type_text.setText(f'Condition: {block_type}')
+def run_block(n_trials, block_type, block_number):
+    if block_type == 'positive':
+        block_type_text.setText(f'Is the word positive?')
+    elif block_type == 'self':
+        block_type_text.setText(f'Does this word describe you?')
+    elif block_type == 'other':
+        block_type_text.setText(f'Does this word describe your friend?')
+
+    block_type_text.draw()
+    win.flip()
+    core.wait(1)
+    # get timings just for the current block
+    block_timing_frame = all_block_timings[all_block_timings.block == block_number]
+    block_timing_frame.reset_index(inplace = True)
+
+    # run each trial in the block, pulling the word type (positive vs. negative) and fixation duration (ISI) from the block_timing_frame
     for trial_num in range(n_trials):
-        run_trial(trial_type = 'positive')
+        run_trial(trial_type = block_timing_frame.stim_type[trial_num], fixation_duration= block_timing_frame.fix_duration[trial_num])
 
 '''
 Show a fixation cross 
@@ -212,9 +223,9 @@ def run_fixation(duration):
 '''
 Run a single trial
 '''
-def run_trial(trial_type):
+def run_trial(trial_type, fixation_duration):
     # fixation at beginning of trial
-    run_fixation(duration=1)
+    run_fixation(duration=fixation_duration)
     
     # present word 
     trial_clock.reset()
@@ -224,6 +235,8 @@ def run_trial(trial_type):
         trial_word = positive_words.pop(0)
     word.setText(trial_word)
     endExpNow = False
+    no.bold = False
+    yes.bold = False
     word.draw()
     yes.draw()
     no.draw()
@@ -237,12 +250,13 @@ def run_trial(trial_type):
     while continueRoutine:            
         trial_time = trial_clock.getTime()
         if trial_time > 0 and trial_time < trial_duration:
-            theseKeys = event.getKeys(keyList=['1', '2'])
+            theseKeys = event.getKeys(keyList=['1', '2', 'escape'])
             if "escape" in theseKeys:
                 endExpNow = True
 
             # if participant has pressed a button    
-            if len(theseKeys) > 0:   
+            if len(theseKeys) > 0:
+                print(theseKeys)   
                 write_to_tsv([expInfo['participant'],expInfo['session'], expInfo['date'], 
                                 expName, expInfo['frameRate'], time.time(), triggerClock.getTime(), 'response', 1, 
                                 trial_word, trial_clock.getTime(), theseKeys[0]])
@@ -257,16 +271,21 @@ def run_trial(trial_type):
                 block_type_text.draw()
                 win.flip()
             if endExpNow:
+                win.close()
                 core.quit()
         else:
-            continueRoutine = False        
+            continueRoutine = False 
+            if endExpNow:
+                core.quit()
+                core.quit()      
 
 
 run_instructions()
 get_trigger()
 
 for block_num in range(block_order.shape[0]):
-    run_block(n_trials = 10, block_type = block_order.block_type[block_num])
+    run_fixation(8)
+    run_block(n_trials = 6, block_type = block_order.block_type[block_num], block_number = block_num)
 
 
 win.close()
