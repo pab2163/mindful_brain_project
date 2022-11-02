@@ -114,26 +114,26 @@ prefix = visual.TextStim(win=win, ori=0, name='prefix',
 
 word = visual.TextStim(win=win, ori=0, name='word',
     text='default text',    font=u'Arial',
-    pos=[0, 0], height=0.2, wrapWidth=None,
+    pos=[0, -0.2], height=0.2, wrapWidth=None,
     color=u'white', colorSpace='rgb', opacity=1,
     depth=-1.0)
 
 yes = visual.TextStim(win=win, ori=0, name='word',
     text='yes',    font=u'Arial',
-    pos=[0.7, 0.5], height=0.2, wrapWidth=None,
+    pos=[0.7, -.8], height=0.2, wrapWidth=None,
     color=u'white', colorSpace='rgb', opacity=1,
     depth=-1.0)
 
 no = visual.TextStim(win=win, ori=0, name='word',
     text='no',    font=u'Arial',
-    pos=[-0.7, 0.5], height=0.2, wrapWidth=None,
+    pos=[-0.7, -.8], height=0.2, wrapWidth=None,
     color=u'white', colorSpace='rgb', opacity=1,
     depth=-1.0)
     
 
 block_type_text = visual.TextStim(win=win, ori=0, name='word',
     text='block_text',    font=u'Arial',
-    pos=[0.0, -0.7], height=0.2, wrapWidth=None,
+    pos=[0.0, 0.2], height=0.2, wrapWidth=None,
     color=u'white', colorSpace='rgb', opacity=1,
     depth=-1.0)
 
@@ -200,11 +200,17 @@ def run_block(n_trials, block_type, block_number, practice=False):
         block_type_text.setText(f'Does this word describe you?')
     elif block_type == 'other':
         block_type_text.setText(f'Does this word describe your friend?')
-
+    block_type_text.height = 0.2    
     block_type_text.draw()
     win.flip()
     core.wait(block_intro_time)
-
+    if block_type == 'positive':
+        block_type_text.setText(f'Is this word positive?')
+    elif block_type == 'self':
+        block_type_text.setText(f'Are you?')
+    elif block_type == 'other':
+        block_type_text.setText(f'Is your friend?')
+    block_type_text.height = 0.08
     if not practice:
         # get timings just for the current block
         block_timing_frame = all_block_timings[all_block_timings.block == block_number]
@@ -247,7 +253,9 @@ def run_trial(trial_type, fixation_duration, practice=False):
     word.setText(trial_word)
     endExpNow = False
     no.bold = False
+    no.italic = False
     yes.bold = False
+    yes.italic = False
     word.draw()
     yes.draw()
     no.draw()
@@ -275,8 +283,10 @@ def run_trial(trial_type, fixation_duration, practice=False):
                 # change color of selected word
                 if '1' in theseKeys:
                     no.bold = True
+                    no.italic = True
                 elif '2' in theseKeys:
                     yes.bold = True
+                    yes.italic = True
                 word.draw()
                 yes.draw()
                 no.draw()
