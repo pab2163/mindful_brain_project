@@ -1,0 +1,326 @@
+3.2242 	WARNING 	Speech-to-text recognition module for PocketSphinx is not available (use command `pip install SpeechRecognition` to get it). Transcription will be unavailable using that service this session.
+3.2248 	WARNING 	Speech-to-text recognition using Google online services is not available (use command `pip install google-api-core google-auth google-cloud google-cloud-speech googleapis-common-protos` to get it). Transcription will be unavailable using that service this session.
+3.4455 	WARNING 	We strongly recommend you activate the PTB sound engine in PsychoPy prefs as the preferred audio engine. Its timing is vastly superior. Your prefs are currently set to use ['sounddevice', 'PTB', 'pyo', 'pygame'] (in that order).
+57.3869 	WARNING 	Requested an unavailable screen number - using first available.
+58.0044 	EXP 	Created window1 = Window(allowGUI=False, allowStencil=False, autoLog=True, backendConf=UNKNOWN, bitsMode=UNKNOWN, blendMode='avg', bpc=(8, 8, 8), color=array([0, 0, 0]), colorSpace='rgb', depthBits=8, fullscr=<method-wrapper '__getattribute__' of attributeSetter object at 0x000001C1D3A23670>, gamma=None, gammaErrorPolicy='raise', lms=UNKNOWN, monitor=<psychopy.monitors.calibTools.Monitor object at 0x000001C1D8AF33A0>, multiSample=False, name='window1', numSamples=2, pos=(740, 260), screen=1, size=array([1080, 1080]), stencilBits=0, stereo=False, units='norm', useFBO=True, useRetina=False, viewOri=0.0, viewPos=None, viewScale=None, waitBlanking=True, winType='pyglet')
+58.0051 	EXP 	window1: mouseVisible = True
+58.0051 	EXP 	window1: Attempting to measure frame rate of screen (1) ...
+58.0052 	EXP 	window1: recordFrameIntervals = False
+58.1703 	EXP 	window1: recordFrameIntervals = True
+58.3533 	EXP 	Screen (1) actual frame rate measured at 60.34Hz
+58.3533 	EXP 	window1: recordFrameIntervals = False
+58.4283 	EXP 	Created text = TextStim(__class__=<class 'psychopy.visual.text.TextStim'>, alignHoriz=method-wrapper(...), alignText='center', alignVert=method-wrapper(...), anchorHoriz='center', anchorVert='center', antialias=True, autoDraw=False, autoLog=True, bold=False, color=array([1., 1., 1.]), colorSpace='rgb', contrast=1.0, depth=0.0, flipHoriz=False, flipVert=False, font='Arial', fontFiles=[], height=0.06, italic=False, languageStyle='LTR', name='text', opacity=1.0, ori=0, pos=array([0., 0.]), rgb=UNKNOWN, text=str(...), units='norm', win=Window(...), wrapWidth=1.2)
+58.4365 	EXP 	Created text_3 = TextStim(__class__=<class 'psychopy.visual.text.TextStim'>, alignHoriz=method-wrapper(...), alignText='center', alignVert=method-wrapper(...), anchorHoriz='center', anchorVert='center', antialias=True, autoDraw=False, autoLog=True, bold=False, color=array([1., 1., 1.]), colorSpace='rgb', contrast=1.0, depth=0.0, flipHoriz=False, flipVert=False, font='Arial', fontFiles=[], height=0.1, italic=False, languageStyle='LTR', name='text_3', opacity=1.0, ori=0, pos=array([0., 0.]), rgb=UNKNOWN, text='waiting for scanner', units='norm', win=Window(...), wrapWidth=2)
+58.4442 	EXP 	Created text_2 = TextStim(__class__=<class 'psychopy.visual.text.TextStim'>, alignHoriz=method-wrapper(...), alignText='center', alignVert=method-wrapper(...), anchorHoriz='center', anchorVert='center', antialias=True, autoDraw=False, autoLog=True, bold=False, color=array([1., 1., 1.]), colorSpace='rgb', contrast=1.0, depth=0.0, flipHoriz=False, flipVert=False, font='Arial', fontFiles=[], height=0.3, italic=False, languageStyle='LTR', name='text_2', opacity=1.0, ori=0, pos=array([0., 0.]), rgb=UNKNOWN, text='+', units='norm', win=Window(...), wrapWidth=1)
+59.0688 	EXP 	Created text_4 = TextStim(__class__=<class 'psychopy.visual.text.TextStim'>, alignHoriz=method-wrapper(...), alignText='center', alignVert=method-wrapper(...), anchorHoriz='center', anchorVert='center', antialias=True, autoDraw=False, autoLog=True, bold=False, color=array([1., 1., 1.]), colorSpace='rgb', contrast=1.0, depth=-3.0, flipHoriz=False, flipVert=False, font='Arial', fontFiles=[], height=0.1, italic=False, languageStyle='LTR', name='text_4', opacity=1.0, ori=0, pos=array([0., 0.]), rgb=UNKNOWN, text='default text', units='norm', win=Window(...), wrapWidth=1)
+59.0751 	EXP 	Created unnamed Circle = Circle(__class__=<class 'psychopy.visual.circle.Circle'>, anchor=('center', 'center'), autoDraw=False, autoLog=True, closeShape=True, color=method-wrapper(...), colorSpace='rgb', contrast=None, depth=0, fillColor=array([0, 0, 0]), fillColorSpace='rgb', fillRGB=array([0, 0, 0]), interpolate=True, lineColor=array([ 1.,  1., -1.]), lineColorSpace='rgb', lineRGB=array([ 1,  1, -1]), lineWidth=1.5, name='unnamed Circle', opacity=0.5, ori=0.0, pos=array([0.        , 0.33333333]), size=array([1., 1.]), units='norm', vertices=ndarray(...), win=Window(...))
+59.0779 	EXP 	Created unnamed Circle = Circle(__class__=<class 'psychopy.visual.circle.Circle'>, anchor=('center', 'center'), autoDraw=False, autoLog=True, closeShape=True, color=method-wrapper(...), colorSpace='rgb', contrast=None, depth=0, fillColor=array([0, 0, 0]), fillColorSpace='rgb', fillRGB=array([0, 0, 0]), interpolate=True, lineColor=array([-1., -1.,  1.]), lineColorSpace='rgb', lineRGB=array([-1, -1,  1]), lineWidth=1.5, name='unnamed Circle', opacity=0.5, ori=0.0, pos=array([-4.08215600e-17, -3.33333333e-01]), size=array([1., 1.]), units='norm', vertices=ndarray(...), win=Window(...))
+59.0807 	EXP 	Created unnamed Circle = Circle(__class__=<class 'psychopy.visual.circle.Circle'>, anchor=('center', 'center'), autoDraw=False, autoLog=True, closeShape=True, color=method-wrapper(...), colorSpace='rgb', contrast=None, depth=0, fillColor=array([1, 1, 1]), fillColorSpace='rgb', fillRGB=array([1, 1, 1]), interpolate=True, lineColor=array([1., 1., 1.]), lineColorSpace='rgb', lineRGB=array([1, 1, 1]), lineWidth=1.5, name='unnamed Circle', opacity=1.0, ori=0.0, pos=array([0., 0.]), size=array([1., 1.]), units='norm', vertices=ndarray(...), win=Window(...))
+59.0864 	EXP 	Created text_5 = TextStim(__class__=<class 'psychopy.visual.text.TextStim'>, alignHoriz=method-wrapper(...), alignText='center', alignVert=method-wrapper(...), anchorHoriz='center', anchorVert='center', antialias=True, autoDraw=False, autoLog=True, bold=False, color=array([1., 1., 1.]), colorSpace='rgb', contrast=1.0, depth=0.0, flipHoriz=False, flipVert=False, font='Arial', fontFiles=[], height=0.1, italic=False, languageStyle='LTR', name='text_5', opacity=1.0, ori=0, pos=array([0., 0.]), rgb=UNKNOWN, text='thank you!', units='norm', win=Window(...), wrapWidth=1)
+59.1013 	EXP 	text: autoDraw = True
+67.7367 	DATA 	Keypress: space
+67.7516 	EXP 	text: autoDraw = False
+67.7516 	EXP 	text_3: autoDraw = True
+102.9181 	DATA 	Keypress: t
+102.9482 	EXP 	text_3: autoDraw = False
+102.9482 	EXP 	text_2: autoDraw = True
+104.1239 	DATA 	Keypress: t
+105.3253 	DATA 	Keypress: t
+106.5263 	DATA 	Keypress: t
+107.7243 	DATA 	Keypress: t
+108.9300 	DATA 	Keypress: t
+110.1102 	DATA 	Keypress: t
+111.3405 	DATA 	Keypress: t
+112.5094 	DATA 	Keypress: t
+113.7413 	DATA 	Keypress: t
+114.9097 	DATA 	Keypress: t
+116.1112 	DATA 	Keypress: t
+117.3102 	DATA 	Keypress: t
+118.5100 	DATA 	Keypress: t
+119.7254 	DATA 	Keypress: t
+120.9412 	DATA 	Keypress: t
+122.1099 	DATA 	Keypress: t
+123.3414 	DATA 	Keypress: t
+124.5095 	DATA 	Keypress: t
+125.7102 	DATA 	Keypress: t
+126.9235 	DATA 	Keypress: t
+128.1234 	DATA 	Keypress: t
+129.3231 	DATA 	Keypress: t
+130.5230 	DATA 	Keypress: t
+131.7230 	DATA 	Keypress: t
+132.9406 	DATA 	Keypress: t
+132.9418 	EXP 	Created sequence: random, trialTypes=1, nReps=1, seed=None
+133.3198 	EXP 	New trial (rep=0, index=0): None
+133.3225 	EXP 	Created unnamed Circle = Circle(__class__=<class 'psychopy.visual.circle.Circle'>, anchor=('center', 'center'), autoDraw=False, autoLog=True, closeShape=True, color=method-wrapper(...), colorSpace='rgb', contrast=None, depth=0, fillColor=array([1, 1, 1]), fillColorSpace='rgb', fillRGB=array([1, 1, 1]), interpolate=True, lineColor=array([1., 1., 1.]), lineColorSpace='rgb', lineRGB=array([1, 1, 1]), lineWidth=3, name='unnamed Circle', opacity=1.0, ori=0.0, pos=array([0., 0.]), size=array([1., 1.]), units='norm', vertices=ndarray(...), win=Window(...))
+134.1169 	DATA 	Keypress: t
+135.3130 	DATA 	Keypress: t
+136.5161 	DATA 	Keypress: t
+137.7299 	DATA 	Keypress: t
+138.9156 	DATA 	Keypress: t
+140.1167 	DATA 	Keypress: t
+141.3355 	DATA 	Keypress: t
+142.5170 	DATA 	Keypress: t
+143.7278 	DATA 	Keypress: t
+144.9331 	DATA 	Keypress: t
+146.1204 	DATA 	Keypress: t
+147.3195 	DATA 	Keypress: t
+148.5256 	DATA 	Keypress: t
+149.7324 	DATA 	Keypress: t
+151.1525 	DATA 	Keypress: t
+151.3979 	EXP 	text_2: autoDraw = False
+151.3979 	EXP 	text_2: autoDraw = False
+152.3550 	DATA 	Keypress: t
+153.5221 	DATA 	Keypress: t
+154.6145 	DATA 	Keypress: t
+155.7085 	DATA 	Keypress: t
+156.9084 	DATA 	Keypress: t
+158.9536 	DATA 	Keypress: t
+160.0366 	DATA 	Keypress: t
+161.1242 	DATA 	Keypress: t
+162.2187 	DATA 	Keypress: t
+163.3037 	DATA 	Keypress: t
+164.3843 	DATA 	Keypress: t
+165.4703 	DATA 	Keypress: t
+166.5514 	DATA 	Keypress: t
+167.7082 	DATA 	Keypress: t
+168.9083 	DATA 	Keypress: t
+170.8850 	DATA 	Keypress: t
+171.9760 	DATA 	Keypress: t
+173.0692 	DATA 	Keypress: t
+174.1539 	DATA 	Keypress: t
+175.2345 	DATA 	Keypress: t
+176.3096 	DATA 	Keypress: t
+177.4047 	DATA 	Keypress: t
+178.5083 	DATA 	Keypress: t
+179.7083 	DATA 	Keypress: t
+181.7384 	DATA 	Keypress: t
+182.8176 	DATA 	Keypress: t
+183.8941 	DATA 	Keypress: t
+184.9860 	DATA 	Keypress: t
+186.0587 	DATA 	Keypress: t
+187.1514 	DATA 	Keypress: t
+188.2270 	DATA 	Keypress: t
+189.3185 	DATA 	Keypress: t
+190.5082 	DATA 	Keypress: t
+191.7133 	DATA 	Keypress: t
+193.6715 	DATA 	Keypress: t
+194.7569 	DATA 	Keypress: t
+195.8518 	DATA 	Keypress: t
+196.9341 	DATA 	Keypress: t
+198.0163 	DATA 	Keypress: t
+199.0994 	DATA 	Keypress: t
+200.1850 	DATA 	Keypress: t
+201.3083 	DATA 	Keypress: t
+201.5129 	EXP 	unnamed Circle: radius = 0.1
+202.5082 	DATA 	Keypress: t
+203.7308 	DATA 	Keypress: t
+205.6670 	DATA 	Keypress: t
+206.7255 	DATA 	Keypress: t
+207.8371 	DATA 	Keypress: t
+208.9348 	DATA 	Keypress: t
+210.0206 	DATA 	Keypress: t
+211.1104 	DATA 	Keypress: t
+212.1897 	DATA 	Keypress: t
+213.3085 	DATA 	Keypress: t
+214.5081 	DATA 	Keypress: t
+216.5346 	DATA 	Keypress: t
+217.6220 	DATA 	Keypress: t
+218.7174 	DATA 	Keypress: t
+219.8012 	DATA 	Keypress: t
+220.8824 	DATA 	Keypress: t
+221.9666 	DATA 	Keypress: t
+223.0506 	DATA 	Keypress: t
+223.2775 	EXP 	unnamed Circle: radius = 0.1
+224.1334 	DATA 	Keypress: t
+225.3082 	DATA 	Keypress: t
+226.5465 	DATA 	Keypress: t
+228.4821 	DATA 	Keypress: t
+229.5672 	DATA 	Keypress: t
+230.6434 	DATA 	Keypress: t
+231.7347 	DATA 	Keypress: t
+232.8172 	DATA 	Keypress: t
+233.9006 	DATA 	Keypress: t
+234.9828 	DATA 	Keypress: t
+236.1083 	DATA 	Keypress: t
+237.3082 	DATA 	Keypress: t
+237.3936 	EXP 	unnamed Circle: radius = 0.05
+239.3356 	DATA 	Keypress: t
+240.4069 	DATA 	Keypress: t
+241.4995 	DATA 	Keypress: t
+242.5714 	DATA 	Keypress: t
+243.6928 	DATA 	Keypress: t
+244.7828 	DATA 	Keypress: t
+245.8404 	DATA 	Keypress: t
+246.9317 	DATA 	Keypress: t
+248.1082 	DATA 	Keypress: t
+248.2772 	EXP 	unnamed Circle: radius = 0.033
+249.3081 	DATA 	Keypress: t
+251.2992 	DATA 	Keypress: t
+252.3813 	DATA 	Keypress: t
+253.7119 	EXP 	text_2: autoDraw = True
+253.9458 	EXP 	text_2: autoDraw = False
+253.9458 	EXP 	text_5: autoDraw = True
+258.9662 	EXP 	window1: mouseVisible = True
+3.2242 	WARNING 	Speech-to-text recognition module for PocketSphinx is not available (use command `pip install SpeechRecognition` to get it). Transcription will be unavailable using that service this session.
+3.2248 	WARNING 	Speech-to-text recognition using Google online services is not available (use command `pip install google-api-core google-auth google-cloud google-cloud-speech googleapis-common-protos` to get it). Transcription will be unavailable using that service this session.
+3.4455 	WARNING 	We strongly recommend you activate the PTB sound engine in PsychoPy prefs as the preferred audio engine. Its timing is vastly superior. Your prefs are currently set to use ['sounddevice', 'PTB', 'pyo', 'pygame'] (in that order).
+57.3869 	WARNING 	Requested an unavailable screen number - using first available.
+58.0044 	EXP 	Created window1 = Window(allowGUI=False, allowStencil=False, autoLog=True, backendConf=UNKNOWN, bitsMode=UNKNOWN, blendMode='avg', bpc=(8, 8, 8), color=array([0, 0, 0]), colorSpace='rgb', depthBits=8, fullscr=<method-wrapper '__getattribute__' of attributeSetter object at 0x000001C1D3A23670>, gamma=None, gammaErrorPolicy='raise', lms=UNKNOWN, monitor=<psychopy.monitors.calibTools.Monitor object at 0x000001C1D8AF33A0>, multiSample=False, name='window1', numSamples=2, pos=(740, 260), screen=1, size=array([1080, 1080]), stencilBits=0, stereo=False, units='norm', useFBO=True, useRetina=False, viewOri=0.0, viewPos=None, viewScale=None, waitBlanking=True, winType='pyglet')
+58.0051 	EXP 	window1: mouseVisible = True
+58.0051 	EXP 	window1: Attempting to measure frame rate of screen (1) ...
+58.0052 	EXP 	window1: recordFrameIntervals = False
+58.1703 	EXP 	window1: recordFrameIntervals = True
+58.3533 	EXP 	Screen (1) actual frame rate measured at 60.34Hz
+58.3533 	EXP 	window1: recordFrameIntervals = False
+58.4283 	EXP 	Created text = TextStim(__class__=<class 'psychopy.visual.text.TextStim'>, alignHoriz=method-wrapper(...), alignText='center', alignVert=method-wrapper(...), anchorHoriz='center', anchorVert='center', antialias=True, autoDraw=False, autoLog=True, bold=False, color=array([1., 1., 1.]), colorSpace='rgb', contrast=1.0, depth=0.0, flipHoriz=False, flipVert=False, font='Arial', fontFiles=[], height=0.06, italic=False, languageStyle='LTR', name='text', opacity=1.0, ori=0, pos=array([0., 0.]), rgb=UNKNOWN, text=str(...), units='norm', win=Window(...), wrapWidth=1.2)
+58.4365 	EXP 	Created text_3 = TextStim(__class__=<class 'psychopy.visual.text.TextStim'>, alignHoriz=method-wrapper(...), alignText='center', alignVert=method-wrapper(...), anchorHoriz='center', anchorVert='center', antialias=True, autoDraw=False, autoLog=True, bold=False, color=array([1., 1., 1.]), colorSpace='rgb', contrast=1.0, depth=0.0, flipHoriz=False, flipVert=False, font='Arial', fontFiles=[], height=0.1, italic=False, languageStyle='LTR', name='text_3', opacity=1.0, ori=0, pos=array([0., 0.]), rgb=UNKNOWN, text='waiting for scanner', units='norm', win=Window(...), wrapWidth=2)
+58.4442 	EXP 	Created text_2 = TextStim(__class__=<class 'psychopy.visual.text.TextStim'>, alignHoriz=method-wrapper(...), alignText='center', alignVert=method-wrapper(...), anchorHoriz='center', anchorVert='center', antialias=True, autoDraw=False, autoLog=True, bold=False, color=array([1., 1., 1.]), colorSpace='rgb', contrast=1.0, depth=0.0, flipHoriz=False, flipVert=False, font='Arial', fontFiles=[], height=0.3, italic=False, languageStyle='LTR', name='text_2', opacity=1.0, ori=0, pos=array([0., 0.]), rgb=UNKNOWN, text='+', units='norm', win=Window(...), wrapWidth=1)
+59.0688 	EXP 	Created text_4 = TextStim(__class__=<class 'psychopy.visual.text.TextStim'>, alignHoriz=method-wrapper(...), alignText='center', alignVert=method-wrapper(...), anchorHoriz='center', anchorVert='center', antialias=True, autoDraw=False, autoLog=True, bold=False, color=array([1., 1., 1.]), colorSpace='rgb', contrast=1.0, depth=-3.0, flipHoriz=False, flipVert=False, font='Arial', fontFiles=[], height=0.1, italic=False, languageStyle='LTR', name='text_4', opacity=1.0, ori=0, pos=array([0., 0.]), rgb=UNKNOWN, text='default text', units='norm', win=Window(...), wrapWidth=1)
+59.0751 	EXP 	Created unnamed Circle = Circle(__class__=<class 'psychopy.visual.circle.Circle'>, anchor=('center', 'center'), autoDraw=False, autoLog=True, closeShape=True, color=method-wrapper(...), colorSpace='rgb', contrast=None, depth=0, fillColor=array([0, 0, 0]), fillColorSpace='rgb', fillRGB=array([0, 0, 0]), interpolate=True, lineColor=array([ 1.,  1., -1.]), lineColorSpace='rgb', lineRGB=array([ 1,  1, -1]), lineWidth=1.5, name='unnamed Circle', opacity=0.5, ori=0.0, pos=array([0.        , 0.33333333]), size=array([1., 1.]), units='norm', vertices=ndarray(...), win=Window(...))
+59.0779 	EXP 	Created unnamed Circle = Circle(__class__=<class 'psychopy.visual.circle.Circle'>, anchor=('center', 'center'), autoDraw=False, autoLog=True, closeShape=True, color=method-wrapper(...), colorSpace='rgb', contrast=None, depth=0, fillColor=array([0, 0, 0]), fillColorSpace='rgb', fillRGB=array([0, 0, 0]), interpolate=True, lineColor=array([-1., -1.,  1.]), lineColorSpace='rgb', lineRGB=array([-1, -1,  1]), lineWidth=1.5, name='unnamed Circle', opacity=0.5, ori=0.0, pos=array([-4.08215600e-17, -3.33333333e-01]), size=array([1., 1.]), units='norm', vertices=ndarray(...), win=Window(...))
+59.0807 	EXP 	Created unnamed Circle = Circle(__class__=<class 'psychopy.visual.circle.Circle'>, anchor=('center', 'center'), autoDraw=False, autoLog=True, closeShape=True, color=method-wrapper(...), colorSpace='rgb', contrast=None, depth=0, fillColor=array([1, 1, 1]), fillColorSpace='rgb', fillRGB=array([1, 1, 1]), interpolate=True, lineColor=array([1., 1., 1.]), lineColorSpace='rgb', lineRGB=array([1, 1, 1]), lineWidth=1.5, name='unnamed Circle', opacity=1.0, ori=0.0, pos=array([0., 0.]), size=array([1., 1.]), units='norm', vertices=ndarray(...), win=Window(...))
+59.0864 	EXP 	Created text_5 = TextStim(__class__=<class 'psychopy.visual.text.TextStim'>, alignHoriz=method-wrapper(...), alignText='center', alignVert=method-wrapper(...), anchorHoriz='center', anchorVert='center', antialias=True, autoDraw=False, autoLog=True, bold=False, color=array([1., 1., 1.]), colorSpace='rgb', contrast=1.0, depth=0.0, flipHoriz=False, flipVert=False, font='Arial', fontFiles=[], height=0.1, italic=False, languageStyle='LTR', name='text_5', opacity=1.0, ori=0, pos=array([0., 0.]), rgb=UNKNOWN, text='thank you!', units='norm', win=Window(...), wrapWidth=1)
+59.1013 	EXP 	text: autoDraw = True
+67.7367 	DATA 	Keypress: space
+67.7516 	EXP 	text: autoDraw = False
+67.7516 	EXP 	text_3: autoDraw = True
+102.9181 	DATA 	Keypress: t
+102.9482 	EXP 	text_3: autoDraw = False
+102.9482 	EXP 	text_2: autoDraw = True
+104.1239 	DATA 	Keypress: t
+105.3253 	DATA 	Keypress: t
+106.5263 	DATA 	Keypress: t
+107.7243 	DATA 	Keypress: t
+108.9300 	DATA 	Keypress: t
+110.1102 	DATA 	Keypress: t
+111.3405 	DATA 	Keypress: t
+112.5094 	DATA 	Keypress: t
+113.7413 	DATA 	Keypress: t
+114.9097 	DATA 	Keypress: t
+116.1112 	DATA 	Keypress: t
+117.3102 	DATA 	Keypress: t
+118.5100 	DATA 	Keypress: t
+119.7254 	DATA 	Keypress: t
+120.9412 	DATA 	Keypress: t
+122.1099 	DATA 	Keypress: t
+123.3414 	DATA 	Keypress: t
+124.5095 	DATA 	Keypress: t
+125.7102 	DATA 	Keypress: t
+126.9235 	DATA 	Keypress: t
+128.1234 	DATA 	Keypress: t
+129.3231 	DATA 	Keypress: t
+130.5230 	DATA 	Keypress: t
+131.7230 	DATA 	Keypress: t
+132.9406 	DATA 	Keypress: t
+132.9418 	EXP 	Created sequence: random, trialTypes=1, nReps=1, seed=None
+133.3198 	EXP 	New trial (rep=0, index=0): None
+133.3225 	EXP 	Created unnamed Circle = Circle(__class__=<class 'psychopy.visual.circle.Circle'>, anchor=('center', 'center'), autoDraw=False, autoLog=True, closeShape=True, color=method-wrapper(...), colorSpace='rgb', contrast=None, depth=0, fillColor=array([1, 1, 1]), fillColorSpace='rgb', fillRGB=array([1, 1, 1]), interpolate=True, lineColor=array([1., 1., 1.]), lineColorSpace='rgb', lineRGB=array([1, 1, 1]), lineWidth=3, name='unnamed Circle', opacity=1.0, ori=0.0, pos=array([0., 0.]), size=array([1., 1.]), units='norm', vertices=ndarray(...), win=Window(...))
+134.1169 	DATA 	Keypress: t
+135.3130 	DATA 	Keypress: t
+136.5161 	DATA 	Keypress: t
+137.7299 	DATA 	Keypress: t
+138.9156 	DATA 	Keypress: t
+140.1167 	DATA 	Keypress: t
+141.3355 	DATA 	Keypress: t
+142.5170 	DATA 	Keypress: t
+143.7278 	DATA 	Keypress: t
+144.9331 	DATA 	Keypress: t
+146.1204 	DATA 	Keypress: t
+147.3195 	DATA 	Keypress: t
+148.5256 	DATA 	Keypress: t
+149.7324 	DATA 	Keypress: t
+151.1525 	DATA 	Keypress: t
+151.3979 	EXP 	text_2: autoDraw = False
+151.3979 	EXP 	text_2: autoDraw = False
+152.3550 	DATA 	Keypress: t
+153.5221 	DATA 	Keypress: t
+154.6145 	DATA 	Keypress: t
+155.7085 	DATA 	Keypress: t
+156.9084 	DATA 	Keypress: t
+158.9536 	DATA 	Keypress: t
+160.0366 	DATA 	Keypress: t
+161.1242 	DATA 	Keypress: t
+162.2187 	DATA 	Keypress: t
+163.3037 	DATA 	Keypress: t
+164.3843 	DATA 	Keypress: t
+165.4703 	DATA 	Keypress: t
+166.5514 	DATA 	Keypress: t
+167.7082 	DATA 	Keypress: t
+168.9083 	DATA 	Keypress: t
+170.8850 	DATA 	Keypress: t
+171.9760 	DATA 	Keypress: t
+173.0692 	DATA 	Keypress: t
+174.1539 	DATA 	Keypress: t
+175.2345 	DATA 	Keypress: t
+176.3096 	DATA 	Keypress: t
+177.4047 	DATA 	Keypress: t
+178.5083 	DATA 	Keypress: t
+179.7083 	DATA 	Keypress: t
+181.7384 	DATA 	Keypress: t
+182.8176 	DATA 	Keypress: t
+183.8941 	DATA 	Keypress: t
+184.9860 	DATA 	Keypress: t
+186.0587 	DATA 	Keypress: t
+187.1514 	DATA 	Keypress: t
+188.2270 	DATA 	Keypress: t
+189.3185 	DATA 	Keypress: t
+190.5082 	DATA 	Keypress: t
+191.7133 	DATA 	Keypress: t
+193.6715 	DATA 	Keypress: t
+194.7569 	DATA 	Keypress: t
+195.8518 	DATA 	Keypress: t
+196.9341 	DATA 	Keypress: t
+198.0163 	DATA 	Keypress: t
+199.0994 	DATA 	Keypress: t
+200.1850 	DATA 	Keypress: t
+201.3083 	DATA 	Keypress: t
+201.5129 	EXP 	unnamed Circle: radius = 0.1
+202.5082 	DATA 	Keypress: t
+203.7308 	DATA 	Keypress: t
+205.6670 	DATA 	Keypress: t
+206.7255 	DATA 	Keypress: t
+207.8371 	DATA 	Keypress: t
+208.9348 	DATA 	Keypress: t
+210.0206 	DATA 	Keypress: t
+211.1104 	DATA 	Keypress: t
+212.1897 	DATA 	Keypress: t
+213.3085 	DATA 	Keypress: t
+214.5081 	DATA 	Keypress: t
+216.5346 	DATA 	Keypress: t
+217.6220 	DATA 	Keypress: t
+218.7174 	DATA 	Keypress: t
+219.8012 	DATA 	Keypress: t
+220.8824 	DATA 	Keypress: t
+221.9666 	DATA 	Keypress: t
+223.0506 	DATA 	Keypress: t
+223.2775 	EXP 	unnamed Circle: radius = 0.1
+224.1334 	DATA 	Keypress: t
+225.3082 	DATA 	Keypress: t
+226.5465 	DATA 	Keypress: t
+228.4821 	DATA 	Keypress: t
+229.5672 	DATA 	Keypress: t
+230.6434 	DATA 	Keypress: t
+231.7347 	DATA 	Keypress: t
+232.8172 	DATA 	Keypress: t
+233.9006 	DATA 	Keypress: t
+234.9828 	DATA 	Keypress: t
+236.1083 	DATA 	Keypress: t
+237.3082 	DATA 	Keypress: t
+237.3936 	EXP 	unnamed Circle: radius = 0.05
+239.3356 	DATA 	Keypress: t
+240.4069 	DATA 	Keypress: t
+241.4995 	DATA 	Keypress: t
+242.5714 	DATA 	Keypress: t
+243.6928 	DATA 	Keypress: t
+244.7828 	DATA 	Keypress: t
+245.8404 	DATA 	Keypress: t
+246.9317 	DATA 	Keypress: t
+248.1082 	DATA 	Keypress: t
+248.2772 	EXP 	unnamed Circle: radius = 0.033
+249.3081 	DATA 	Keypress: t
+251.2992 	DATA 	Keypress: t
+252.3813 	DATA 	Keypress: t
+253.7119 	EXP 	text_2: autoDraw = True
+253.9458 	EXP 	text_2: autoDraw = False
+253.9458 	EXP 	text_5: autoDraw = True
+258.9662 	EXP 	window1: mouseVisible = True
