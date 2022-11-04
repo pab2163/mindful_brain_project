@@ -9,16 +9,13 @@ import numpy as np
 import matplotlib.pyplot as plt
 from nipype.interfaces import fsl
 from nipype.interfaces.fsl import MotionOutliers
-#get_ipython().run_line_magic('matplotlib', 'inline')
 import os.path
 import subprocess
 import os
 from glob import glob
 import sys
-
-# In[2]:
-
-
+import pandas as pd
+from nipype.interfaces.fsl import ImageStats
 
 subjID = sys.argv[1]
 ses = sys.argv[2]
@@ -27,23 +24,14 @@ run = sys.argv[3]
 
 
 # # get correls to Yeo 7networks
+correlfile="../subjects/%s/rest/%s_%s_task-rest_%s_bold.ica/filtered_func_data.ica/Yeo_rsn_correl.txt" %(subjID,subjID,ses,run)
+split_outfile='../subjects/%s/rest/%s_%s_task-rest_%s_bold.ica/filtered_func_data.ica/melodic_IC_' %(subjID,subjID,ses,run)
+dmn_component='../subjects/%s/rest/%s_%s_task-rest_%s_bold.ica/filtered_func_data.ica/dmn_uthresh.nii.gz' %(subjID,subjID,ses,run)
+cen_component='../subjects/%s/rest/%s_%s_task-rest_%s_bold.ica/filtered_func_data.ica/cen_uthresh.nii.gz' %(subjID,subjID,ses,run)
+smc_component='../subjects/%s/rest/%s_%s_task-rest_%s_bold.ica/filtered_func_data.ica/smc_uthresh.nii.gz' %(subjID,subjID,ses,run)
+#
 
-# In[4]:
-
-
-
-correlfile="/home/auerbachlinux/murfi-rt-PyProject/subjects/%s/rest/%s_%s_task-rest_%s_bold.ica/filtered_func_data.ica/Yeo_rsn_correl.txt" %(subjID,subjID,ses,run)
-split_outfile='/home/auerbachlinux/murfi-rt-PyProject/subjects/%s/rest/%s_%s_task-rest_%s_bold.ica/filtered_func_data.ica/melodic_IC_' %(subjID,subjID,ses,run)
-dmn_component='/home/auerbachlinux/murfi-rt-PyProject/subjects/%s/rest/%s_%s_task-rest_%s_bold.ica/filtered_func_data.ica/dmn_uthresh.nii.gz' %(subjID,subjID,ses,run)
-cen_component='/home/auerbachlinux/murfi-rt-PyProject/subjects/%s/rest/%s_%s_task-rest_%s_bold.ica/filtered_func_data.ica/cen_uthresh.nii.gz' %(subjID,subjID,ses,run)
-smc_component='/home/auerbachlinux/murfi-rt-PyProject/subjects/%s/rest/%s_%s_task-rest_%s_bold.ica/filtered_func_data.ica/smc_uthresh.nii.gz' %(subjID,subjID,ses,run)
-# # get DMN, CEN, SMC
-
-# In[6]:
-
-
-import pandas as pd
-from nipype.interfaces.fsl import ImageStats
+ # get DMN, CEN, SMC
 fslcc_info = pd.read_csv(correlfile, sep=' ', skipinitialspace=True, header=None)
 list(fslcc_info)
 fslcc_info.sort_values(by=[1, 2], ascending=False, inplace=True)
