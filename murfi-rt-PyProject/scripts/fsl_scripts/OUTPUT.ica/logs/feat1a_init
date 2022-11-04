@@ -1,0 +1,14 @@
+</pre><hr>Initialisation<br><pre>
+
+/usr/local/fsl/bin/fslmaths DATA prefiltered_func_data -odt float
+Image Exception : #63 :: No image files match: DATA
+terminate called after throwing an instance of 'std::runtime_error'
+  what():  No image files match: DATA
+Aborted (core dumped)
+
+FATAL ERROR ENCOUNTERED:
+COMMAND:
+/usr/local/fsl/bin/fslmaths DATA prefiltered_func_data -odt float
+ERROR MESSAGE:
+child process exited abnormally
+END OF ERROR MESSAGE

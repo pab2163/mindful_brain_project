@@ -1,0 +1,60 @@
+<HTML><HEAD>
+<!--refreshstart-->
+
+<!--refreshstop-->
+<link REL=stylesheet TYPE=text/css href=.files/fsl.css>
+<TITLE>FSL</TITLE></HEAD><BODY><OBJECT data=report.html></OBJECT>
+<h2>Progress Report / Log</h2>
+Started at Fri 15 Jul 2022 02:24:41 PM EDT<p>
+Main script<br><pre>
+
+/bin/cp /home/auerbachlinux/murfi-rt-PyProject/scripts/fsl_scripts/rest_template.fsf design.fsf
+
+mkdir .files;cp /usr/local/fsl/doc/fsl.css .files;cp -r /usr/local/fsl/doc/images .files/images
+
+/usr/local/fsl/bin/fsl_sub -T 10 -l logs -N feat1a_init   /usr/local/fsl/bin/feat /home/auerbachlinux/murfi-rt-PyProject/scripts/fsl_scripts/OUTPUT.ica/design.fsf -D /home/auerbachlinux/murfi-rt-PyProject/scripts/fsl_scripts/OUTPUT.ica -I 1 -init
+Error submitting job - child process exited abnormally
+    while executing
+"if { [ catch {
+
+for { set argindex 1 } { $argindex < $argc } { incr argindex 1 } {
+    switch -- [ lindex $argv $argindex ] {
+
+	-I {
+	    incr arginde..."
+    (file "/usr/local/fsl/bin/feat" line 312)
+
+
+FATAL ERROR ENCOUNTERED:
+COMMAND:
+/usr/local/fsl/bin/fsl_sub -T 10 -l logs -N feat1a_init   /usr/local/fsl/bin/feat /home/auerbachlinux/murfi-rt-PyProject/scripts/fsl_scripts/OUTPUT.ica/design.fsf -D /home/auerbachlinux/murfi-rt-PyProject/scripts/fsl_scripts/OUTPUT.ica -I 1 -init
+ERROR MESSAGE:
+child process exited abnormally
+END OF ERROR MESSAGE
+</pre><hr>Initialisation<br><pre>
+
+/usr/local/fsl/bin/fslmaths DATA prefiltered_func_data -odt float
+Image Exception : #63 :: No image files match: DATA
+terminate called after throwing an instance of 'std::runtime_error'
+  what():  No image files match: DATA
+Aborted (core dumped)
+
+FATAL ERROR ENCOUNTERED:
+COMMAND:
+/usr/local/fsl/bin/fslmaths DATA prefiltered_func_data -odt float
+ERROR MESSAGE:
+child process exited abnormally
+END OF ERROR MESSAGE
+child process exited abnormally
+    while executing
+"if { [ catch {
+
+for { set argindex 1 } { $argindex < $argc } { incr argindex 1 } {
+    switch -- [ lindex $argv $argindex ] {
+
+	-I {
+	    incr arginde..."
+    (file "/usr/local/fsl/bin/feat" line 312)
+Error encountered while running in main feat script, halting.
+child process exited abnormally
+</pre><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br></BODY></HTML>
