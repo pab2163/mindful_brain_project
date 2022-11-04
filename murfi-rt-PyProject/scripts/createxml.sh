@@ -6,7 +6,7 @@ set -e
 subject=${1}
 step=${2}
 
-subject_dir=/home/auerbachlinux/murfi-rt-PyProject/subjects/
+subject_dir=../subjects/
 
 if [ ${subject} = help ]
 then
