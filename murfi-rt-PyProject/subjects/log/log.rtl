@@ -1,0 +1,2078 @@
+################################################################
+
+# realtime system log file
+created 2022/7/15 10:52:16.419915
+
+configured the mosaic
+configured the mask-gen
+configured the mask-load
+configured the mask-load
+configured the incremental-glm
+configured the current-activation
+configured the roi-combine
+configured the roi-combine
+configuration:
+--------------
++ study
+  + name=rtDMN
+  + option
+    + name=subjectsDir
+    + /home/rt/rtDMN/subjects
+  + subject
+    + option
+      + name=name
+      + test_rtdmn
+  + option
+    + name=softwareDir
+    + /home/rt/murfi2/
+  + log
+    + filename=/home/auerbachlinux/murfi-rt-PyProject/subjects/log/log.rtl
+  + xfm
+    + referenceVol=study_ref.
++ scanner
+  + option
+    + name=disabled
+    + false
+  + option
+    + name=tr
+    + 1.2
+  + option
+    + name=measurements
+    + 250
+  + option
+    + name=port
+    + 15000
+  + option
+    + name=saveImages
+    + true
+  + option
+    + name=receiveImages
+    + true
+  + option
+    + name=onlyReadMoCo
+    + false
++ infoserver
+  + option
+    + name=disabled
+    + false
+  + option
+    + name=port
+    + 15001
++ processor
+  + module
+    + name=mosaic
+    + option
+      + name=disabled
+      + false
+    + output
+      + display
+    + output
+      + log
+  + module
+    + name=mask-gen
+    + option
+      + name=disabled
+      + false
+    + option
+      + name=makeavail
+      + true
+    + option
+      + name=roiID
+      + brain
+    + option
+      + name=threshold
+      + 0.5
+    + option
+      + name=useBet
+      + false
+    + option
+      + name=betParms
+      + -f 0.5 -g 0 -n -m
+    + option
+      + name=dynamic
+      + false
+    + option
+      + name=save
+      + true
+  + module
+    + name=mask-load
+    + option
+      + name=disabled
+      + false
+    + option
+      + name=makeavail
+      + true
+    + option
+      + name=roiID
+      + pcc
+    + option
+      + name=filename
+      + pcc
+    + option
+      + name=align
+      + true
+    + option
+      + name=save
+      + true
+  + module
+    + name=mask-load
+    + option
+      + name=disabled
+      + false
+    + option
+      + name=makeavail
+      + true
+    + option
+      + name=roiID
+      + dlpfc
+    + option
+      + name=filename
+      + dlpfc
+    + option
+      + name=align
+      + true
+    + option
+      + name=save
+      + true
+  + module
+    + name=incremental-glm
+    + option
+      + name=disabled
+      + false
+    + option
+      + name=makeavail
+      + true
+    + output
+      + display
+    + option
+      + name=maskRoiID
+      + brain
+    + design
+      + option
+        + name=disabled
+        + false
+      + option
+        + name=condition
+        + conditionName=Regulation
+        + 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1
+      + option
+        + name=conditionShift
+        + 0
+  + module
+    + name=current-activation
+    + option
+      + name=disabled
+      + false
+    + option
+      + name=makeavail
+      + true
+    + option
+      + name=print
+      + true
+    + option
+      + name=modelFitModuleID
+      + incremental-glm
+    + option
+      + name=modelFitRoiID
+      + brain
+    + option
+      + name=maskRoiID
+      + brain
+    + option
+      + name=numDataPointsForErrEst
+      + 15
+  + module
+    + name=roi-combine
+    + output
+      + infoserver
+    + output
+      + display
+    + option
+      + name=disabled
+      + false
+    + option
+      + name=print
+      + true
+    + option
+      + name=makeavail
+      + true
+    + option
+      + name=method
+      + weighted-ave
+    + option
+      + name=maskRoiID
+      + pcc
+    + option
+      + name=inputModuleID
+      + current-activation
+    + option
+      + name=inputDataName
+      + activation-img
+    + option
+      + name=inputRoiID
+      + brain
+    + option
+      + name=weightModuleID
+      + incremental-glm
+    + option
+      + name=weightDataName
+      + residual_mse-img
+  + module
+    + name=roi-combine
+    + output
+      + infoserver
+    + output
+      + display
+    + option
+      + name=disabled
+      + false
+    + option
+      + name=print
+      + true
+    + option
+      + name=makeavail
+      + true
+    + option
+      + name=method
+      + weighted-ave
+    + option
+      + name=maskRoiID
+      + dlpfc
+    + option
+      + name=inputModuleID
+      + current-activation
+    + option
+      + name=inputDataName
+      + activation-img
+    + option
+      + name=inputRoiID
+      + brain
+    + option
+      + name=weightModuleID
+      + incremental-glm
+    + option
+      + name=weightDataName
+      + residual_mse-img
+--------------
+
+initialization completed at 2022/7/15 10:52:16.426649
+began running at 2022/7/15 10:52:16.426724
+received image from scanner: series 1 acquisition 1
+maskgen: produced mask brain of 270694 voxels and saved to /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/series1_brain.nii
+error aligning mask /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/pcc , just using unaligned version.
+error loading mask file from /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/pcc
+error aligning mask /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/dlpfc , just using unaligned version.
+error loading mask file from /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/dlpfc
+RtIncrementalGLM: done at tr 1
+RtCurrentActivation: done at tr 1
+RtRoiCombine::process: could not find the mask for roi combination at tr 1
+RtRoiCombine::process: could not find the mask for roi combination at tr 1
+received image from scanner: series 0 acquisition 2
+error aligning mask /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/pcc , just using unaligned version.
+error loading mask file from /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/pcc
+error aligning mask /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/dlpfc , just using unaligned version.
+error loading mask file from /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/dlpfc
+RtIncrementalGLM: done at tr 2
+RtCurrentActivation: done at tr 2
+RtRoiCombine::process: could not find the mask for roi combination at tr 2
+RtRoiCombine::process: could not find the mask for roi combination at tr 2
+received image from scanner: series 2 acquisition 1
+error aligning mask /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/pcc , just using unaligned version.
+error loading mask file from /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/pcc
+error aligning mask /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/dlpfc , just using unaligned version.
+error loading mask file from /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/dlpfc
+RtIncrementalGLM: done at tr 1
+RtCurrentActivation: done at tr 1
+RtRoiCombine::process: could not find the mask for roi combination at tr 1
+RtRoiCombine::process: could not find the mask for roi combination at tr 1
+received image from scanner: series 1 acquisition 2
+error aligning mask /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/pcc , just using unaligned version.
+error loading mask file from /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/pcc
+error aligning mask /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/dlpfc , just using unaligned version.
+error loading mask file from /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/dlpfc
+RtIncrementalGLM: done at tr 2
+RtCurrentActivation: done at tr 2
+RtRoiCombine::process: could not find the mask for roi combination at tr 2
+RtRoiCombine::process: could not find the mask for roi combination at tr 2
+received image from scanner: series 1 acquisition 3
+error aligning mask /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/pcc , just using unaligned version.
+error loading mask file from /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/pcc
+error aligning mask /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/dlpfc , just using unaligned version.
+error loading mask file from /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/dlpfc
+RtIncrementalGLM: done at tr 3
+RtCurrentActivation: done at tr 3
+RtRoiCombine::process: could not find the mask for roi combination at tr 3
+RtRoiCombine::process: could not find the mask for roi combination at tr 3
+received image from scanner: series 1 acquisition 4
+error aligning mask /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/pcc , just using unaligned version.
+error loading mask file from /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/pcc
+error aligning mask /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/dlpfc , just using unaligned version.
+error loading mask file from /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/dlpfc
+RtIncrementalGLM: done at tr 4
+RtCurrentActivation: done at tr 4
+RtRoiCombine::process: could not find the mask for roi combination at tr 4
+RtRoiCombine::process: could not find the mask for roi combination at tr 4
+received image from scanner: series 1 acquisition 5
+error aligning mask /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/pcc , just using unaligned version.
+error loading mask file from /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/pcc
+error aligning mask /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/dlpfc , just using unaligned version.
+error loading mask file from /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/dlpfc
+RtIncrementalGLM: done at tr 5
+RtCurrentActivation: done at tr 5
+RtRoiCombine::process: could not find the mask for roi combination at tr 5
+RtRoiCombine::process: could not find the mask for roi combination at tr 5
+received image from scanner: series 1 acquisition 6
+error aligning mask /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/pcc , just using unaligned version.
+error loading mask file from /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/pcc
+error aligning mask /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/dlpfc , just using unaligned version.
+error loading mask file from /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/dlpfc
+RtIncrementalGLM: done at tr 6
+RtCurrentActivation: done at tr 6
+RtRoiCombine::process: could not find the mask for roi combination at tr 6
+RtRoiCombine::process: could not find the mask for roi combination at tr 6
+received image from scanner: series 1 acquisition 7
+error aligning mask /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/pcc , just using unaligned version.
+error loading mask file from /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/pcc
+error aligning mask /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/dlpfc , just using unaligned version.
+error loading mask file from /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/dlpfc
+RtIncrementalGLM: done at tr 7
+RtCurrentActivation: done at tr 7
+RtRoiCombine::process: could not find the mask for roi combination at tr 7
+RtRoiCombine::process: could not find the mask for roi combination at tr 7
+received image from scanner: series 1 acquisition 8
+error aligning mask /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/pcc , just using unaligned version.
+error loading mask file from /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/pcc
+error aligning mask /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/dlpfc , just using unaligned version.
+error loading mask file from /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/dlpfc
+RtIncrementalGLM: done at tr 8
+RtCurrentActivation: done at tr 8
+RtRoiCombine::process: could not find the mask for roi combination at tr 8
+RtRoiCombine::process: could not find the mask for roi combination at tr 8
+received image from scanner: series 1 acquisition 9
+error aligning mask /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/pcc , just using unaligned version.
+error loading mask file from /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/pcc
+error aligning mask /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/dlpfc , just using unaligned version.
+error loading mask file from /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/dlpfc
+RtIncrementalGLM: done at tr 9
+RtCurrentActivation: done at tr 9
+RtRoiCombine::process: could not find the mask for roi combination at tr 9
+RtRoiCombine::process: could not find the mask for roi combination at tr 9
+received image from scanner: series 1 acquisition 10
+error aligning mask /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/pcc , just using unaligned version.
+error loading mask file from /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/pcc
+error aligning mask /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/dlpfc , just using unaligned version.
+error loading mask file from /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/dlpfc
+RtIncrementalGLM: done at tr 10
+RtCurrentActivation: done at tr 10
+RtRoiCombine::process: could not find the mask for roi combination at tr 10
+RtRoiCombine::process: could not find the mask for roi combination at tr 10
+received image from scanner: series 1 acquisition 11
+error aligning mask /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/pcc , just using unaligned version.
+error loading mask file from /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/pcc
+error aligning mask /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/dlpfc , just using unaligned version.
+error loading mask file from /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/dlpfc
+RtIncrementalGLM: done at tr 11
+RtCurrentActivation: done at tr 11
+RtRoiCombine::process: could not find the mask for roi combination at tr 11
+RtRoiCombine::process: could not find the mask for roi combination at tr 11
+received image from scanner: series 1 acquisition 12
+error aligning mask /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/pcc , just using unaligned version.
+error loading mask file from /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/pcc
+error aligning mask /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/dlpfc , just using unaligned version.
+error loading mask file from /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/dlpfc
+RtIncrementalGLM: done at tr 12
+RtCurrentActivation: done at tr 12
+RtRoiCombine::process: could not find the mask for roi combination at tr 12
+RtRoiCombine::process: could not find the mask for roi combination at tr 12
+received image from scanner: series 1 acquisition 13
+error aligning mask /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/pcc , just using unaligned version.
+error loading mask file from /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/pcc
+error aligning mask /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/dlpfc , just using unaligned version.
+error loading mask file from /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/dlpfc
+RtIncrementalGLM: done at tr 13
+RtCurrentActivation: done at tr 13
+RtRoiCombine::process: could not find the mask for roi combination at tr 13
+RtRoiCombine::process: could not find the mask for roi combination at tr 13
+received image from scanner: series 1 acquisition 14
+error aligning mask /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/pcc , just using unaligned version.
+error loading mask file from /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/pcc
+error aligning mask /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/dlpfc , just using unaligned version.
+error loading mask file from /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/dlpfc
+RtIncrementalGLM: done at tr 14
+RtCurrentActivation: done at tr 14
+RtRoiCombine::process: could not find the mask for roi combination at tr 14
+RtRoiCombine::process: could not find the mask for roi combination at tr 14
+received image from scanner: series 1 acquisition 15
+error aligning mask /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/pcc , just using unaligned version.
+error loading mask file from /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/pcc
+error aligning mask /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/dlpfc , just using unaligned version.
+error loading mask file from /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/dlpfc
+RtIncrementalGLM: done at tr 15
+RtCurrentActivation: done at tr 15
+RtRoiCombine::process: could not find the mask for roi combination at tr 15
+RtRoiCombine::process: could not find the mask for roi combination at tr 15
+received image from scanner: series 1 acquisition 16
+error aligning mask /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/pcc , just using unaligned version.
+error loading mask file from /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/pcc
+error aligning mask /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/dlpfc , just using unaligned version.
+error loading mask file from /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/dlpfc
+RtIncrementalGLM: done at tr 16
+RtCurrentActivation: done at tr 16
+RtRoiCombine::process: could not find the mask for roi combination at tr 16
+RtRoiCombine::process: could not find the mask for roi combination at tr 16
+received image from scanner: series 1 acquisition 17
+error aligning mask /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/pcc , just using unaligned version.
+error loading mask file from /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/pcc
+error aligning mask /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/dlpfc , just using unaligned version.
+error loading mask file from /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/dlpfc
+RtIncrementalGLM: done at tr 17
+RtCurrentActivation: done at tr 17
+RtRoiCombine::process: could not find the mask for roi combination at tr 17
+RtRoiCombine::process: could not find the mask for roi combination at tr 17
+received image from scanner: series 1 acquisition 18
+error aligning mask /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/pcc , just using unaligned version.
+error loading mask file from /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/pcc
+error aligning mask /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/dlpfc , just using unaligned version.
+error loading mask file from /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/dlpfc
+RtIncrementalGLM: done at tr 18
+RtCurrentActivation: done at tr 18
+RtRoiCombine::process: could not find the mask for roi combination at tr 18
+RtRoiCombine::process: could not find the mask for roi combination at tr 18
+received image from scanner: series 1 acquisition 19
+error aligning mask /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/pcc , just using unaligned version.
+error loading mask file from /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/pcc
+error aligning mask /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/dlpfc , just using unaligned version.
+error loading mask file from /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/dlpfc
+RtIncrementalGLM: done at tr 19
+RtCurrentActivation: done at tr 19
+RtRoiCombine::process: could not find the mask for roi combination at tr 19
+RtRoiCombine::process: could not find the mask for roi combination at tr 19
+received image from scanner: series 1 acquisition 20
+error aligning mask /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/pcc , just using unaligned version.
+error loading mask file from /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/pcc
+error aligning mask /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/dlpfc , just using unaligned version.
+error loading mask file from /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/dlpfc
+RtIncrementalGLM: done at tr 20
+RtCurrentActivation: done at tr 20
+RtRoiCombine::process: could not find the mask for roi combination at tr 20
+RtRoiCombine::process: could not find the mask for roi combination at tr 20
+received image from scanner: series 1 acquisition 21
+error aligning mask /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/pcc , just using unaligned version.
+error loading mask file from /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/pcc
+error aligning mask /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/dlpfc , just using unaligned version.
+error loading mask file from /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/dlpfc
+RtIncrementalGLM: done at tr 21
+RtCurrentActivation: done at tr 21
+RtRoiCombine::process: could not find the mask for roi combination at tr 21
+RtRoiCombine::process: could not find the mask for roi combination at tr 21
+received image from scanner: series 1 acquisition 22
+error aligning mask /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/pcc , just using unaligned version.
+error loading mask file from /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/pcc
+error aligning mask /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/dlpfc , just using unaligned version.
+error loading mask file from /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/dlpfc
+RtIncrementalGLM: done at tr 22
+RtCurrentActivation: done at tr 22
+RtRoiCombine::process: could not find the mask for roi combination at tr 22
+RtRoiCombine::process: could not find the mask for roi combination at tr 22
+received image from scanner: series 1 acquisition 23
+error aligning mask /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/pcc , just using unaligned version.
+error loading mask file from /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/pcc
+error aligning mask /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/dlpfc , just using unaligned version.
+error loading mask file from /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/dlpfc
+RtIncrementalGLM: done at tr 23
+RtCurrentActivation: done at tr 23
+RtRoiCombine::process: could not find the mask for roi combination at tr 23
+RtRoiCombine::process: could not find the mask for roi combination at tr 23
+received image from scanner: series 1 acquisition 24
+error aligning mask /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/pcc , just using unaligned version.
+error loading mask file from /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/pcc
+error aligning mask /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/dlpfc , just using unaligned version.
+error loading mask file from /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/dlpfc
+RtIncrementalGLM: done at tr 24
+RtCurrentActivation: done at tr 24
+RtRoiCombine::process: could not find the mask for roi combination at tr 24
+RtRoiCombine::process: could not find the mask for roi combination at tr 24
+received image from scanner: series 1 acquisition 25
+error aligning mask /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/pcc , just using unaligned version.
+error loading mask file from /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/pcc
+error aligning mask /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/dlpfc , just using unaligned version.
+error loading mask file from /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/dlpfc
+RtIncrementalGLM: done at tr 25
+RtCurrentActivation: done at tr 25
+RtRoiCombine::process: could not find the mask for roi combination at tr 25
+RtRoiCombine::process: could not find the mask for roi combination at tr 25
+received image from scanner: series 1 acquisition 26
+error aligning mask /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/pcc , just using unaligned version.
+error loading mask file from /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/pcc
+error aligning mask /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/dlpfc , just using unaligned version.
+error loading mask file from /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/dlpfc
+RtIncrementalGLM: done at tr 26
+RtCurrentActivation: done at tr 26
+RtRoiCombine::process: could not find the mask for roi combination at tr 26
+RtRoiCombine::process: could not find the mask for roi combination at tr 26
+received image from scanner: series 1 acquisition 27
+error aligning mask /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/pcc , just using unaligned version.
+error loading mask file from /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/pcc
+error aligning mask /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/dlpfc , just using unaligned version.
+error loading mask file from /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/dlpfc
+RtIncrementalGLM: done at tr 27
+RtCurrentActivation: done at tr 27
+RtRoiCombine::process: could not find the mask for roi combination at tr 27
+RtRoiCombine::process: could not find the mask for roi combination at tr 27
+received image from scanner: series 1 acquisition 28
+error aligning mask /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/pcc , just using unaligned version.
+error loading mask file from /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/pcc
+error aligning mask /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/dlpfc , just using unaligned version.
+error loading mask file from /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/dlpfc
+RtIncrementalGLM: done at tr 28
+RtCurrentActivation: done at tr 28
+RtRoiCombine::process: could not find the mask for roi combination at tr 28
+RtRoiCombine::process: could not find the mask for roi combination at tr 28
+received image from scanner: series 1 acquisition 29
+error aligning mask /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/pcc , just using unaligned version.
+error loading mask file from /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/pcc
+error aligning mask /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/dlpfc , just using unaligned version.
+error loading mask file from /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/dlpfc
+RtIncrementalGLM: done at tr 29
+RtCurrentActivation: done at tr 29
+RtRoiCombine::process: could not find the mask for roi combination at tr 29
+RtRoiCombine::process: could not find the mask for roi combination at tr 29
+received image from scanner: series 1 acquisition 30
+error aligning mask /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/pcc , just using unaligned version.
+error loading mask file from /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/pcc
+error aligning mask /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/dlpfc , just using unaligned version.
+error loading mask file from /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/dlpfc
+RtIncrementalGLM: done at tr 30
+RtCurrentActivation: done at tr 30
+RtRoiCombine::process: could not find the mask for roi combination at tr 30
+RtRoiCombine::process: could not find the mask for roi combination at tr 30
+received image from scanner: series 1 acquisition 31
+error aligning mask /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/pcc , just using unaligned version.
+error loading mask file from /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/pcc
+error aligning mask /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/dlpfc , just using unaligned version.
+error loading mask file from /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/dlpfc
+RtIncrementalGLM: done at tr 31
+RtCurrentActivation: done at tr 31
+RtRoiCombine::process: could not find the mask for roi combination at tr 31
+RtRoiCombine::process: could not find the mask for roi combination at tr 31
+received image from scanner: series 1 acquisition 32
+error aligning mask /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/pcc , just using unaligned version.
+error loading mask file from /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/pcc
+error aligning mask /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/dlpfc , just using unaligned version.
+error loading mask file from /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/dlpfc
+RtIncrementalGLM: done at tr 32
+RtCurrentActivation: done at tr 32
+RtRoiCombine::process: could not find the mask for roi combination at tr 32
+RtRoiCombine::process: could not find the mask for roi combination at tr 32
+received image from scanner: series 1 acquisition 33
+error aligning mask /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/pcc , just using unaligned version.
+error loading mask file from /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/pcc
+error aligning mask /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/dlpfc , just using unaligned version.
+error loading mask file from /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/dlpfc
+RtIncrementalGLM: done at tr 33
+RtCurrentActivation: done at tr 33
+RtRoiCombine::process: could not find the mask for roi combination at tr 33
+RtRoiCombine::process: could not find the mask for roi combination at tr 33
+received image from scanner: series 1 acquisition 34
+error aligning mask /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/pcc , just using unaligned version.
+error loading mask file from /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/pcc
+error aligning mask /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/dlpfc , just using unaligned version.
+error loading mask file from /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/dlpfc
+RtIncrementalGLM: done at tr 34
+RtCurrentActivation: done at tr 34
+RtRoiCombine::process: could not find the mask for roi combination at tr 34
+RtRoiCombine::process: could not find the mask for roi combination at tr 34
+received image from scanner: series 1 acquisition 35
+error aligning mask /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/pcc , just using unaligned version.
+error loading mask file from /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/pcc
+error aligning mask /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/dlpfc , just using unaligned version.
+error loading mask file from /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/dlpfc
+RtIncrementalGLM: done at tr 35
+RtCurrentActivation: done at tr 35
+RtRoiCombine::process: could not find the mask for roi combination at tr 35
+RtRoiCombine::process: could not find the mask for roi combination at tr 35
+received image from scanner: series 1 acquisition 36
+error aligning mask /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/pcc , just using unaligned version.
+error loading mask file from /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/pcc
+error aligning mask /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/dlpfc , just using unaligned version.
+error loading mask file from /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/dlpfc
+RtIncrementalGLM: done at tr 36
+RtCurrentActivation: done at tr 36
+RtRoiCombine::process: could not find the mask for roi combination at tr 36
+RtRoiCombine::process: could not find the mask for roi combination at tr 36
+received image from scanner: series 1 acquisition 37
+error aligning mask /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/pcc , just using unaligned version.
+error loading mask file from /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/pcc
+error aligning mask /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/dlpfc , just using unaligned version.
+error loading mask file from /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/dlpfc
+RtIncrementalGLM: done at tr 37
+RtCurrentActivation: done at tr 37
+RtRoiCombine::process: could not find the mask for roi combination at tr 37
+RtRoiCombine::process: could not find the mask for roi combination at tr 37
+received image from scanner: series 1 acquisition 38
+error aligning mask /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/pcc , just using unaligned version.
+error loading mask file from /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/pcc
+error aligning mask /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/dlpfc , just using unaligned version.
+error loading mask file from /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/dlpfc
+RtIncrementalGLM: done at tr 38
+RtCurrentActivation: done at tr 38
+RtRoiCombine::process: could not find the mask for roi combination at tr 38
+RtRoiCombine::process: could not find the mask for roi combination at tr 38
+received image from scanner: series 1 acquisition 39
+error aligning mask /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/pcc , just using unaligned version.
+error loading mask file from /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/pcc
+error aligning mask /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/dlpfc , just using unaligned version.
+error loading mask file from /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/dlpfc
+RtIncrementalGLM: done at tr 39
+RtCurrentActivation: done at tr 39
+RtRoiCombine::process: could not find the mask for roi combination at tr 39
+RtRoiCombine::process: could not find the mask for roi combination at tr 39
+received image from scanner: series 1 acquisition 40
+error aligning mask /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/pcc , just using unaligned version.
+error loading mask file from /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/pcc
+error aligning mask /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/dlpfc , just using unaligned version.
+error loading mask file from /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/dlpfc
+RtIncrementalGLM: done at tr 40
+RtCurrentActivation: done at tr 40
+RtRoiCombine::process: could not find the mask for roi combination at tr 40
+RtRoiCombine::process: could not find the mask for roi combination at tr 40
+received image from scanner: series 1 acquisition 41
+error aligning mask /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/pcc , just using unaligned version.
+error loading mask file from /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/pcc
+error aligning mask /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/dlpfc , just using unaligned version.
+error loading mask file from /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/dlpfc
+RtIncrementalGLM: done at tr 41
+RtCurrentActivation: done at tr 41
+RtRoiCombine::process: could not find the mask for roi combination at tr 41
+RtRoiCombine::process: could not find the mask for roi combination at tr 41
+received image from scanner: series 1 acquisition 42
+error aligning mask /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/pcc , just using unaligned version.
+error loading mask file from /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/pcc
+error aligning mask /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/dlpfc , just using unaligned version.
+error loading mask file from /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/dlpfc
+RtIncrementalGLM: done at tr 42
+RtCurrentActivation: done at tr 42
+RtRoiCombine::process: could not find the mask for roi combination at tr 42
+RtRoiCombine::process: could not find the mask for roi combination at tr 42
+received image from scanner: series 1 acquisition 43
+error aligning mask /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/pcc , just using unaligned version.
+error loading mask file from /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/pcc
+error aligning mask /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/dlpfc , just using unaligned version.
+error loading mask file from /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/dlpfc
+RtIncrementalGLM: done at tr 43
+RtCurrentActivation: done at tr 43
+RtRoiCombine::process: could not find the mask for roi combination at tr 43
+RtRoiCombine::process: could not find the mask for roi combination at tr 43
+received image from scanner: series 1 acquisition 44
+error aligning mask /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/pcc , just using unaligned version.
+error loading mask file from /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/pcc
+error aligning mask /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/dlpfc , just using unaligned version.
+error loading mask file from /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/dlpfc
+RtIncrementalGLM: done at tr 44
+RtCurrentActivation: done at tr 44
+RtRoiCombine::process: could not find the mask for roi combination at tr 44
+RtRoiCombine::process: could not find the mask for roi combination at tr 44
+received image from scanner: series 1 acquisition 45
+error aligning mask /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/pcc , just using unaligned version.
+error loading mask file from /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/pcc
+error aligning mask /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/dlpfc , just using unaligned version.
+error loading mask file from /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/dlpfc
+RtIncrementalGLM: done at tr 45
+RtCurrentActivation: done at tr 45
+RtRoiCombine::process: could not find the mask for roi combination at tr 45
+RtRoiCombine::process: could not find the mask for roi combination at tr 45
+received image from scanner: series 1 acquisition 46
+error aligning mask /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/pcc , just using unaligned version.
+error loading mask file from /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/pcc
+error aligning mask /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/dlpfc , just using unaligned version.
+error loading mask file from /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/dlpfc
+RtIncrementalGLM: done at tr 46
+RtCurrentActivation: done at tr 46
+RtRoiCombine::process: could not find the mask for roi combination at tr 46
+RtRoiCombine::process: could not find the mask for roi combination at tr 46
+received image from scanner: series 1 acquisition 47
+error aligning mask /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/pcc , just using unaligned version.
+error loading mask file from /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/pcc
+error aligning mask /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/dlpfc , just using unaligned version.
+error loading mask file from /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/dlpfc
+RtIncrementalGLM: done at tr 47
+RtCurrentActivation: done at tr 47
+RtRoiCombine::process: could not find the mask for roi combination at tr 47
+RtRoiCombine::process: could not find the mask for roi combination at tr 47
+received image from scanner: series 1 acquisition 48
+error aligning mask /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/pcc , just using unaligned version.
+error loading mask file from /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/pcc
+error aligning mask /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/dlpfc , just using unaligned version.
+error loading mask file from /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/dlpfc
+RtIncrementalGLM: done at tr 48
+RtCurrentActivation: done at tr 48
+RtRoiCombine::process: could not find the mask for roi combination at tr 48
+RtRoiCombine::process: could not find the mask for roi combination at tr 48
+received image from scanner: series 1 acquisition 49
+error aligning mask /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/pcc , just using unaligned version.
+error loading mask file from /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/pcc
+error aligning mask /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/dlpfc , just using unaligned version.
+error loading mask file from /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/dlpfc
+RtIncrementalGLM: done at tr 49
+RtCurrentActivation: done at tr 49
+RtRoiCombine::process: could not find the mask for roi combination at tr 49
+RtRoiCombine::process: could not find the mask for roi combination at tr 49
+received image from scanner: series 1 acquisition 50
+error aligning mask /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/pcc , just using unaligned version.
+error loading mask file from /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/pcc
+error aligning mask /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/dlpfc , just using unaligned version.
+error loading mask file from /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/dlpfc
+RtIncrementalGLM: done at tr 50
+RtCurrentActivation: done at tr 50
+RtRoiCombine::process: could not find the mask for roi combination at tr 50
+RtRoiCombine::process: could not find the mask for roi combination at tr 50
+received image from scanner: series 1 acquisition 51
+error aligning mask /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/pcc , just using unaligned version.
+error loading mask file from /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/pcc
+error aligning mask /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/dlpfc , just using unaligned version.
+error loading mask file from /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/dlpfc
+RtIncrementalGLM: done at tr 51
+RtCurrentActivation: done at tr 51
+RtRoiCombine::process: could not find the mask for roi combination at tr 51
+RtRoiCombine::process: could not find the mask for roi combination at tr 51
+received image from scanner: series 1 acquisition 52
+error aligning mask /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/pcc , just using unaligned version.
+error loading mask file from /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/pcc
+error aligning mask /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/dlpfc , just using unaligned version.
+error loading mask file from /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/dlpfc
+RtIncrementalGLM: done at tr 52
+RtCurrentActivation: done at tr 52
+RtRoiCombine::process: could not find the mask for roi combination at tr 52
+RtRoiCombine::process: could not find the mask for roi combination at tr 52
+received image from scanner: series 1 acquisition 53
+error aligning mask /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/pcc , just using unaligned version.
+error loading mask file from /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/pcc
+error aligning mask /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/dlpfc , just using unaligned version.
+error loading mask file from /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/dlpfc
+RtIncrementalGLM: done at tr 53
+RtCurrentActivation: done at tr 53
+RtRoiCombine::process: could not find the mask for roi combination at tr 53
+RtRoiCombine::process: could not find the mask for roi combination at tr 53
+received image from scanner: series 1 acquisition 54
+error aligning mask /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/pcc , just using unaligned version.
+error loading mask file from /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/pcc
+error aligning mask /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/dlpfc , just using unaligned version.
+error loading mask file from /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/dlpfc
+RtIncrementalGLM: done at tr 54
+RtCurrentActivation: done at tr 54
+RtRoiCombine::process: could not find the mask for roi combination at tr 54
+RtRoiCombine::process: could not find the mask for roi combination at tr 54
+received image from scanner: series 1 acquisition 55
+error aligning mask /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/pcc , just using unaligned version.
+error loading mask file from /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/pcc
+error aligning mask /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/dlpfc , just using unaligned version.
+error loading mask file from /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/dlpfc
+RtIncrementalGLM: done at tr 55
+RtCurrentActivation: done at tr 55
+RtRoiCombine::process: could not find the mask for roi combination at tr 55
+RtRoiCombine::process: could not find the mask for roi combination at tr 55
+received image from scanner: series 1 acquisition 56
+error aligning mask /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/pcc , just using unaligned version.
+error loading mask file from /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/pcc
+error aligning mask /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/dlpfc , just using unaligned version.
+error loading mask file from /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/dlpfc
+RtIncrementalGLM: done at tr 56
+RtCurrentActivation: done at tr 56
+RtRoiCombine::process: could not find the mask for roi combination at tr 56
+RtRoiCombine::process: could not find the mask for roi combination at tr 56
+received image from scanner: series 1 acquisition 57
+error aligning mask /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/pcc , just using unaligned version.
+error loading mask file from /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/pcc
+error aligning mask /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/dlpfc , just using unaligned version.
+error loading mask file from /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/dlpfc
+RtIncrementalGLM: done at tr 57
+RtCurrentActivation: done at tr 57
+RtRoiCombine::process: could not find the mask for roi combination at tr 57
+RtRoiCombine::process: could not find the mask for roi combination at tr 57
+received image from scanner: series 1 acquisition 58
+error aligning mask /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/pcc , just using unaligned version.
+error loading mask file from /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/pcc
+error aligning mask /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/dlpfc , just using unaligned version.
+error loading mask file from /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/dlpfc
+RtIncrementalGLM: done at tr 58
+RtCurrentActivation: done at tr 58
+RtRoiCombine::process: could not find the mask for roi combination at tr 58
+RtRoiCombine::process: could not find the mask for roi combination at tr 58
+received image from scanner: series 1 acquisition 59
+error aligning mask /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/pcc , just using unaligned version.
+error loading mask file from /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/pcc
+error aligning mask /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/dlpfc , just using unaligned version.
+error loading mask file from /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/dlpfc
+RtIncrementalGLM: done at tr 59
+RtCurrentActivation: done at tr 59
+RtRoiCombine::process: could not find the mask for roi combination at tr 59
+RtRoiCombine::process: could not find the mask for roi combination at tr 59
+received image from scanner: series 1 acquisition 60
+error aligning mask /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/pcc , just using unaligned version.
+error loading mask file from /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/pcc
+error aligning mask /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/dlpfc , just using unaligned version.
+error loading mask file from /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/dlpfc
+RtIncrementalGLM: done at tr 60
+RtCurrentActivation: done at tr 60
+RtRoiCombine::process: could not find the mask for roi combination at tr 60
+RtRoiCombine::process: could not find the mask for roi combination at tr 60
+received image from scanner: series 1 acquisition 61
+error aligning mask /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/pcc , just using unaligned version.
+error loading mask file from /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/pcc
+error aligning mask /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/dlpfc , just using unaligned version.
+error loading mask file from /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/dlpfc
+RtIncrementalGLM: done at tr 61
+RtCurrentActivation: done at tr 61
+RtRoiCombine::process: could not find the mask for roi combination at tr 61
+RtRoiCombine::process: could not find the mask for roi combination at tr 61
+received image from scanner: series 1 acquisition 62
+error aligning mask /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/pcc , just using unaligned version.
+error loading mask file from /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/pcc
+error aligning mask /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/dlpfc , just using unaligned version.
+error loading mask file from /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/dlpfc
+RtIncrementalGLM: done at tr 62
+RtCurrentActivation: done at tr 62
+RtRoiCombine::process: could not find the mask for roi combination at tr 62
+RtRoiCombine::process: could not find the mask for roi combination at tr 62
+received image from scanner: series 1 acquisition 63
+error aligning mask /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/pcc , just using unaligned version.
+error loading mask file from /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/pcc
+error aligning mask /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/dlpfc , just using unaligned version.
+error loading mask file from /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/dlpfc
+RtIncrementalGLM: done at tr 63
+RtCurrentActivation: done at tr 63
+RtRoiCombine::process: could not find the mask for roi combination at tr 63
+RtRoiCombine::process: could not find the mask for roi combination at tr 63
+received image from scanner: series 1 acquisition 64
+error aligning mask /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/pcc , just using unaligned version.
+error loading mask file from /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/pcc
+error aligning mask /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/dlpfc , just using unaligned version.
+error loading mask file from /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/dlpfc
+RtIncrementalGLM: done at tr 64
+RtCurrentActivation: done at tr 64
+RtRoiCombine::process: could not find the mask for roi combination at tr 64
+RtRoiCombine::process: could not find the mask for roi combination at tr 64
+received image from scanner: series 1 acquisition 65
+error aligning mask /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/pcc , just using unaligned version.
+error loading mask file from /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/pcc
+error aligning mask /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/dlpfc , just using unaligned version.
+error loading mask file from /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/dlpfc
+RtIncrementalGLM: done at tr 65
+RtCurrentActivation: done at tr 65
+RtRoiCombine::process: could not find the mask for roi combination at tr 65
+RtRoiCombine::process: could not find the mask for roi combination at tr 65
+received image from scanner: series 1 acquisition 66
+error aligning mask /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/pcc , just using unaligned version.
+error loading mask file from /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/pcc
+error aligning mask /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/dlpfc , just using unaligned version.
+error loading mask file from /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/dlpfc
+RtIncrementalGLM: done at tr 66
+RtCurrentActivation: done at tr 66
+RtRoiCombine::process: could not find the mask for roi combination at tr 66
+RtRoiCombine::process: could not find the mask for roi combination at tr 66
+received image from scanner: series 1 acquisition 67
+error aligning mask /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/pcc , just using unaligned version.
+error loading mask file from /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/pcc
+error aligning mask /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/dlpfc , just using unaligned version.
+error loading mask file from /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/dlpfc
+RtIncrementalGLM: done at tr 67
+RtCurrentActivation: done at tr 67
+RtRoiCombine::process: could not find the mask for roi combination at tr 67
+RtRoiCombine::process: could not find the mask for roi combination at tr 67
+received image from scanner: series 1 acquisition 68
+error aligning mask /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/pcc , just using unaligned version.
+error loading mask file from /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/pcc
+error aligning mask /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/dlpfc , just using unaligned version.
+error loading mask file from /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/dlpfc
+RtIncrementalGLM: done at tr 68
+RtCurrentActivation: done at tr 68
+RtRoiCombine::process: could not find the mask for roi combination at tr 68
+RtRoiCombine::process: could not find the mask for roi combination at tr 68
+received image from scanner: series 1 acquisition 69
+error aligning mask /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/pcc , just using unaligned version.
+error loading mask file from /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/pcc
+error aligning mask /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/dlpfc , just using unaligned version.
+error loading mask file from /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/dlpfc
+RtIncrementalGLM: done at tr 69
+RtCurrentActivation: done at tr 69
+RtRoiCombine::process: could not find the mask for roi combination at tr 69
+RtRoiCombine::process: could not find the mask for roi combination at tr 69
+received image from scanner: series 1 acquisition 70
+error aligning mask /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/pcc , just using unaligned version.
+error loading mask file from /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/pcc
+error aligning mask /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/dlpfc , just using unaligned version.
+error loading mask file from /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/dlpfc
+RtIncrementalGLM: done at tr 70
+RtCurrentActivation: done at tr 70
+RtRoiCombine::process: could not find the mask for roi combination at tr 70
+RtRoiCombine::process: could not find the mask for roi combination at tr 70
+received image from scanner: series 1 acquisition 71
+error aligning mask /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/pcc , just using unaligned version.
+error loading mask file from /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/pcc
+error aligning mask /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/dlpfc , just using unaligned version.
+error loading mask file from /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/dlpfc
+RtIncrementalGLM: done at tr 71
+RtCurrentActivation: done at tr 71
+RtRoiCombine::process: could not find the mask for roi combination at tr 71
+RtRoiCombine::process: could not find the mask for roi combination at tr 71
+received image from scanner: series 1 acquisition 72
+error aligning mask /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/pcc , just using unaligned version.
+error loading mask file from /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/pcc
+error aligning mask /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/dlpfc , just using unaligned version.
+error loading mask file from /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/dlpfc
+RtIncrementalGLM: done at tr 72
+RtCurrentActivation: done at tr 72
+RtRoiCombine::process: could not find the mask for roi combination at tr 72
+RtRoiCombine::process: could not find the mask for roi combination at tr 72
+received image from scanner: series 1 acquisition 73
+error aligning mask /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/pcc , just using unaligned version.
+error loading mask file from /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/pcc
+error aligning mask /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/dlpfc , just using unaligned version.
+error loading mask file from /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/dlpfc
+RtIncrementalGLM: done at tr 73
+RtCurrentActivation: done at tr 73
+RtRoiCombine::process: could not find the mask for roi combination at tr 73
+RtRoiCombine::process: could not find the mask for roi combination at tr 73
+received image from scanner: series 1 acquisition 74
+error aligning mask /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/pcc , just using unaligned version.
+error loading mask file from /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/pcc
+error aligning mask /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/dlpfc , just using unaligned version.
+error loading mask file from /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/dlpfc
+RtIncrementalGLM: done at tr 74
+RtCurrentActivation: done at tr 74
+RtRoiCombine::process: could not find the mask for roi combination at tr 74
+RtRoiCombine::process: could not find the mask for roi combination at tr 74
+received image from scanner: series 1 acquisition 75
+error aligning mask /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/pcc , just using unaligned version.
+error loading mask file from /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/pcc
+error aligning mask /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/dlpfc , just using unaligned version.
+error loading mask file from /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/dlpfc
+RtIncrementalGLM: done at tr 75
+RtCurrentActivation: done at tr 75
+RtRoiCombine::process: could not find the mask for roi combination at tr 75
+RtRoiCombine::process: could not find the mask for roi combination at tr 75
+received image from scanner: series 1 acquisition 76
+error aligning mask /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/pcc , just using unaligned version.
+error loading mask file from /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/pcc
+error aligning mask /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/dlpfc , just using unaligned version.
+error loading mask file from /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/dlpfc
+RtIncrementalGLM: done at tr 76
+RtCurrentActivation: done at tr 76
+RtRoiCombine::process: could not find the mask for roi combination at tr 76
+RtRoiCombine::process: could not find the mask for roi combination at tr 76
+received image from scanner: series 1 acquisition 77
+error aligning mask /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/pcc , just using unaligned version.
+error loading mask file from /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/pcc
+error aligning mask /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/dlpfc , just using unaligned version.
+error loading mask file from /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/dlpfc
+RtIncrementalGLM: done at tr 77
+RtCurrentActivation: done at tr 77
+RtRoiCombine::process: could not find the mask for roi combination at tr 77
+RtRoiCombine::process: could not find the mask for roi combination at tr 77
+received image from scanner: series 1 acquisition 78
+error aligning mask /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/pcc , just using unaligned version.
+error loading mask file from /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/pcc
+error aligning mask /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/dlpfc , just using unaligned version.
+error loading mask file from /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/dlpfc
+RtIncrementalGLM: done at tr 78
+RtCurrentActivation: done at tr 78
+RtRoiCombine::process: could not find the mask for roi combination at tr 78
+RtRoiCombine::process: could not find the mask for roi combination at tr 78
+received image from scanner: series 1 acquisition 79
+error aligning mask /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/pcc , just using unaligned version.
+error loading mask file from /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/pcc
+error aligning mask /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/dlpfc , just using unaligned version.
+error loading mask file from /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/dlpfc
+RtIncrementalGLM: done at tr 79
+RtCurrentActivation: done at tr 79
+RtRoiCombine::process: could not find the mask for roi combination at tr 79
+RtRoiCombine::process: could not find the mask for roi combination at tr 79
+received image from scanner: series 1 acquisition 80
+error aligning mask /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/pcc , just using unaligned version.
+error loading mask file from /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/pcc
+error aligning mask /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/dlpfc , just using unaligned version.
+error loading mask file from /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/dlpfc
+RtIncrementalGLM: done at tr 80
+RtCurrentActivation: done at tr 80
+RtRoiCombine::process: could not find the mask for roi combination at tr 80
+RtRoiCombine::process: could not find the mask for roi combination at tr 80
+received image from scanner: series 1 acquisition 81
+error aligning mask /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/pcc , just using unaligned version.
+error loading mask file from /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/pcc
+error aligning mask /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/dlpfc , just using unaligned version.
+error loading mask file from /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/dlpfc
+RtIncrementalGLM: done at tr 81
+RtCurrentActivation: done at tr 81
+RtRoiCombine::process: could not find the mask for roi combination at tr 81
+RtRoiCombine::process: could not find the mask for roi combination at tr 81
+received image from scanner: series 1 acquisition 82
+error aligning mask /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/pcc , just using unaligned version.
+error loading mask file from /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/pcc
+error aligning mask /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/dlpfc , just using unaligned version.
+error loading mask file from /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/dlpfc
+RtIncrementalGLM: done at tr 82
+RtCurrentActivation: done at tr 82
+RtRoiCombine::process: could not find the mask for roi combination at tr 82
+RtRoiCombine::process: could not find the mask for roi combination at tr 82
+received image from scanner: series 1 acquisition 83
+error aligning mask /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/pcc , just using unaligned version.
+error loading mask file from /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/pcc
+error aligning mask /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/dlpfc , just using unaligned version.
+error loading mask file from /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/dlpfc
+RtIncrementalGLM: done at tr 83
+RtCurrentActivation: done at tr 83
+RtRoiCombine::process: could not find the mask for roi combination at tr 83
+RtRoiCombine::process: could not find the mask for roi combination at tr 83
+received image from scanner: series 1 acquisition 84
+error aligning mask /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/pcc , just using unaligned version.
+error loading mask file from /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/pcc
+error aligning mask /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/dlpfc , just using unaligned version.
+error loading mask file from /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/dlpfc
+RtIncrementalGLM: done at tr 84
+RtCurrentActivation: done at tr 84
+RtRoiCombine::process: could not find the mask for roi combination at tr 84
+RtRoiCombine::process: could not find the mask for roi combination at tr 84
+received image from scanner: series 1 acquisition 85
+error aligning mask /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/pcc , just using unaligned version.
+error loading mask file from /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/pcc
+error aligning mask /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/dlpfc , just using unaligned version.
+error loading mask file from /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/dlpfc
+RtIncrementalGLM: done at tr 85
+RtCurrentActivation: done at tr 85
+RtRoiCombine::process: could not find the mask for roi combination at tr 85
+RtRoiCombine::process: could not find the mask for roi combination at tr 85
+received image from scanner: series 1 acquisition 86
+error aligning mask /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/pcc , just using unaligned version.
+error loading mask file from /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/pcc
+error aligning mask /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/dlpfc , just using unaligned version.
+error loading mask file from /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/dlpfc
+RtIncrementalGLM: done at tr 86
+RtCurrentActivation: done at tr 86
+RtRoiCombine::process: could not find the mask for roi combination at tr 86
+RtRoiCombine::process: could not find the mask for roi combination at tr 86
+received image from scanner: series 1 acquisition 87
+error aligning mask /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/pcc , just using unaligned version.
+error loading mask file from /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/pcc
+error aligning mask /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/dlpfc , just using unaligned version.
+error loading mask file from /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/dlpfc
+RtIncrementalGLM: done at tr 87
+RtCurrentActivation: done at tr 87
+RtRoiCombine::process: could not find the mask for roi combination at tr 87
+RtRoiCombine::process: could not find the mask for roi combination at tr 87
+received image from scanner: series 1 acquisition 88
+error aligning mask /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/pcc , just using unaligned version.
+error loading mask file from /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/pcc
+error aligning mask /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/dlpfc , just using unaligned version.
+error loading mask file from /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/dlpfc
+RtIncrementalGLM: done at tr 88
+RtCurrentActivation: done at tr 88
+RtRoiCombine::process: could not find the mask for roi combination at tr 88
+RtRoiCombine::process: could not find the mask for roi combination at tr 88
+received image from scanner: series 1 acquisition 89
+error aligning mask /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/pcc , just using unaligned version.
+error loading mask file from /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/pcc
+error aligning mask /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/dlpfc , just using unaligned version.
+error loading mask file from /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/dlpfc
+RtIncrementalGLM: done at tr 89
+RtCurrentActivation: done at tr 89
+RtRoiCombine::process: could not find the mask for roi combination at tr 89
+RtRoiCombine::process: could not find the mask for roi combination at tr 89
+received image from scanner: series 1 acquisition 90
+error aligning mask /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/pcc , just using unaligned version.
+error loading mask file from /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/pcc
+error aligning mask /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/dlpfc , just using unaligned version.
+error loading mask file from /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/dlpfc
+RtIncrementalGLM: done at tr 90
+RtCurrentActivation: done at tr 90
+RtRoiCombine::process: could not find the mask for roi combination at tr 90
+RtRoiCombine::process: could not find the mask for roi combination at tr 90
+received image from scanner: series 1 acquisition 91
+error aligning mask /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/pcc , just using unaligned version.
+error loading mask file from /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/pcc
+error aligning mask /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/dlpfc , just using unaligned version.
+error loading mask file from /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/dlpfc
+RtIncrementalGLM: done at tr 91
+RtCurrentActivation: done at tr 91
+RtRoiCombine::process: could not find the mask for roi combination at tr 91
+RtRoiCombine::process: could not find the mask for roi combination at tr 91
+received image from scanner: series 1 acquisition 92
+error aligning mask /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/pcc , just using unaligned version.
+error loading mask file from /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/pcc
+error aligning mask /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/dlpfc , just using unaligned version.
+error loading mask file from /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/dlpfc
+RtIncrementalGLM: done at tr 92
+RtCurrentActivation: done at tr 92
+RtRoiCombine::process: could not find the mask for roi combination at tr 92
+RtRoiCombine::process: could not find the mask for roi combination at tr 92
+received image from scanner: series 1 acquisition 93
+error aligning mask /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/pcc , just using unaligned version.
+error loading mask file from /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/pcc
+error aligning mask /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/dlpfc , just using unaligned version.
+error loading mask file from /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/dlpfc
+RtIncrementalGLM: done at tr 93
+RtCurrentActivation: done at tr 93
+RtRoiCombine::process: could not find the mask for roi combination at tr 93
+RtRoiCombine::process: could not find the mask for roi combination at tr 93
+received image from scanner: series 1 acquisition 94
+error aligning mask /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/pcc , just using unaligned version.
+error loading mask file from /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/pcc
+error aligning mask /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/dlpfc , just using unaligned version.
+error loading mask file from /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/dlpfc
+RtIncrementalGLM: done at tr 94
+RtCurrentActivation: done at tr 94
+RtRoiCombine::process: could not find the mask for roi combination at tr 94
+RtRoiCombine::process: could not find the mask for roi combination at tr 94
+received image from scanner: series 1 acquisition 95
+error aligning mask /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/pcc , just using unaligned version.
+error loading mask file from /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/pcc
+error aligning mask /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/dlpfc , just using unaligned version.
+error loading mask file from /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/dlpfc
+RtIncrementalGLM: done at tr 95
+RtCurrentActivation: done at tr 95
+RtRoiCombine::process: could not find the mask for roi combination at tr 95
+RtRoiCombine::process: could not find the mask for roi combination at tr 95
+received image from scanner: series 1 acquisition 96
+error aligning mask /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/pcc , just using unaligned version.
+error loading mask file from /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/pcc
+error aligning mask /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/dlpfc , just using unaligned version.
+error loading mask file from /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/dlpfc
+RtIncrementalGLM: done at tr 96
+RtCurrentActivation: done at tr 96
+RtRoiCombine::process: could not find the mask for roi combination at tr 96
+RtRoiCombine::process: could not find the mask for roi combination at tr 96
+received image from scanner: series 1 acquisition 97
+error aligning mask /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/pcc , just using unaligned version.
+error loading mask file from /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/pcc
+error aligning mask /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/dlpfc , just using unaligned version.
+error loading mask file from /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/dlpfc
+RtIncrementalGLM: done at tr 97
+RtCurrentActivation: done at tr 97
+RtRoiCombine::process: could not find the mask for roi combination at tr 97
+RtRoiCombine::process: could not find the mask for roi combination at tr 97
+received image from scanner: series 1 acquisition 98
+error aligning mask /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/pcc , just using unaligned version.
+error loading mask file from /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/pcc
+error aligning mask /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/dlpfc , just using unaligned version.
+error loading mask file from /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/dlpfc
+RtIncrementalGLM: done at tr 98
+RtCurrentActivation: done at tr 98
+RtRoiCombine::process: could not find the mask for roi combination at tr 98
+RtRoiCombine::process: could not find the mask for roi combination at tr 98
+received image from scanner: series 1 acquisition 99
+error aligning mask /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/pcc , just using unaligned version.
+error loading mask file from /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/pcc
+error aligning mask /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/dlpfc , just using unaligned version.
+error loading mask file from /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/dlpfc
+RtIncrementalGLM: done at tr 99
+RtCurrentActivation: done at tr 99
+RtRoiCombine::process: could not find the mask for roi combination at tr 99
+RtRoiCombine::process: could not find the mask for roi combination at tr 99
+received image from scanner: series 1 acquisition 100
+error aligning mask /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/pcc , just using unaligned version.
+error loading mask file from /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/pcc
+error aligning mask /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/dlpfc , just using unaligned version.
+error loading mask file from /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/dlpfc
+RtIncrementalGLM: done at tr 100
+RtCurrentActivation: done at tr 100
+RtRoiCombine::process: could not find the mask for roi combination at tr 100
+RtRoiCombine::process: could not find the mask for roi combination at tr 100
+received image from scanner: series 1 acquisition 101
+error aligning mask /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/pcc , just using unaligned version.
+error loading mask file from /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/pcc
+error aligning mask /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/dlpfc , just using unaligned version.
+error loading mask file from /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/dlpfc
+RtIncrementalGLM: done at tr 101
+RtCurrentActivation: done at tr 101
+RtRoiCombine::process: could not find the mask for roi combination at tr 101
+RtRoiCombine::process: could not find the mask for roi combination at tr 101
+received image from scanner: series 1 acquisition 102
+error aligning mask /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/pcc , just using unaligned version.
+error loading mask file from /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/pcc
+error aligning mask /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/dlpfc , just using unaligned version.
+error loading mask file from /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/dlpfc
+RtIncrementalGLM: done at tr 102
+RtCurrentActivation: done at tr 102
+RtRoiCombine::process: could not find the mask for roi combination at tr 102
+RtRoiCombine::process: could not find the mask for roi combination at tr 102
+received image from scanner: series 1 acquisition 103
+error aligning mask /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/pcc , just using unaligned version.
+error loading mask file from /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/pcc
+error aligning mask /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/dlpfc , just using unaligned version.
+error loading mask file from /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/dlpfc
+RtIncrementalGLM: done at tr 103
+RtCurrentActivation: done at tr 103
+RtRoiCombine::process: could not find the mask for roi combination at tr 103
+RtRoiCombine::process: could not find the mask for roi combination at tr 103
+received image from scanner: series 1 acquisition 104
+error aligning mask /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/pcc , just using unaligned version.
+error loading mask file from /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/pcc
+error aligning mask /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/dlpfc , just using unaligned version.
+error loading mask file from /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/dlpfc
+RtIncrementalGLM: done at tr 104
+RtCurrentActivation: done at tr 104
+RtRoiCombine::process: could not find the mask for roi combination at tr 104
+RtRoiCombine::process: could not find the mask for roi combination at tr 104
+received image from scanner: series 1 acquisition 105
+error aligning mask /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/pcc , just using unaligned version.
+error loading mask file from /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/pcc
+error aligning mask /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/dlpfc , just using unaligned version.
+error loading mask file from /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/dlpfc
+RtIncrementalGLM: done at tr 105
+RtCurrentActivation: done at tr 105
+RtRoiCombine::process: could not find the mask for roi combination at tr 105
+RtRoiCombine::process: could not find the mask for roi combination at tr 105
+received image from scanner: series 1 acquisition 106
+error aligning mask /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/pcc , just using unaligned version.
+error loading mask file from /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/pcc
+error aligning mask /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/dlpfc , just using unaligned version.
+error loading mask file from /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/dlpfc
+RtIncrementalGLM: done at tr 106
+RtCurrentActivation: done at tr 106
+RtRoiCombine::process: could not find the mask for roi combination at tr 106
+RtRoiCombine::process: could not find the mask for roi combination at tr 106
+received image from scanner: series 1 acquisition 107
+error aligning mask /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/pcc , just using unaligned version.
+error loading mask file from /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/pcc
+error aligning mask /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/dlpfc , just using unaligned version.
+error loading mask file from /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/dlpfc
+RtIncrementalGLM: done at tr 107
+RtCurrentActivation: done at tr 107
+RtRoiCombine::process: could not find the mask for roi combination at tr 107
+RtRoiCombine::process: could not find the mask for roi combination at tr 107
+received image from scanner: series 1 acquisition 108
+error aligning mask /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/pcc , just using unaligned version.
+error loading mask file from /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/pcc
+error aligning mask /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/dlpfc , just using unaligned version.
+error loading mask file from /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/dlpfc
+RtIncrementalGLM: done at tr 108
+RtCurrentActivation: done at tr 108
+RtRoiCombine::process: could not find the mask for roi combination at tr 108
+RtRoiCombine::process: could not find the mask for roi combination at tr 108
+received image from scanner: series 1 acquisition 109
+error aligning mask /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/pcc , just using unaligned version.
+error loading mask file from /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/pcc
+error aligning mask /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/dlpfc , just using unaligned version.
+error loading mask file from /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/dlpfc
+RtIncrementalGLM: done at tr 109
+RtCurrentActivation: done at tr 109
+RtRoiCombine::process: could not find the mask for roi combination at tr 109
+RtRoiCombine::process: could not find the mask for roi combination at tr 109
+received image from scanner: series 1 acquisition 110
+error aligning mask /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/pcc , just using unaligned version.
+error loading mask file from /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/pcc
+error aligning mask /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/dlpfc , just using unaligned version.
+error loading mask file from /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/dlpfc
+RtIncrementalGLM: done at tr 110
+RtCurrentActivation: done at tr 110
+RtRoiCombine::process: could not find the mask for roi combination at tr 110
+RtRoiCombine::process: could not find the mask for roi combination at tr 110
+received image from scanner: series 1 acquisition 111
+error aligning mask /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/pcc , just using unaligned version.
+error loading mask file from /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/pcc
+error aligning mask /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/dlpfc , just using unaligned version.
+error loading mask file from /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/dlpfc
+RtIncrementalGLM: done at tr 111
+RtCurrentActivation: done at tr 111
+RtRoiCombine::process: could not find the mask for roi combination at tr 111
+RtRoiCombine::process: could not find the mask for roi combination at tr 111
+received image from scanner: series 1 acquisition 112
+error aligning mask /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/pcc , just using unaligned version.
+error loading mask file from /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/pcc
+error aligning mask /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/dlpfc , just using unaligned version.
+error loading mask file from /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/dlpfc
+RtIncrementalGLM: done at tr 112
+RtCurrentActivation: done at tr 112
+RtRoiCombine::process: could not find the mask for roi combination at tr 112
+RtRoiCombine::process: could not find the mask for roi combination at tr 112
+received image from scanner: series 1 acquisition 113
+error aligning mask /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/pcc , just using unaligned version.
+error loading mask file from /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/pcc
+error aligning mask /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/dlpfc , just using unaligned version.
+error loading mask file from /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/dlpfc
+RtIncrementalGLM: done at tr 113
+RtCurrentActivation: done at tr 113
+RtRoiCombine::process: could not find the mask for roi combination at tr 113
+RtRoiCombine::process: could not find the mask for roi combination at tr 113
+received image from scanner: series 1 acquisition 114
+error aligning mask /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/pcc , just using unaligned version.
+error loading mask file from /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/pcc
+error aligning mask /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/dlpfc , just using unaligned version.
+error loading mask file from /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/dlpfc
+RtIncrementalGLM: done at tr 114
+RtCurrentActivation: done at tr 114
+RtRoiCombine::process: could not find the mask for roi combination at tr 114
+RtRoiCombine::process: could not find the mask for roi combination at tr 114
+received image from scanner: series 1 acquisition 115
+error aligning mask /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/pcc , just using unaligned version.
+error loading mask file from /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/pcc
+error aligning mask /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/dlpfc , just using unaligned version.
+error loading mask file from /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/dlpfc
+RtIncrementalGLM: done at tr 115
+RtCurrentActivation: done at tr 115
+RtRoiCombine::process: could not find the mask for roi combination at tr 115
+RtRoiCombine::process: could not find the mask for roi combination at tr 115
+received image from scanner: series 1 acquisition 116
+error aligning mask /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/pcc , just using unaligned version.
+error loading mask file from /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/pcc
+error aligning mask /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/dlpfc , just using unaligned version.
+error loading mask file from /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/dlpfc
+RtIncrementalGLM: done at tr 116
+RtCurrentActivation: done at tr 116
+RtRoiCombine::process: could not find the mask for roi combination at tr 116
+RtRoiCombine::process: could not find the mask for roi combination at tr 116
+received image from scanner: series 1 acquisition 117
+error aligning mask /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/pcc , just using unaligned version.
+error loading mask file from /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/pcc
+error aligning mask /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/dlpfc , just using unaligned version.
+error loading mask file from /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/dlpfc
+RtIncrementalGLM: done at tr 117
+RtCurrentActivation: done at tr 117
+RtRoiCombine::process: could not find the mask for roi combination at tr 117
+RtRoiCombine::process: could not find the mask for roi combination at tr 117
+received image from scanner: series 1 acquisition 118
+error aligning mask /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/pcc , just using unaligned version.
+error loading mask file from /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/pcc
+error aligning mask /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/dlpfc , just using unaligned version.
+error loading mask file from /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/dlpfc
+RtIncrementalGLM: done at tr 118
+RtCurrentActivation: done at tr 118
+RtRoiCombine::process: could not find the mask for roi combination at tr 118
+RtRoiCombine::process: could not find the mask for roi combination at tr 118
+received image from scanner: series 1 acquisition 119
+error aligning mask /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/pcc , just using unaligned version.
+error loading mask file from /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/pcc
+error aligning mask /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/dlpfc , just using unaligned version.
+error loading mask file from /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/dlpfc
+RtIncrementalGLM: done at tr 119
+RtCurrentActivation: done at tr 119
+RtRoiCombine::process: could not find the mask for roi combination at tr 119
+RtRoiCombine::process: could not find the mask for roi combination at tr 119
+received image from scanner: series 1 acquisition 120
+error aligning mask /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/pcc , just using unaligned version.
+error loading mask file from /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/pcc
+error aligning mask /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/dlpfc , just using unaligned version.
+error loading mask file from /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/dlpfc
+RtIncrementalGLM: done at tr 120
+RtCurrentActivation: done at tr 120
+RtRoiCombine::process: could not find the mask for roi combination at tr 120
+RtRoiCombine::process: could not find the mask for roi combination at tr 120
+received image from scanner: series 1 acquisition 121
+error aligning mask /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/pcc , just using unaligned version.
+error loading mask file from /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/pcc
+error aligning mask /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/dlpfc , just using unaligned version.
+error loading mask file from /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/dlpfc
+RtIncrementalGLM: done at tr 121
+RtCurrentActivation: done at tr 121
+RtRoiCombine::process: could not find the mask for roi combination at tr 121
+RtRoiCombine::process: could not find the mask for roi combination at tr 121
+received image from scanner: series 1 acquisition 122
+error aligning mask /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/pcc , just using unaligned version.
+error loading mask file from /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/pcc
+error aligning mask /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/dlpfc , just using unaligned version.
+error loading mask file from /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/dlpfc
+RtIncrementalGLM: done at tr 122
+RtCurrentActivation: done at tr 122
+RtRoiCombine::process: could not find the mask for roi combination at tr 122
+RtRoiCombine::process: could not find the mask for roi combination at tr 122
+received image from scanner: series 1 acquisition 123
+error aligning mask /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/pcc , just using unaligned version.
+error loading mask file from /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/pcc
+error aligning mask /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/dlpfc , just using unaligned version.
+error loading mask file from /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/dlpfc
+RtIncrementalGLM: done at tr 123
+RtCurrentActivation: done at tr 123
+RtRoiCombine::process: could not find the mask for roi combination at tr 123
+RtRoiCombine::process: could not find the mask for roi combination at tr 123
+received image from scanner: series 1 acquisition 124
+error aligning mask /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/pcc , just using unaligned version.
+error loading mask file from /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/pcc
+error aligning mask /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/dlpfc , just using unaligned version.
+error loading mask file from /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/dlpfc
+RtIncrementalGLM: done at tr 124
+RtCurrentActivation: done at tr 124
+RtRoiCombine::process: could not find the mask for roi combination at tr 124
+RtRoiCombine::process: could not find the mask for roi combination at tr 124
+received image from scanner: series 1 acquisition 125
+error aligning mask /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/pcc , just using unaligned version.
+error loading mask file from /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/pcc
+error aligning mask /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/dlpfc , just using unaligned version.
+error loading mask file from /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/dlpfc
+RtIncrementalGLM: done at tr 125
+RtCurrentActivation: done at tr 125
+RtRoiCombine::process: could not find the mask for roi combination at tr 125
+RtRoiCombine::process: could not find the mask for roi combination at tr 125
+received image from scanner: series 1 acquisition 126
+error aligning mask /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/pcc , just using unaligned version.
+error loading mask file from /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/pcc
+error aligning mask /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/dlpfc , just using unaligned version.
+error loading mask file from /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/dlpfc
+RtIncrementalGLM: done at tr 126
+RtCurrentActivation: done at tr 126
+RtRoiCombine::process: could not find the mask for roi combination at tr 126
+RtRoiCombine::process: could not find the mask for roi combination at tr 126
+received image from scanner: series 1 acquisition 127
+error aligning mask /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/pcc , just using unaligned version.
+error loading mask file from /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/pcc
+error aligning mask /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/dlpfc , just using unaligned version.
+error loading mask file from /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/dlpfc
+RtIncrementalGLM: done at tr 127
+RtCurrentActivation: done at tr 127
+RtRoiCombine::process: could not find the mask for roi combination at tr 127
+RtRoiCombine::process: could not find the mask for roi combination at tr 127
+received image from scanner: series 1 acquisition 128
+error aligning mask /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/pcc , just using unaligned version.
+error loading mask file from /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/pcc
+error aligning mask /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/dlpfc , just using unaligned version.
+error loading mask file from /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/dlpfc
+RtIncrementalGLM: done at tr 128
+RtCurrentActivation: done at tr 128
+RtRoiCombine::process: could not find the mask for roi combination at tr 128
+RtRoiCombine::process: could not find the mask for roi combination at tr 128
+received image from scanner: series 1 acquisition 129
+error aligning mask /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/pcc , just using unaligned version.
+error loading mask file from /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/pcc
+error aligning mask /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/dlpfc , just using unaligned version.
+error loading mask file from /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/dlpfc
+RtIncrementalGLM: done at tr 129
+RtCurrentActivation: done at tr 129
+RtRoiCombine::process: could not find the mask for roi combination at tr 129
+RtRoiCombine::process: could not find the mask for roi combination at tr 129
+received image from scanner: series 1 acquisition 130
+error aligning mask /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/pcc , just using unaligned version.
+error loading mask file from /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/pcc
+error aligning mask /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/dlpfc , just using unaligned version.
+error loading mask file from /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/dlpfc
+RtIncrementalGLM: done at tr 130
+RtCurrentActivation: done at tr 130
+RtRoiCombine::process: could not find the mask for roi combination at tr 130
+RtRoiCombine::process: could not find the mask for roi combination at tr 130
+received image from scanner: series 1 acquisition 131
+error aligning mask /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/pcc , just using unaligned version.
+error loading mask file from /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/pcc
+error aligning mask /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/dlpfc , just using unaligned version.
+error loading mask file from /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/dlpfc
+RtIncrementalGLM: done at tr 131
+RtCurrentActivation: done at tr 131
+RtRoiCombine::process: could not find the mask for roi combination at tr 131
+RtRoiCombine::process: could not find the mask for roi combination at tr 131
+received image from scanner: series 1 acquisition 132
+error aligning mask /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/pcc , just using unaligned version.
+error loading mask file from /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/pcc
+error aligning mask /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/dlpfc , just using unaligned version.
+error loading mask file from /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/dlpfc
+RtIncrementalGLM: done at tr 132
+RtCurrentActivation: done at tr 132
+RtRoiCombine::process: could not find the mask for roi combination at tr 132
+RtRoiCombine::process: could not find the mask for roi combination at tr 132
+received image from scanner: series 1 acquisition 133
+error aligning mask /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/pcc , just using unaligned version.
+error loading mask file from /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/pcc
+error aligning mask /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/dlpfc , just using unaligned version.
+error loading mask file from /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/dlpfc
+RtIncrementalGLM: done at tr 133
+RtCurrentActivation: done at tr 133
+RtRoiCombine::process: could not find the mask for roi combination at tr 133
+RtRoiCombine::process: could not find the mask for roi combination at tr 133
+received image from scanner: series 1 acquisition 134
+error aligning mask /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/pcc , just using unaligned version.
+error loading mask file from /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/pcc
+error aligning mask /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/dlpfc , just using unaligned version.
+error loading mask file from /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/dlpfc
+RtIncrementalGLM: done at tr 134
+RtCurrentActivation: done at tr 134
+RtRoiCombine::process: could not find the mask for roi combination at tr 134
+RtRoiCombine::process: could not find the mask for roi combination at tr 134
+received image from scanner: series 1 acquisition 135
+error aligning mask /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/pcc , just using unaligned version.
+error loading mask file from /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/pcc
+error aligning mask /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/dlpfc , just using unaligned version.
+error loading mask file from /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/dlpfc
+RtIncrementalGLM: done at tr 135
+RtCurrentActivation: done at tr 135
+RtRoiCombine::process: could not find the mask for roi combination at tr 135
+RtRoiCombine::process: could not find the mask for roi combination at tr 135
+received image from scanner: series 1 acquisition 136
+error aligning mask /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/pcc , just using unaligned version.
+error loading mask file from /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/pcc
+error aligning mask /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/dlpfc , just using unaligned version.
+error loading mask file from /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/dlpfc
+RtIncrementalGLM: done at tr 136
+RtCurrentActivation: done at tr 136
+RtRoiCombine::process: could not find the mask for roi combination at tr 136
+RtRoiCombine::process: could not find the mask for roi combination at tr 136
+received image from scanner: series 1 acquisition 137
+error aligning mask /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/pcc , just using unaligned version.
+error loading mask file from /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/pcc
+error aligning mask /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/dlpfc , just using unaligned version.
+error loading mask file from /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/dlpfc
+RtIncrementalGLM: done at tr 137
+RtCurrentActivation: done at tr 137
+RtRoiCombine::process: could not find the mask for roi combination at tr 137
+RtRoiCombine::process: could not find the mask for roi combination at tr 137
+received image from scanner: series 1 acquisition 138
+error aligning mask /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/pcc , just using unaligned version.
+error loading mask file from /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/pcc
+error aligning mask /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/dlpfc , just using unaligned version.
+error loading mask file from /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/dlpfc
+RtIncrementalGLM: done at tr 138
+RtCurrentActivation: done at tr 138
+RtRoiCombine::process: could not find the mask for roi combination at tr 138
+RtRoiCombine::process: could not find the mask for roi combination at tr 138
+received image from scanner: series 1 acquisition 139
+error aligning mask /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/pcc , just using unaligned version.
+error loading mask file from /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/pcc
+error aligning mask /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/dlpfc , just using unaligned version.
+error loading mask file from /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/dlpfc
+RtIncrementalGLM: done at tr 139
+RtCurrentActivation: done at tr 139
+RtRoiCombine::process: could not find the mask for roi combination at tr 139
+RtRoiCombine::process: could not find the mask for roi combination at tr 139
+received image from scanner: series 1 acquisition 140
+error aligning mask /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/pcc , just using unaligned version.
+error loading mask file from /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/pcc
+error aligning mask /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/dlpfc , just using unaligned version.
+error loading mask file from /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/dlpfc
+RtIncrementalGLM: done at tr 140
+RtCurrentActivation: done at tr 140
+RtRoiCombine::process: could not find the mask for roi combination at tr 140
+RtRoiCombine::process: could not find the mask for roi combination at tr 140
+received image from scanner: series 1 acquisition 141
+error aligning mask /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/pcc , just using unaligned version.
+error loading mask file from /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/pcc
+error aligning mask /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/dlpfc , just using unaligned version.
+error loading mask file from /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/dlpfc
+RtIncrementalGLM: done at tr 141
+RtCurrentActivation: done at tr 141
+RtRoiCombine::process: could not find the mask for roi combination at tr 141
+RtRoiCombine::process: could not find the mask for roi combination at tr 141
+received image from scanner: series 1 acquisition 142
+error aligning mask /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/pcc , just using unaligned version.
+error loading mask file from /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/pcc
+error aligning mask /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/dlpfc , just using unaligned version.
+error loading mask file from /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/dlpfc
+RtIncrementalGLM: done at tr 142
+RtCurrentActivation: done at tr 142
+RtRoiCombine::process: could not find the mask for roi combination at tr 142
+RtRoiCombine::process: could not find the mask for roi combination at tr 142
+received image from scanner: series 1 acquisition 143
+error aligning mask /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/pcc , just using unaligned version.
+error loading mask file from /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/pcc
+error aligning mask /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/dlpfc , just using unaligned version.
+error loading mask file from /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/dlpfc
+RtIncrementalGLM: done at tr 143
+RtCurrentActivation: done at tr 143
+RtRoiCombine::process: could not find the mask for roi combination at tr 143
+RtRoiCombine::process: could not find the mask for roi combination at tr 143
+received image from scanner: series 1 acquisition 144
+error aligning mask /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/pcc , just using unaligned version.
+error loading mask file from /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/pcc
+error aligning mask /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/dlpfc , just using unaligned version.
+error loading mask file from /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/dlpfc
+RtIncrementalGLM: done at tr 144
+RtCurrentActivation: done at tr 144
+RtRoiCombine::process: could not find the mask for roi combination at tr 144
+RtRoiCombine::process: could not find the mask for roi combination at tr 144
+received image from scanner: series 1 acquisition 145
+error aligning mask /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/pcc , just using unaligned version.
+error loading mask file from /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/pcc
+error aligning mask /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/dlpfc , just using unaligned version.
+error loading mask file from /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/dlpfc
+RtIncrementalGLM: done at tr 145
+RtCurrentActivation: done at tr 145
+RtRoiCombine::process: could not find the mask for roi combination at tr 145
+RtRoiCombine::process: could not find the mask for roi combination at tr 145
+received image from scanner: series 1 acquisition 146
+error aligning mask /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/pcc , just using unaligned version.
+error loading mask file from /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/pcc
+error aligning mask /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/dlpfc , just using unaligned version.
+error loading mask file from /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/dlpfc
+RtIncrementalGLM: done at tr 146
+RtCurrentActivation: done at tr 146
+RtRoiCombine::process: could not find the mask for roi combination at tr 146
+RtRoiCombine::process: could not find the mask for roi combination at tr 146
+received image from scanner: series 1 acquisition 147
+error aligning mask /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/pcc , just using unaligned version.
+error loading mask file from /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/pcc
+error aligning mask /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/dlpfc , just using unaligned version.
+error loading mask file from /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/dlpfc
+RtIncrementalGLM: done at tr 147
+RtCurrentActivation: done at tr 147
+RtRoiCombine::process: could not find the mask for roi combination at tr 147
+RtRoiCombine::process: could not find the mask for roi combination at tr 147
+received image from scanner: series 1 acquisition 148
+error aligning mask /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/pcc , just using unaligned version.
+error loading mask file from /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/pcc
+error aligning mask /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/dlpfc , just using unaligned version.
+error loading mask file from /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/dlpfc
+RtIncrementalGLM: done at tr 148
+RtCurrentActivation: done at tr 148
+RtRoiCombine::process: could not find the mask for roi combination at tr 148
+RtRoiCombine::process: could not find the mask for roi combination at tr 148
+received image from scanner: series 1 acquisition 149
+error aligning mask /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/pcc , just using unaligned version.
+error loading mask file from /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/pcc
+error aligning mask /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/dlpfc , just using unaligned version.
+error loading mask file from /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/dlpfc
+RtIncrementalGLM: done at tr 149
+RtCurrentActivation: done at tr 149
+RtRoiCombine::process: could not find the mask for roi combination at tr 149
+RtRoiCombine::process: could not find the mask for roi combination at tr 149
+received image from scanner: series 1 acquisition 150
+error aligning mask /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/pcc , just using unaligned version.
+error loading mask file from /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/pcc
+error aligning mask /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/dlpfc , just using unaligned version.
+error loading mask file from /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/dlpfc
+RtIncrementalGLM: done at tr 150
+RtCurrentActivation: done at tr 150
+RtRoiCombine::process: could not find the mask for roi combination at tr 150
+RtRoiCombine::process: could not find the mask for roi combination at tr 150
+received image from scanner: series 1 acquisition 151
+error aligning mask /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/pcc , just using unaligned version.
+error loading mask file from /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/pcc
+error aligning mask /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/dlpfc , just using unaligned version.
+error loading mask file from /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/dlpfc
+RtIncrementalGLM: done at tr 151
+RtCurrentActivation: done at tr 151
+RtRoiCombine::process: could not find the mask for roi combination at tr 151
+RtRoiCombine::process: could not find the mask for roi combination at tr 151
+received image from scanner: series 1 acquisition 152
+error aligning mask /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/pcc , just using unaligned version.
+error loading mask file from /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/pcc
+error aligning mask /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/dlpfc , just using unaligned version.
+error loading mask file from /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/dlpfc
+RtIncrementalGLM: done at tr 152
+RtCurrentActivation: done at tr 152
+RtRoiCombine::process: could not find the mask for roi combination at tr 152
+RtRoiCombine::process: could not find the mask for roi combination at tr 152
+received image from scanner: series 1 acquisition 153
+error aligning mask /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/pcc , just using unaligned version.
+error loading mask file from /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/pcc
+error aligning mask /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/dlpfc , just using unaligned version.
+error loading mask file from /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/dlpfc
+RtIncrementalGLM: done at tr 153
+RtCurrentActivation: done at tr 153
+RtRoiCombine::process: could not find the mask for roi combination at tr 153
+RtRoiCombine::process: could not find the mask for roi combination at tr 153
+received image from scanner: series 1 acquisition 154
+error aligning mask /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/pcc , just using unaligned version.
+error loading mask file from /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/pcc
+error aligning mask /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/dlpfc , just using unaligned version.
+error loading mask file from /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/dlpfc
+RtIncrementalGLM: done at tr 154
+RtCurrentActivation: done at tr 154
+RtRoiCombine::process: could not find the mask for roi combination at tr 154
+RtRoiCombine::process: could not find the mask for roi combination at tr 154
+received image from scanner: series 1 acquisition 155
+error aligning mask /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/pcc , just using unaligned version.
+error loading mask file from /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/pcc
+error aligning mask /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/dlpfc , just using unaligned version.
+error loading mask file from /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/dlpfc
+RtIncrementalGLM: done at tr 155
+RtCurrentActivation: done at tr 155
+RtRoiCombine::process: could not find the mask for roi combination at tr 155
+RtRoiCombine::process: could not find the mask for roi combination at tr 155
+received image from scanner: series 1 acquisition 156
+error aligning mask /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/pcc , just using unaligned version.
+error loading mask file from /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/pcc
+error aligning mask /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/dlpfc , just using unaligned version.
+error loading mask file from /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/dlpfc
+RtIncrementalGLM: done at tr 156
+RtCurrentActivation: done at tr 156
+RtRoiCombine::process: could not find the mask for roi combination at tr 156
+RtRoiCombine::process: could not find the mask for roi combination at tr 156
+received image from scanner: series 1 acquisition 157
+error aligning mask /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/pcc , just using unaligned version.
+error loading mask file from /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/pcc
+error aligning mask /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/dlpfc , just using unaligned version.
+error loading mask file from /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/dlpfc
+RtIncrementalGLM: done at tr 157
+RtCurrentActivation: done at tr 157
+RtRoiCombine::process: could not find the mask for roi combination at tr 157
+RtRoiCombine::process: could not find the mask for roi combination at tr 157
+received image from scanner: series 1 acquisition 158
+error aligning mask /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/pcc , just using unaligned version.
+error loading mask file from /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/pcc
+error aligning mask /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/dlpfc , just using unaligned version.
+error loading mask file from /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/dlpfc
+RtIncrementalGLM: done at tr 158
+RtCurrentActivation: done at tr 158
+RtRoiCombine::process: could not find the mask for roi combination at tr 158
+RtRoiCombine::process: could not find the mask for roi combination at tr 158
+received image from scanner: series 1 acquisition 159
+error aligning mask /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/pcc , just using unaligned version.
+error loading mask file from /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/pcc
+error aligning mask /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/dlpfc , just using unaligned version.
+error loading mask file from /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/dlpfc
+RtIncrementalGLM: done at tr 159
+RtCurrentActivation: done at tr 159
+RtRoiCombine::process: could not find the mask for roi combination at tr 159
+RtRoiCombine::process: could not find the mask for roi combination at tr 159
+received image from scanner: series 1 acquisition 160
+error aligning mask /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/pcc , just using unaligned version.
+error loading mask file from /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/pcc
+error aligning mask /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/dlpfc , just using unaligned version.
+error loading mask file from /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/dlpfc
+RtIncrementalGLM: done at tr 160
+RtCurrentActivation: done at tr 160
+RtRoiCombine::process: could not find the mask for roi combination at tr 160
+RtRoiCombine::process: could not find the mask for roi combination at tr 160
+received image from scanner: series 1 acquisition 161
+error aligning mask /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/pcc , just using unaligned version.
+error loading mask file from /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/pcc
+error aligning mask /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/dlpfc , just using unaligned version.
+error loading mask file from /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/dlpfc
+RtIncrementalGLM: done at tr 161
+RtCurrentActivation: done at tr 161
+RtRoiCombine::process: could not find the mask for roi combination at tr 161
+RtRoiCombine::process: could not find the mask for roi combination at tr 161
+received image from scanner: series 1 acquisition 162
+error aligning mask /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/pcc , just using unaligned version.
+error loading mask file from /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/pcc
+error aligning mask /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/dlpfc , just using unaligned version.
+error loading mask file from /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/dlpfc
+RtIncrementalGLM: done at tr 162
+RtCurrentActivation: done at tr 162
+RtRoiCombine::process: could not find the mask for roi combination at tr 162
+RtRoiCombine::process: could not find the mask for roi combination at tr 162
+received image from scanner: series 1 acquisition 163
+error aligning mask /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/pcc , just using unaligned version.
+error loading mask file from /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/pcc
+error aligning mask /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/dlpfc , just using unaligned version.
+error loading mask file from /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/dlpfc
+RtIncrementalGLM: done at tr 163
+RtCurrentActivation: done at tr 163
+RtRoiCombine::process: could not find the mask for roi combination at tr 163
+RtRoiCombine::process: could not find the mask for roi combination at tr 163
+received image from scanner: series 1 acquisition 164
+error aligning mask /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/pcc , just using unaligned version.
+error loading mask file from /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/pcc
+error aligning mask /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/dlpfc , just using unaligned version.
+error loading mask file from /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/dlpfc
+RtIncrementalGLM: done at tr 164
+RtCurrentActivation: done at tr 164
+RtRoiCombine::process: could not find the mask for roi combination at tr 164
+RtRoiCombine::process: could not find the mask for roi combination at tr 164
+received image from scanner: series 1 acquisition 165
+error aligning mask /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/pcc , just using unaligned version.
+error loading mask file from /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/pcc
+error aligning mask /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/dlpfc , just using unaligned version.
+error loading mask file from /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/dlpfc
+RtIncrementalGLM: done at tr 165
+RtCurrentActivation: done at tr 165
+RtRoiCombine::process: could not find the mask for roi combination at tr 165
+RtRoiCombine::process: could not find the mask for roi combination at tr 165
+received image from scanner: series 1 acquisition 166
+error aligning mask /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/pcc , just using unaligned version.
+error loading mask file from /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/pcc
+error aligning mask /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/dlpfc , just using unaligned version.
+error loading mask file from /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/dlpfc
+RtIncrementalGLM: done at tr 166
+RtCurrentActivation: done at tr 166
+RtRoiCombine::process: could not find the mask for roi combination at tr 166
+RtRoiCombine::process: could not find the mask for roi combination at tr 166
+received image from scanner: series 1 acquisition 167
+error aligning mask /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/pcc , just using unaligned version.
+error loading mask file from /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/pcc
+error aligning mask /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/dlpfc , just using unaligned version.
+error loading mask file from /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/dlpfc
+RtIncrementalGLM: done at tr 167
+RtCurrentActivation: done at tr 167
+RtRoiCombine::process: could not find the mask for roi combination at tr 167
+RtRoiCombine::process: could not find the mask for roi combination at tr 167
+received image from scanner: series 1 acquisition 168
+error aligning mask /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/pcc , just using unaligned version.
+error loading mask file from /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/pcc
+error aligning mask /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/dlpfc , just using unaligned version.
+error loading mask file from /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/dlpfc
+RtIncrementalGLM: done at tr 168
+RtCurrentActivation: done at tr 168
+RtRoiCombine::process: could not find the mask for roi combination at tr 168
+RtRoiCombine::process: could not find the mask for roi combination at tr 168
+received image from scanner: series 1 acquisition 169
+error aligning mask /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/pcc , just using unaligned version.
+error loading mask file from /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/pcc
+error aligning mask /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/dlpfc , just using unaligned version.
+error loading mask file from /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/dlpfc
+RtIncrementalGLM: done at tr 169
+RtCurrentActivation: done at tr 169
+RtRoiCombine::process: could not find the mask for roi combination at tr 169
+RtRoiCombine::process: could not find the mask for roi combination at tr 169
+received image from scanner: series 1 acquisition 170
+error aligning mask /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/pcc , just using unaligned version.
+error loading mask file from /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/pcc
+error aligning mask /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/dlpfc , just using unaligned version.
+error loading mask file from /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/dlpfc
+RtIncrementalGLM: done at tr 170
+RtCurrentActivation: done at tr 170
+RtRoiCombine::process: could not find the mask for roi combination at tr 170
+RtRoiCombine::process: could not find the mask for roi combination at tr 170
+received image from scanner: series 1 acquisition 171
+error aligning mask /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/pcc , just using unaligned version.
+error loading mask file from /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/pcc
+error aligning mask /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/dlpfc , just using unaligned version.
+error loading mask file from /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/dlpfc
+RtIncrementalGLM: done at tr 171
+RtCurrentActivation: done at tr 171
+RtRoiCombine::process: could not find the mask for roi combination at tr 171
+RtRoiCombine::process: could not find the mask for roi combination at tr 171
+received image from scanner: series 1 acquisition 172
+error aligning mask /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/pcc , just using unaligned version.
+error loading mask file from /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/pcc
+error aligning mask /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/dlpfc , just using unaligned version.
+error loading mask file from /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/dlpfc
+RtIncrementalGLM: done at tr 172
+RtCurrentActivation: done at tr 172
+RtRoiCombine::process: could not find the mask for roi combination at tr 172
+RtRoiCombine::process: could not find the mask for roi combination at tr 172
+received image from scanner: series 1 acquisition 173
+error aligning mask /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/pcc , just using unaligned version.
+error loading mask file from /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/pcc
+error aligning mask /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/dlpfc , just using unaligned version.
+error loading mask file from /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/dlpfc
+RtIncrementalGLM: done at tr 173
+RtCurrentActivation: done at tr 173
+RtRoiCombine::process: could not find the mask for roi combination at tr 173
+RtRoiCombine::process: could not find the mask for roi combination at tr 173
+received image from scanner: series 1 acquisition 174
+error aligning mask /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/pcc , just using unaligned version.
+error loading mask file from /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/pcc
+error aligning mask /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/dlpfc , just using unaligned version.
+error loading mask file from /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/dlpfc
+RtIncrementalGLM: done at tr 174
+RtCurrentActivation: done at tr 174
+RtRoiCombine::process: could not find the mask for roi combination at tr 174
+RtRoiCombine::process: could not find the mask for roi combination at tr 174
+received image from scanner: series 1 acquisition 175
+error aligning mask /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/pcc , just using unaligned version.
+error loading mask file from /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/pcc
+error aligning mask /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/dlpfc , just using unaligned version.
+error loading mask file from /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/dlpfc
+RtIncrementalGLM: done at tr 175
+RtCurrentActivation: done at tr 175
+RtRoiCombine::process: could not find the mask for roi combination at tr 175
+RtRoiCombine::process: could not find the mask for roi combination at tr 175
+received image from scanner: series 1 acquisition 176
+error aligning mask /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/pcc , just using unaligned version.
+error loading mask file from /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/pcc
+error aligning mask /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/dlpfc , just using unaligned version.
+error loading mask file from /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/dlpfc
+RtIncrementalGLM: done at tr 176
+RtCurrentActivation: done at tr 176
+RtRoiCombine::process: could not find the mask for roi combination at tr 176
+RtRoiCombine::process: could not find the mask for roi combination at tr 176
+received image from scanner: series 1 acquisition 177
+error aligning mask /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/pcc , just using unaligned version.
+error loading mask file from /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/pcc
+error aligning mask /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/dlpfc , just using unaligned version.
+error loading mask file from /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/dlpfc
+RtIncrementalGLM: done at tr 177
+RtCurrentActivation: done at tr 177
+RtRoiCombine::process: could not find the mask for roi combination at tr 177
+RtRoiCombine::process: could not find the mask for roi combination at tr 177
+received image from scanner: series 1 acquisition 178
+error aligning mask /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/pcc , just using unaligned version.
+error loading mask file from /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/pcc
+error aligning mask /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/dlpfc , just using unaligned version.
+error loading mask file from /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/dlpfc
+RtIncrementalGLM: done at tr 178
+RtCurrentActivation: done at tr 178
+RtRoiCombine::process: could not find the mask for roi combination at tr 178
+RtRoiCombine::process: could not find the mask for roi combination at tr 178
+received image from scanner: series 1 acquisition 179
+error aligning mask /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/pcc , just using unaligned version.
+error loading mask file from /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/pcc
+error aligning mask /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/dlpfc , just using unaligned version.
+error loading mask file from /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/dlpfc
+RtIncrementalGLM: done at tr 179
+RtCurrentActivation: done at tr 179
+RtRoiCombine::process: could not find the mask for roi combination at tr 179
+RtRoiCombine::process: could not find the mask for roi combination at tr 179
+received image from scanner: series 1 acquisition 180
+error aligning mask /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/pcc , just using unaligned version.
+error loading mask file from /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/pcc
+error aligning mask /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/dlpfc , just using unaligned version.
+error loading mask file from /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/dlpfc
+RtIncrementalGLM: done at tr 180
+RtCurrentActivation: done at tr 180
+RtRoiCombine::process: could not find the mask for roi combination at tr 180
+RtRoiCombine::process: could not find the mask for roi combination at tr 180
+received image from scanner: series 1 acquisition 181
+error aligning mask /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/pcc , just using unaligned version.
+error loading mask file from /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/pcc
+error aligning mask /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/dlpfc , just using unaligned version.
+error loading mask file from /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/dlpfc
+RtIncrementalGLM: done at tr 181
+RtCurrentActivation: done at tr 181
+RtRoiCombine::process: could not find the mask for roi combination at tr 181
+RtRoiCombine::process: could not find the mask for roi combination at tr 181
+received image from scanner: series 1 acquisition 182
+error aligning mask /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/pcc , just using unaligned version.
+error loading mask file from /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/pcc
+error aligning mask /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/dlpfc , just using unaligned version.
+error loading mask file from /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/dlpfc
+RtIncrementalGLM: done at tr 182
+RtCurrentActivation: done at tr 182
+RtRoiCombine::process: could not find the mask for roi combination at tr 182
+RtRoiCombine::process: could not find the mask for roi combination at tr 182
+received image from scanner: series 1 acquisition 183
+error aligning mask /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/pcc , just using unaligned version.
+error loading mask file from /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/pcc
+error aligning mask /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/dlpfc , just using unaligned version.
+error loading mask file from /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/dlpfc
+RtIncrementalGLM: done at tr 183
+RtCurrentActivation: done at tr 183
+RtRoiCombine::process: could not find the mask for roi combination at tr 183
+RtRoiCombine::process: could not find the mask for roi combination at tr 183
+received image from scanner: series 1 acquisition 184
+error aligning mask /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/pcc , just using unaligned version.
+error loading mask file from /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/pcc
+error aligning mask /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/dlpfc , just using unaligned version.
+error loading mask file from /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/dlpfc
+RtIncrementalGLM: done at tr 184
+RtCurrentActivation: done at tr 184
+RtRoiCombine::process: could not find the mask for roi combination at tr 184
+RtRoiCombine::process: could not find the mask for roi combination at tr 184
+received image from scanner: series 1 acquisition 185
+error aligning mask /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/pcc , just using unaligned version.
+error loading mask file from /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/pcc
+error aligning mask /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/dlpfc , just using unaligned version.
+error loading mask file from /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/dlpfc
+RtIncrementalGLM: done at tr 185
+RtCurrentActivation: done at tr 185
+RtRoiCombine::process: could not find the mask for roi combination at tr 185
+RtRoiCombine::process: could not find the mask for roi combination at tr 185
+received image from scanner: series 1 acquisition 186
+error aligning mask /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/pcc , just using unaligned version.
+error loading mask file from /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/pcc
+error aligning mask /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/dlpfc , just using unaligned version.
+error loading mask file from /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/dlpfc
+RtIncrementalGLM: done at tr 186
+RtCurrentActivation: done at tr 186
+RtRoiCombine::process: could not find the mask for roi combination at tr 186
+RtRoiCombine::process: could not find the mask for roi combination at tr 186
+received image from scanner: series 1 acquisition 187
+error aligning mask /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/pcc , just using unaligned version.
+error loading mask file from /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/pcc
+error aligning mask /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/dlpfc , just using unaligned version.
+error loading mask file from /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/dlpfc
+RtIncrementalGLM: done at tr 187
+RtCurrentActivation: done at tr 187
+RtRoiCombine::process: could not find the mask for roi combination at tr 187
+RtRoiCombine::process: could not find the mask for roi combination at tr 187
+received image from scanner: series 1 acquisition 188
+error aligning mask /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/pcc , just using unaligned version.
+error loading mask file from /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/pcc
+error aligning mask /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/dlpfc , just using unaligned version.
+error loading mask file from /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/dlpfc
+RtIncrementalGLM: done at tr 188
+RtCurrentActivation: done at tr 188
+RtRoiCombine::process: could not find the mask for roi combination at tr 188
+RtRoiCombine::process: could not find the mask for roi combination at tr 188
+received image from scanner: series 1 acquisition 189
+error aligning mask /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/pcc , just using unaligned version.
+error loading mask file from /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/pcc
+error aligning mask /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/dlpfc , just using unaligned version.
+error loading mask file from /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/dlpfc
+RtIncrementalGLM: done at tr 189
+RtCurrentActivation: done at tr 189
+RtRoiCombine::process: could not find the mask for roi combination at tr 189
+RtRoiCombine::process: could not find the mask for roi combination at tr 189
+received image from scanner: series 1 acquisition 190
+error aligning mask /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/pcc , just using unaligned version.
+error loading mask file from /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/pcc
+error aligning mask /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/dlpfc , just using unaligned version.
+error loading mask file from /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/dlpfc
+RtIncrementalGLM: done at tr 190
+RtCurrentActivation: done at tr 190
+RtRoiCombine::process: could not find the mask for roi combination at tr 190
+RtRoiCombine::process: could not find the mask for roi combination at tr 190
+received image from scanner: series 1 acquisition 191
+error aligning mask /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/pcc , just using unaligned version.
+error loading mask file from /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/pcc
+error aligning mask /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/dlpfc , just using unaligned version.
+error loading mask file from /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/dlpfc
+RtIncrementalGLM: done at tr 191
+RtCurrentActivation: done at tr 191
+RtRoiCombine::process: could not find the mask for roi combination at tr 191
+RtRoiCombine::process: could not find the mask for roi combination at tr 191
+received image from scanner: series 1 acquisition 192
+error aligning mask /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/pcc , just using unaligned version.
+error loading mask file from /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/pcc
+error aligning mask /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/dlpfc , just using unaligned version.
+error loading mask file from /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/dlpfc
+RtIncrementalGLM: done at tr 192
+RtCurrentActivation: done at tr 192
+RtRoiCombine::process: could not find the mask for roi combination at tr 192
+RtRoiCombine::process: could not find the mask for roi combination at tr 192
+received image from scanner: series 1 acquisition 193
+error aligning mask /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/pcc , just using unaligned version.
+error loading mask file from /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/pcc
+error aligning mask /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/dlpfc , just using unaligned version.
+error loading mask file from /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/dlpfc
+RtIncrementalGLM: done at tr 193
+RtCurrentActivation: done at tr 193
+RtRoiCombine::process: could not find the mask for roi combination at tr 193
+RtRoiCombine::process: could not find the mask for roi combination at tr 193
+received image from scanner: series 1 acquisition 194
+error aligning mask /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/pcc , just using unaligned version.
+error loading mask file from /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/pcc
+error aligning mask /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/dlpfc , just using unaligned version.
+error loading mask file from /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/dlpfc
+RtIncrementalGLM: done at tr 194
+RtCurrentActivation: done at tr 194
+RtRoiCombine::process: could not find the mask for roi combination at tr 194
+RtRoiCombine::process: could not find the mask for roi combination at tr 194
+received image from scanner: series 1 acquisition 195
+error aligning mask /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/pcc , just using unaligned version.
+error loading mask file from /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/pcc
+error aligning mask /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/dlpfc , just using unaligned version.
+error loading mask file from /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/dlpfc
+RtIncrementalGLM: done at tr 195
+RtCurrentActivation: done at tr 195
+RtRoiCombine::process: could not find the mask for roi combination at tr 195
+RtRoiCombine::process: could not find the mask for roi combination at tr 195
+received image from scanner: series 1 acquisition 196
+error aligning mask /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/pcc , just using unaligned version.
+error loading mask file from /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/pcc
+error aligning mask /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/dlpfc , just using unaligned version.
+error loading mask file from /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/dlpfc
+RtIncrementalGLM: done at tr 196
+RtCurrentActivation: done at tr 196
+RtRoiCombine::process: could not find the mask for roi combination at tr 196
+RtRoiCombine::process: could not find the mask for roi combination at tr 196
+received image from scanner: series 1 acquisition 197
+error aligning mask /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/pcc , just using unaligned version.
+error loading mask file from /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/pcc
+error aligning mask /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/dlpfc , just using unaligned version.
+error loading mask file from /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/dlpfc
+RtIncrementalGLM: done at tr 197
+RtCurrentActivation: done at tr 197
+RtRoiCombine::process: could not find the mask for roi combination at tr 197
+RtRoiCombine::process: could not find the mask for roi combination at tr 197
+received image from scanner: series 1 acquisition 198
+error aligning mask /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/pcc , just using unaligned version.
+error loading mask file from /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/pcc
+error aligning mask /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/dlpfc , just using unaligned version.
+error loading mask file from /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/dlpfc
+RtIncrementalGLM: done at tr 198
+RtCurrentActivation: done at tr 198
+RtRoiCombine::process: could not find the mask for roi combination at tr 198
+RtRoiCombine::process: could not find the mask for roi combination at tr 198
+received image from scanner: series 1 acquisition 199
+error aligning mask /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/pcc , just using unaligned version.
+error loading mask file from /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/pcc
+error aligning mask /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/dlpfc , just using unaligned version.
+error loading mask file from /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/dlpfc
+RtIncrementalGLM: done at tr 199
+RtCurrentActivation: done at tr 199
+RtRoiCombine::process: could not find the mask for roi combination at tr 199
+RtRoiCombine::process: could not find the mask for roi combination at tr 199
+received image from scanner: series 1 acquisition 200
+error aligning mask /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/pcc , just using unaligned version.
+error loading mask file from /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/pcc
+error aligning mask /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/dlpfc , just using unaligned version.
+error loading mask file from /home/auerbachlinux/murfi-rt-PyProject/subjects/mask/dlpfc
+RtIncrementalGLM: done at tr 200
+RtCurrentActivation: done at tr 200
+RtRoiCombine::process: could not find the mask for roi combination at tr 200
+RtRoiCombine::process: could not find the mask for roi combination at tr 200

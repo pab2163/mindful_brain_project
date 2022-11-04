@@ -1,0 +1,24 @@
+
+/bin/cp /home/auerbachlinux/murfi-rt-PyProject/scripts/fsl_scripts/rest_template.fsf design.fsf
+
+mkdir .files;cp /usr/local/fsl/doc/fsl.css .files;cp -r /usr/local/fsl/doc/images .files/images
+
+/usr/local/fsl/bin/fsl_sub -T 10 -l logs -N feat1a_init   /usr/local/fsl/bin/feat /home/auerbachlinux/murfi-rt-PyProject/scripts/fsl_scripts/OUTPUT.ica/design.fsf -D /home/auerbachlinux/murfi-rt-PyProject/scripts/fsl_scripts/OUTPUT.ica -I 1 -init
+Error submitting job - child process exited abnormally
+    while executing
+"if { [ catch {
+
+for { set argindex 1 } { $argindex < $argc } { incr argindex 1 } {
+    switch -- [ lindex $argv $argindex ] {
+
+	-I {
+	    incr arginde..."
+    (file "/usr/local/fsl/bin/feat" line 312)
+
+
+FATAL ERROR ENCOUNTERED:
+COMMAND:
+/usr/local/fsl/bin/fsl_sub -T 10 -l logs -N feat1a_init   /usr/local/fsl/bin/feat /home/auerbachlinux/murfi-rt-PyProject/scripts/fsl_scripts/OUTPUT.ica/design.fsf -D /home/auerbachlinux/murfi-rt-PyProject/scripts/fsl_scripts/OUTPUT.ica -I 1 -init
+ERROR MESSAGE:
+child process exited abnormally
+END OF ERROR MESSAGE
