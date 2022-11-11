@@ -47,56 +47,13 @@ then
 fi
 
 
- #this step is no longer needed since we are processing everything in subjectspace, see localizer.sh
-if [ ${step} = register ]
-then
-    clear
-    echo "++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++"
-    echo "Registering masks to study_ref"
-    echo "Ignore Flipping WARNINGS we need LPS/NEUROLOGICAL orientation for murfi feedback!!"
-    latest_ref=$(ls -t $subj_dir/xfm/*.nii | head -n1)
-    latest_ref="${latest_ref::-4}"
-    echo ${latest_ref}
-    bet ${latest_ref} ${latest_ref}_brain -R -f 0.6 -g 0 -m
-
-    # CCCB version (direct flirt from subject functional to MNI structural: step 1)
-    # because the images that we get from Prisma through Vsend are in LPS orientation we need to change both our MNI mean image and our mni masks accordingly: 
-   fslswapdim MNI152_T1_2mm.nii.gz x -y z MNI152_T1_2mm_LPS.nii.gz
-   fslorient -forceneurological MNI152_T1_2mm_LPS.nii.gz
-#   once the images are in the same orientation we can do registration
-    rm -r $subj_dir/xfm/epi2reg
-    mkdir $subj_dir/xfm/epi2reg
-    mkdir $subj_dir/mask/lps
-
-#for mni_mask in {dmn,cen,smc}; #include this for DMN feedback
-    for mni_mask in {dmn,cen,smc,stg};do 
-        echo "+ REGISTERING ${mni_mask} TO study_ref" 
-    flirt -in MNI152_T1_2mm_LPS.nii.gz -ref ${latest_ref} -out $subj_dir/xfm/epi2reg/mnilps2studyref -omat $subj_dir/xfm/epi2reg/mnilps2studyref.mat
-    flirt -in MNI152_T1_2mm_LPS_brain.nii.gz -ref ${latest_ref}_brain -out $subj_dir/xfm/epi2reg/mnilps2studyref_brain -omat $subj_dir/xfm/epi2reg/mnilps2studyref.mat
-
-    fslswapdim $subj_dir/mask/mni/${mni_mask}_mni x -y z $subj_dir/mask/lps/${mni_mask}_mni_lps
-       fslorient -forceneurological $subj_dir/mask/lps/${mni_mask}_mni_lps
-    #start registration
-
-      flirt -in $subj_dir/mask/lps/${mni_mask}_mni_lps -ref ${latest_ref} -out $subj_dir/mask/${mni_mask} -init $subj_dir/xfm/epi2reg/mnilps2studyref.mat -applyxfm -interp nearestneighbour -datatype short
-	fslmaths $subj_dir/mask/${mni_mask}.nii.gz -mul ${latest_ref}_brain_mask $subj_dir/mask/${mni_mask}.nii.gz -odt short
-	gunzip -f $subj_dir/mask/${mni_mask}.nii.gz;done
-        #rm $subj_dir/mask/${mni_mask}.nii.gz
-     
-    
-    #cp $subj_dir/mask/dmn.nii $subj_dir/mask/non.nii
-    echo "+ INSPECT"
-    echo "++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++"
-    fsleyes ${latest_ref}_brain  $subj_dir/mask/stg.nii -cm green $subj_dir/mask/cen.nii -cm red $subj_dir/mask/dmn.nii -cm blue  $subj_dir/mask/smc.nii -cm yellow
-fi
-
-if [ ${step} = nf ]
-then
-clear
-    echo "+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++"
-    echo "ready to receive stg feedback scan"
-    singularity exec /home/auerbachlinux/singularity-images/murfi2.sif murfi -f $subj_dir/xml/$subj_$run.xml
-fi
+# if [ ${step} = nf ]
+# then
+# clear
+#     echo "+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++"
+#     echo "ready to receive stg feedback scan"
+#     singularity exec /home/auerbachlinux/singularity-images/murfi2.sif murfi -f $subj_dir/xml/$subj_$run.xml
+# fi
 
 if  [ ${step} = feedback ]
 then
@@ -106,13 +63,6 @@ clear
     singularity exec /home/auerbachlinux/singularity-images/murfi2.sif murfi -f $subj_dir/xml/rtdmn.xml
 fi
 
-if  [ ${step} = smc ]
-then
-clear
-    echo "+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++"
-    echo "ready to receive smc feedback scan"
-    singularity exec /home/auerbachlinux/singularity-images/murfi2.sif murfi -f $subj_dir/xml/$subj_$run.xml
-fi
 
 if  [ ${step} = resting_state ]
 then
@@ -129,8 +79,8 @@ then
 clear
     echo "+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++"
     echo "+ compiling resting state run into analysis folder"
-    cp $subj_dir/img/img-00002-00002.nii  $subj_dir/rest/$subj'_'$ses'_task-rest_'$run'_bold'.nii
-    yes n | gzip $subj_dir/rest/$subj'_'$ses'_task-rest_'$run'_bold'.nii
+    #cp $subj_dir/img/img-00002-00002.nii  $subj_dir/rest/$subj'_'$ses'_task-rest_'$run'_bold'.nii
+    #yes n | gzip $subj_dir/rest/$subj'_'$ses'_task-rest_'$run'_bold'.nii
     
     # get all volumes of resting data (no matter how many) merged into 1 .nii.gz file
     # NOTE: the -00002 extensipn will likely need to be adjusted depending on where this scan falls in the protocol
@@ -186,7 +136,7 @@ flirt -in ${yeo7networks} -ref ${examplefunc} -out ${yeo7networks2example_func} 
 
 split_outfile=$subj_dir/rest/$subj'_'$ses'_task-rest_'$run'_bold'.ica/filtered_func_data.ica/melodic_IC_
 
-
+# SHOULD we correlate with just DMN & CEN, rather than all yeo networks?
 fslcc --noabs -p 3 -t 0.05 ${infile} ${yeo7networks2example_func} >>${correlfile}
 fslsplit ${infile} ${split_outfile}
 
@@ -195,16 +145,19 @@ python rsn_get.py ${subj} ${ses} ${run}
 
 dmn_uthresh=$subj_dir/rest/$subj'_'$ses'_task-rest_'$run'_bold'.ica/filtered_func_data.ica/dmn_uthresh.nii.gz
 cen_uthresh=$subj_dir/rest/$subj'_'$ses'_task-rest_'$run'_bold'.ica/filtered_func_data.ica/cen_uthresh.nii.gz
-smc_uthresh=$subj_dir/rest/$subj'_'$ses'_task-rest_'$run'_bold'.ica/filtered_func_data.ica/smc_uthresh.nii.gz
+#smc_uthresh=$subj_dir/rest/$subj'_'$ses'_task-rest_'$run'_bold'.ica/filtered_func_data.ica/smc_uthresh.nii.gz
 
 dmn_thresh=$subj_dir/rest/$subj'_'$ses'_task-rest_'$run'_bold'.ica/filtered_func_data.ica/dmn_thresh.txt
 cen_thresh=$subj_dir/rest/$subj'_'$ses'_task-rest_'$run'_bold'.ica/filtered_func_data.ica/cen_thresh.txt
-smc_thresh=$subj_dir/rest/$subj'_'$ses'_task-rest_'$run'_bold'.ica/filtered_func_data.ica/smc_thresh.txt
+#smc_thresh=$subj_dir/rest/$subj'_'$ses'_task-rest_'$run'_bold'.ica/filtered_func_data.ica/smc_thresh.txt
 
 dmn_mni_thresh=$subj_dir/rest/$subj'_'$ses'_task-rest_'$run'_bold'.ica/filtered_func_data.ica/dmn_mni_thresh.nii.gz
 cen_mni_thresh=$subj_dir/rest/$subj'_'$ses'_task-rest_'$run'_bold'.ica/filtered_func_data.ica/cen_mni_thresh.nii.gz
-smc_mni_thresh=$subj_dir/rest/$subj'_'$ses'_task-rest_'$run'_bold'.ica/filtered_func_data.ica/smc_mni_thresh.nii.gz
+#smc_mni_thresh=$subj_dir/rest/$subj'_'$ses'_task-rest_'$run'_bold'.ica/filtered_func_data.ica/smc_mni_thresh.nii.gz
 
+
+#ERODE
+#top X voxels?
 
 
 #Here you can change the size of the DMN/CEN mask
