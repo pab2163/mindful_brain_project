@@ -109,7 +109,7 @@ if [ ${step} = process_roi_masks ]
 then
 clear
     echo "++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++"
-    echo "+ Generating DMN, CEN and SMC masks. "
+    echo "+ Generating DMN & CEN Masks "
     echo "++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++"
     touch $subj_dir/rest/$subj'_'$ses'_task-rest_'$run'_bold'.ica/filtered_func_data.ica/Yeo_rsn_correl.txt
 correlfile=$subj_dir/rest/$subj'_'$ses'_task-rest_'$run'_bold'.ica/filtered_func_data.ica/Yeo_rsn_correl.txt
@@ -145,49 +145,95 @@ python rsn_get.py ${subj} ${ses} ${run}
 
 dmn_uthresh=$subj_dir/rest/$subj'_'$ses'_task-rest_'$run'_bold'.ica/filtered_func_data.ica/dmn_uthresh.nii.gz
 cen_uthresh=$subj_dir/rest/$subj'_'$ses'_task-rest_'$run'_bold'.ica/filtered_func_data.ica/cen_uthresh.nii.gz
-#smc_uthresh=$subj_dir/rest/$subj'_'$ses'_task-rest_'$run'_bold'.ica/filtered_func_data.ica/smc_uthresh.nii.gz
 
-dmn_thresh=$subj_dir/rest/$subj'_'$ses'_task-rest_'$run'_bold'.ica/filtered_func_data.ica/dmn_thresh.txt
-cen_thresh=$subj_dir/rest/$subj'_'$ses'_task-rest_'$run'_bold'.ica/filtered_func_data.ica/cen_thresh.txt
-#smc_thresh=$subj_dir/rest/$subj'_'$ses'_task-rest_'$run'_bold'.ica/filtered_func_data.ica/smc_thresh.txt
+#dmn_thresh=$subj_dir/rest/$subj'_'$ses'_task-rest_'$run'_bold'.ica/filtered_func_data.ica/dmn_thresh.txt
+#cen_thresh=$subj_dir/rest/$subj'_'$ses'_task-rest_'$run'_bold'.ica/filtered_func_data.ica/cen_thresh.txt
 
 dmn_mni_thresh=$subj_dir/rest/$subj'_'$ses'_task-rest_'$run'_bold'.ica/filtered_func_data.ica/dmn_mni_thresh.nii.gz
 cen_mni_thresh=$subj_dir/rest/$subj'_'$ses'_task-rest_'$run'_bold'.ica/filtered_func_data.ica/cen_mni_thresh.nii.gz
-#smc_mni_thresh=$subj_dir/rest/$subj'_'$ses'_task-rest_'$run'_bold'.ica/filtered_func_data.ica/smc_mni_thresh.nii.gz
+dmn_mni_uthresh=$subj_dir/rest/$subj'_'$ses'_task-rest_'$run'_bold'.ica/filtered_func_data.ica/dmn_mni_uthresh.nii.gz
+cen_mni_uthresh=$subj_dir/rest/$subj'_'$ses'_task-rest_'$run'_bold'.ica/filtered_func_data.ica/cen_mni_uthresh.nii.gz
 
 
 #ERODE
 #top X voxels?
 
 
-#Here you can change the size of the DMN/CEN mask
-#thresh=500
-threshvalue=99.7
-#while [$thresh>=100]
-#do
-#threshvalue=$(($threshvalue +0.01)) | bc
-fslstats ${dmn_uthresh} -P $threshvalue >${dmn_thresh}
-thresh="$(awk '{print $1}' ${dmn_thresh})"
-fslmaths ${dmn_uthresh} -thr ${thresh} -bin ${dmn_mni_thresh} -odt short
-flirt -in  ${dmn_mni_thresh} -ref ${standard} -out ${dmn_mni_thresh} -init ${example_func2standard_mat} -applyxfm
-fslmaths ${dmn_mni_thresh} -mul ../scripts/FSL_7networks_DMN.nii.gz ${dmn_mni_thresh}
+# UPDATE Pipeline
+# pull in eroded DMN / CEN masks
+# zero out any voxels in the unthresholded personalized networks that aren't in the masks
+# take the top N (hardcoded) voxels from that 
 
-fslstats ${cen_uthresh} -P $threshvalue >${cen_thresh}
-thresh="$(awk '{print $1}' ${cen_thresh})"
-fslmaths ${cen_uthresh} -thr ${thresh} -bin ${cen_mni_thresh} -odt short
-flirt -in  ${cen_mni_thresh} -ref ${standard} -out ${cen_mni_thresh} -init ${example_func2standard_mat} -applyxfm
-fslmaths ${cen_mni_thresh} -mul ../scripts/FSL_7networks_CEN.nii.gz ${cen_mni_thresh}
+num_voxels_desired=1500
 
-fslstats ${smc_uthresh} -P $threshvalue >${smc_thresh}
-thresh="$(awk '{print $1}' ${smc_thresh})"
-fslmaths ${smc_uthresh} -thr ${thresh} -bin ${smc_mni_thresh} -odt short
-flirt -in  ${smc_mni_thresh} -ref ${standard} -out ${smc_mni_thresh} -init ${example_func2standard_mat} -applyxfm
-fslmaths ${smc_mni_thresh} -mul ../scripts/FSL_7networks_SMC.nii.gz ${smc_mni_thresh}
+# register non-thresholded masks to MNI space
+flirt -in  ${dmn_uthresh} -ref ${standard} -out ${dmn_mni_uthresh} -init ${example_func2standard_mat} -applyxfm
+flirt -in  ${cen_uthresh} -ref ${standard} -out ${cen_mni_uthresh} -init ${example_func2standard_mat} -applyxfm
 
+
+# zero out voxels not included in the Yeo mask
+fslmaths ${dmn_mni_uthresh} -mul FSL_7networks_DMN.nii.gz ${dmn_mni_uthresh}
+fslmaths ${cen_mni_uthresh} -mul FSL_7networks_CEN.nii.gz ${cen_mni_uthresh}
+
+
+# get number of non-zero voxels in masks, calculate percentile of voxels desired
+voxels_in_dmn=$(fslstats ${dmn_mni_uthresh} -V | awk '{print $1}')
+percentile_dmn=$(python -c "print(100*(1-${num_voxels_desired}/${voxels_in_dmn}))")
+voxels_in_cen=$(fslstats ${cen_mni_uthresh} -V | awk '{print $1}')
+percentile_cen=$(python -c "print(100*(1-${num_voxels_desired}/${voxels_in_cen}))")
+
+
+# get threshold based on percentile
+dmn_thresh_value=$(fslstats ${dmn_mni_uthresh} -P ${percentile_dmn})
+cen_thresh_value=$(fslstats ${cen_mni_uthresh} -P ${percentile_cen})
+
+# threshold masks in MNI space
+fslmaths ${dmn_mni_uthresh} -thr ${dmn_thresh_value} -bin ${dmn_mni_thresh} -odt short
+fslmaths ${cen_mni_uthresh} -thr ${cen_thresh_value} -bin ${cen_mni_thresh} -odt short
+
+
+echo "Number of voxels in dmn mask: $(fslstats ${dmn_mni_thresh} -V)"
+echo "Number of voxels in cen mask: $(fslstats ${cen_mni_thresh} -V)"
+
+# copy masks to mask directory
 cp ${dmn_mni_thresh} ${subj_dir}/mask/mni/dmn_mni.nii.gz
 cp ${cen_mni_thresh} ${subj_dir}/mask/mni/cen_mni.nii.gz
-cp ${smc_mni_thresh} ${subj_dir}/mask/mni/smc_mni.nii.gz
 
-fsleyes  mean_brain.nii.gz ${subj_dir}/mask/mni/dmn_mni.nii.gz -cm blue ${subj_dir}/mask/mni/cen_mni.nii.gz -cm red ${subj_dir}/mask/mni/smc_mni.nii.gz -cm green
+
+# Display masks with FSLEYES
+fsleyes  mean_brain.nii.gz ${dmn_mni_thresh} -cm blue ${cen_mni_thresh} -cm red
+
 
 fi
+
+# #Here you can change the size of the DMN/CEN mask
+# #thresh=500
+# threshvalue=99.7
+# #while [$thresh>=100]
+# #do
+# #threshvalue=$(($threshvalue +0.01)) | bc
+# fslstats ${dmn_uthresh} -P $threshvalue >${dmn_thresh}
+# thresh="$(awk '{print $1}' ${dmn_thresh})"
+# fslmaths ${dmn_uthresh} -thr ${thresh} -bin ${dmn_mni_thresh} -odt short
+# flirt -in  ${dmn_mni_thresh} -ref ${standard} -out ${dmn_mni_thresh} -init ${example_func2standard_mat} -applyxfm
+# fslmaths ${dmn_mni_thresh} -mul ../scripts/FSL_7networks_DMN.nii.gz ${dmn_mni_thresh}
+
+# fslstats ${cen_uthresh} -P $threshvalue >${cen_thresh}
+# thresh="$(awk '{print $1}' ${cen_thresh})"
+# fslmaths ${cen_uthresh} -thr ${thresh} -bin ${cen_mni_thresh} -odt short
+# flirt -in  ${cen_mni_thresh} -ref ${standard} -out ${cen_mni_thresh} -init ${example_func2standard_mat} -applyxfm
+# fslmaths ${cen_mni_thresh} -mul ../scripts/FSL_7networks_CEN.nii.gz ${cen_mni_thresh}
+
+# # fslstats ${smc_uthresh} -P $threshvalue >${smc_thresh}
+# # thresh="$(awk '{print $1}' ${smc_thresh})"
+# # fslmaths ${smc_uthresh} -thr ${thresh} -bin ${smc_mni_thresh} -odt short
+# # flirt -in  ${smc_mni_thresh} -ref ${standard} -out ${smc_mni_thresh} -init ${example_func2standard_mat} -applyxfm
+# # fslmaths ${smc_mni_thresh} -mul ../scripts/FSL_7networks_SMC.nii.gz ${smc_mni_thresh}
+
+# cp ${dmn_mni_thresh} ${subj_dir}/mask/mni/dmn_mni.nii.gz
+# cp ${cen_mni_thresh} ${subj_dir}/mask/mni/cen_mni.nii.gz
+# cp ${smc_mni_thresh} ${subj_dir}/mask/mni/smc_mni.nii.gz
+
+# fsleyes  mean_brain.nii.gz ${subj_dir}/mask/mni/dmn_mni.nii.gz -cm blue ${subj_dir}/mask/mni/cen_mni.nii.gz -cm red ${subj_dir}/mask/mni/smc_mni.nii.gz -cm green
+
+# fi
