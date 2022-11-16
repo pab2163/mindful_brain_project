@@ -45,15 +45,49 @@ then
     echo "ready to receive 2 volume scan"
     singularity exec /home/auerbachlinux/singularity-images/murfi2.sif murfi -f $subj_dir/xml/2vol.xml
 fi
+ #this step is no longer needed since we are processing everything in subjectspace, see localizer.sh
 
+if [ ${step} = register ]
+then
+    clear
+    echo "++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++"
+    echo "Registering masks to study_ref"
+    echo "Ignore Flipping WARNINGS we need LPS/NEUROLOGICAL orientation for murfi feedback!!"
+    latest_ref=$(ls -t $subj_dir/xfm/*.nii | head -n1)
+    latest_ref="${latest_ref::-4}"
+    echo ${latest_ref}
+    bet ${latest_ref} ${latest_ref}_brain -R -f 0.6 -g 0 -m
 
-# if [ ${step} = nf ]
-# then
-# clear
-#     echo "+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++"
-#     echo "ready to receive stg feedback scan"
-#     singularity exec /home/auerbachlinux/singularity-images/murfi2.sif murfi -f $subj_dir/xml/$subj_$run.xml
-# fi
+    # CCCB version (direct flirt from subject functional to MNI structural: step 1)
+    # because the images that we get from Prisma through Vsend are in LPS orientation we need to change both our MNI mean image and our mni masks accordingly: 
+   fslswapdim MNI152_T1_2mm.nii.gz x -y z MNI152_T1_2mm_LPS.nii.gz
+   fslorient -forceneurological MNI152_T1_2mm_LPS.nii.gz
+#   once the images are in the same orientation we can do registration
+    rm -r $subj_dir/xfm/epi2reg
+    mkdir $subj_dir/xfm/epi2reg
+    mkdir $subj_dir/mask/lps
+
+#for mni_mask in {dmn,cen,smc}; #include this for DMN feedback
+    for mni_mask in {dmn,cen,smc,stg};do 
+        echo "+ REGISTERING ${mni_mask} TO study_ref" 
+    flirt -in MNI152_T1_2mm_LPS.nii.gz -ref ${latest_ref} -out $subj_dir/xfm/epi2reg/mnilps2studyref -omat $subj_dir/xfm/epi2reg/mnilps2studyref.mat
+    flirt -in MNI152_T1_2mm_LPS_brain.nii.gz -ref ${latest_ref}_brain -out $subj_dir/xfm/epi2reg/mnilps2studyref_brain -omat $subj_dir/xfm/epi2reg/mnilps2studyref.mat
+
+    fslswapdim $subj_dir/mask/mni/${mni_mask}_mni x -y z $subj_dir/mask/lps/${mni_mask}_mni_lps
+       fslorient -forceneurological $subj_dir/mask/lps/${mni_mask}_mni_lps
+    #start registration
+
+      flirt -in $subj_dir/mask/lps/${mni_mask}_mni_lps -ref ${latest_ref} -out $subj_dir/mask/${mni_mask} -init $subj_dir/xfm/epi2reg/mnilps2studyref.mat -applyxfm -interp nearestneighbour -datatype short
+    fslmaths $subj_dir/mask/${mni_mask}.nii.gz -mul ${latest_ref}_brain_mask $subj_dir/mask/${mni_mask}.nii.gz -odt short
+    gunzip -f $subj_dir/mask/${mni_mask}.nii.gz;done
+        #rm $subj_dir/mask/${mni_mask}.nii.gz
+     
+    
+    #cp $subj_dir/mask/dmn.nii $subj_dir/mask/non.nii
+    echo "+ INSPECT"
+    echo "++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++"
+    fsleyes ${latest_ref}_brain  $subj_dir/mask/stg.nii -cm green $subj_dir/mask/cen.nii -cm red $subj_dir/mask/dmn.nii -cm blue  $subj_dir/mask/smc.nii -cm yellow
+fi
 
 if  [ ${step} = feedback ]
 then
