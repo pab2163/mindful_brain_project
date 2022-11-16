@@ -35,8 +35,8 @@ cen_component='../subjects/%s/rest/%s_%s_task-rest_%s_bold.ica/filtered_func_dat
 fslcc_info = pd.read_csv(correlfile, sep=' ', skipinitialspace=True, header=None)
 list(fslcc_info)
 fslcc_info.sort_values(by=[1, 2], ascending=False, inplace=True)
-dmn_info = fslcc_info.loc[fslcc_info[1] == 7, :].values
-cen_info = fslcc_info.loc[fslcc_info[1] == 6, :].values
+dmn_info = fslcc_info.loc[fslcc_info[1] == 1, :].values
+cen_info = fslcc_info.loc[fslcc_info[1] == 2, :].values
 #smc_info = fslcc_info.loc[fslcc_info[1] == 2, :].values
 
 roi1 = int(dmn_info[0, 0]-1)

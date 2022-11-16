@@ -105,6 +105,8 @@ clear
     feat $subj_dir/rest/$subj'_'$ses'_task-rest_'$run'_bold'.fsf
 fi
 
+
+
 if [ ${step} = process_roi_masks ]
 then
 clear
@@ -125,19 +127,24 @@ standard=$subj_dir/rest/$subj'_'$ses'_task-rest_'$run'_bold'.ica/reg/standard.ni
 example_func2standard_mat=$subj_dir/rest/$subj'_'$ses'_task-rest_'$run'_bold'.ica/reg/example_func2standard.mat
 
 standard2example_func_mat=$subj_dir/rest/$subj'_'$ses'_task-rest_'$run'_bold'.ica/reg/standard2example_func.mat
+template_networks='template_networks.nii.gz'
 
-yeo7networks=../scripts/FSL_7networks.nii
+#yeo7networks=../scripts/FSL_7networks.nii
+#yeo7networks2example_func=$subj_dir/rest/$subj'_'$ses'_task-rest_'$run'_bold'.ica/reg/yeo7networks2example_func.nii.gz
 
-yeo7networks2example_func=$subj_dir/rest/$subj'_'$ses'_task-rest_'$run'_bold'.ica/reg/yeo7networks2example_func.nii.gz
+template_dmn='DMNa_brainmaskero2.nii'
+template_cen='CENa_brainmaskero2.nii'
+fslmerge -tr ${template_networks} ${template_dmn} ${template_cen} 1
 
+template2example_func=$subj_dir/rest/$subj'_'$ses'_task-rest_'$run'_bold'.ica/reg/template_networks2example_func.nii.gz
 
-flirt -in ${yeo7networks} -ref ${examplefunc} -out ${yeo7networks2example_func} -init ${standard2example_func_mat} -applyxfm
+flirt -in ${template_networks} -ref ${examplefunc} -out ${template2example_func} -init ${standard2example_func_mat} -applyxfm
 
 
 split_outfile=$subj_dir/rest/$subj'_'$ses'_task-rest_'$run'_bold'.ica/filtered_func_data.ica/melodic_IC_
 
 # SHOULD we correlate with just DMN & CEN, rather than all yeo networks?
-fslcc --noabs -p 3 -t 0.05 ${infile} ${yeo7networks2example_func} >>${correlfile}
+fslcc --noabs -p 3 -t 0.05 ${infile} ${template2example_func} >>${correlfile}
 fslsplit ${infile} ${split_outfile}
 
 python rsn_get.py ${subj} ${ses} ${run}
@@ -171,9 +178,9 @@ flirt -in  ${dmn_uthresh} -ref ${standard} -out ${dmn_mni_uthresh} -init ${examp
 flirt -in  ${cen_uthresh} -ref ${standard} -out ${cen_mni_uthresh} -init ${example_func2standard_mat} -applyxfm
 
 
-# zero out voxels not included in the Yeo mask
-fslmaths ${dmn_mni_uthresh} -mul FSL_7networks_DMN.nii.gz ${dmn_mni_uthresh}
-fslmaths ${cen_mni_uthresh} -mul FSL_7networks_CEN.nii.gz ${cen_mni_uthresh}
+# zero out voxels not included in the template mask
+fslmaths ${dmn_mni_uthresh} -mul ${template_dmn} ${dmn_mni_uthresh}
+fslmaths ${cen_mni_uthresh} -mul ${template_cen} ${cen_mni_uthresh}
 
 
 # get number of non-zero voxels in masks, calculate percentile of voxels desired
