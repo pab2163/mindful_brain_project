@@ -22,7 +22,7 @@ os.chdir(_thisDir)
 
 # Store info about the experiment 
 expName = 'DMN_BallTask'  # from the Builder filename that created this script
-expInfo = {'participant':'','session':'','No_of_ROIs':'2','Level_1_2_3':'1','No_repetitions':'1','Run_Time':'120','Scale_Factor':'5',}#Run_Time in seconds and direction  
+expInfo = {'participant':'','session':'','No_of_ROIs':'2','Level_1_2_3':'1','No_repetitions':'1','Run_Time':'120'}#Run_Time in seconds and direction  
 BaseLineTime=30 #30 
 exp_tr=1.2
 murfi_FAKE=False
@@ -30,8 +30,32 @@ dlg = gui.DlgFromDict(dictionary=expInfo, title=expName)
 if dlg.OK == False: core.quit()  # user pressed cancel
 expInfo['date'] = data.getDateStr()  # add a simple timestamp
 expInfo['expName'] = expName
+expInfo['Scale_Factor'] = 5
 roi_number= str('%s') %(expInfo['No_of_ROIs'])
 roi_number=int(roi_number)
+
+'''
+PSUDO CODE
+if run == 1:
+    expInfo['Scale_Factor'] = 5
+else:
+    try:
+        last_run_info = read_file(last_run_file_path)
+        change_scale_factor_accordingly(last_run_info)
+    except:
+        expInfo['Scale_Factor'] = 5
+'''
+
+
+'''
+Scale factor updates:
+
+Everyone starts at scale factor 5
+If <3 to either circle: increase scale factor
+If 3-5 hits: keep scale factor the same
+If >5 hits: decrease scale factor
+Write # of hits to a file, then next run pulls that info
+'''
 
 RUN_TIME= str('%s') %(expInfo['Run_Time'])
 RUN_TIME=int(RUN_TIME)
@@ -576,13 +600,18 @@ for thisTrial in trials:
                 TargetCircleBlue_X=0
                 TargetCircleBlue_Y=0
                 TargetCircle_blue.pos=(TargetCircleBlue_X,TargetCircleBlue_Y)
-            
+
+            # for each ROI, look for the index -- see whether that ROI has the highest activity
             if roi_activities.index(np.nanmax(roi_activities))==i and np.nanmean(roi_activities)!=0:
                 
                 #activity=abs((np.max(roi_activities))/5)
                 activity=abs(np.nanmax(roi_activities)-(np.nanmin(roi_activities)))/10
                 #print "activity_dif",activity_diff
                 print ("activity",activity, " roi_activities",roi_activities)
+
+                # activity will always be positive (PDA)
+                # positions refers to either CEN position positions[0] or DMN position positions[1]
+                print('positions:', positions)
                 cursor_position = np.dot(positions[i], activity)
                 
                 TargetCircleBlue_Y=TargetCircleBlue_Y+ (np.real(cursor_position) * scale_factor_z2pixels/20) #
