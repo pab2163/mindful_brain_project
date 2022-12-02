@@ -509,6 +509,9 @@ for thisTrial in trials:
         communicator.update()
         
         roi_raw_activations=[]
+
+        # Where ROI activation first comes in
+        # CEN, DMN
         for i in range(n_roi):
             roi_raw_i=communicator.get_roi_activation(roi_names_list[i], frame)
             roi_raw_activations.append(roi_raw_i)
@@ -519,6 +522,7 @@ for thisTrial in trials:
         dlpfc = communicator.get_roi_activation('dlpfc', frame)
         wm = communicator.get_roi_activation('wm', frame)"""
         
+        # So psychopy doesn't start too early if MURFI has started sending data early (real feedback values shouldn't be 0)
         if roi_raw_activations[0] ==0: #and roi_raw_activations[0]==0:
             #win.close()
             print ("let's begin feedback")
@@ -528,6 +532,7 @@ for thisTrial in trials:
             print ("began baseline")
             continue
         
+        # a list of [CEN, DMN] for the current frame
         roi_activities=[]
         
         for i in range(n_roi):
@@ -552,6 +557,7 @@ for thisTrial in trials:
         roi_activities=(target_pcc,target_mpfc,target_dlpfc)"""
         
         #print "roi activities", roi_activities
+        # Cursor position is position of main ball
         cursor_position = np.dot(activity, positions)
         #print frame, cursor_position
         #print 'max_roi: ',max(roi_activities),'index:',roi_activities.index(max(roi_activities))
