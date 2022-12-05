@@ -473,8 +473,8 @@ for thisTrial in trials:
     subject_key_reset.status = NOT_STARTED
     routineTimer.add(RUN_TIME)
     
-    # Should we start delivering feedback based on frame 25 (24 when zero-indexing), since there is 30s of basline? (25volumes * 1.2s TR)
-    frame = 24
+    # Should we start delivering feedback based on frame 26 (25 when zero-indexing), since there is 30s of basline? (25volumes * 1.2s TR = 30s, then we want the one after that?)
+    frame = 25
     dmn_feedback = []
     #mpfc_feedback = []
     cen_feedback = []
