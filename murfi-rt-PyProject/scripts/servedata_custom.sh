@@ -35,7 +35,7 @@ servepath=`which servenii`
 
 if [ x"$servepath" == x ]; then
     echo "servenii not found, please add it to your path"
-    exit 1
+    #exit 1
 fi
 
 

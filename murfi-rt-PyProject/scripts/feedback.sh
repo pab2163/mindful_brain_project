@@ -92,7 +92,7 @@ then
     
     echo "+ INSPECT"
     echo "++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++"
-    fsleyes ${latest_ref}_brain  $subj_dir/mask/stg.nii -cm green $subj_dir/mask/cen.nii -cm red $subj_dir/mask/dmn.nii -cm blue  $subj_dir/mask/smc.nii -cm yellow
+    fsleyes ${latest_ref}_brain  $subj_dir/mask/cen.nii -cm red $subj_dir/mask/dmn.nii -cm blue  #$subj_dir/mask/smc.nii -cm yellow $subj_dir/mask/stg.nii -cm green
 fi
 
 if  [ ${step} = feedback ]
@@ -121,16 +121,26 @@ clear
     echo "+ compiling resting state run into analysis folder"
 
     # get all volumes of resting data (no matter how many) merged into 1 .nii.gz file
-    # NOTE: the -00002 extensipn will likely need to be adjusted depending on where this scan falls in the protocol
-    fslmerge -tr $subj_dir/rest/$subj'_'$ses'_task-rest_'$run'_bold'.nii.gz $subj_dir/img/img-00002* 1.2
+    # NOTE: the image-##### extension will likely need to be adjusted depending on where this scan falls in the protocol
+
+    # if run 0 has <=2 volumes (i.e. this was the 2vol run), use run 1
+    run_0_volumes=$(find ../subjects/${subj}/img/ -name "img-00000*" | wc -l)
+    if [ ${run_0_volumes} -le 2 ];
+    then
+        rest_run_num=1
+    else
+        rest_run_num=0
+    fi
+    echo "Using run ${rest_run_num}"
+    fslmerge -tr $subj_dir/rest/$subj'_'$ses'_task-rest_'$run'_bold'.nii.gz $subj_dir/img/img-0000${rest_run_num}* 1.2
     
     # make sure file permissisions are set so the resting-state data can be picked up by FSL
     chmod 777 $subj_dir/rest/$subj'_'$ses'_task-rest_'$run'_bold'.nii.gz 
 
-    expected_volumes = 250
+    expected_volumes=250
     # figure out how many volumes of resting state data there were to be used in ICA
     restvolumes=$(fslnvols $subj_dir/rest/$subj'_'$ses'_task-rest_'$run'_bold'.nii.gz)
-    if [ ${restvolumes} != ${expected_volumes} ]
+    if [ ${restvolumes} -ne ${expected_volumes} ]
     then
         echo "WARNING! Only ${restvolumes} volumes of resting-state data found for ICA. ${expected_volumes} expected?"
     fi
