@@ -639,10 +639,6 @@ for thisTrial in trials:
                     
                 else:
                     continue
-                
-                #for i in range(n_roi):
-                #    target_circles[i].draw()
-                #TargetCircle_blue.draw()
                          
             else:
                 continue
