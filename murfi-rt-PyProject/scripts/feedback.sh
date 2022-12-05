@@ -74,22 +74,22 @@ then
     mkdir $subj_dir/xfm/epi2reg
     mkdir $subj_dir/mask/lps
 
-    # For each MNI mask in the participant's MNI mask directory
-    for mni_mask in {dmn,cen};do 
-        echo "+ REGISTERING ${mni_mask} TO study_ref" 
     flirt -in MNI152_T1_2mm_LPS.nii.gz -ref ${latest_ref} -out $subj_dir/xfm/epi2reg/mnilps2studyref -omat $subj_dir/xfm/epi2reg/mnilps2studyref.mat
     flirt -in MNI152_T1_2mm_LPS_brain.nii.gz -ref ${latest_ref}_brain -out $subj_dir/xfm/epi2reg/mnilps2studyref_brain -omat $subj_dir/xfm/epi2reg/mnilps2studyref.mat
 
-    fslswapdim $subj_dir/mask/mni/${mni_mask}_mni x -y z $subj_dir/mask/lps/${mni_mask}_mni_lps
-    fslorient -forceneurological $subj_dir/mask/lps/${mni_mask}_mni_lps
-    #start registration
+    # For each MNI mask in the participant's MNI mask directory, swap dimension & register to 2vol native space
+    for mni_mask in {dmn,cen};
+    do 
+        echo "+ REGISTERING ${mni_mask} TO study_ref" 
+        fslswapdim $subj_dir/mask/mni/${mni_mask}_mni x -y z $subj_dir/mask/lps/${mni_mask}_mni_lps
+        fslorient -forceneurological $subj_dir/mask/lps/${mni_mask}_mni_lps
+        
+        #start registration
+        flirt -in $subj_dir/mask/lps/${mni_mask}_mni_lps -ref ${latest_ref} -out $subj_dir/mask/${mni_mask} -init $subj_dir/xfm/epi2reg/mnilps2studyref.mat -applyxfm -interp nearestneighbour -datatype short
+        fslmaths $subj_dir/mask/${mni_mask}.nii.gz -mul ${latest_ref}_brain_mask $subj_dir/mask/${mni_mask}.nii.gz -odt short
+        gunzip -f $subj_dir/mask/${mni_mask}.nii.gz
+    done
 
-      flirt -in $subj_dir/mask/lps/${mni_mask}_mni_lps -ref ${latest_ref} -out $subj_dir/mask/${mni_mask} -init $subj_dir/xfm/epi2reg/mnilps2studyref.mat -applyxfm -interp nearestneighbour -datatype short
-    fslmaths $subj_dir/mask/${mni_mask}.nii.gz -mul ${latest_ref}_brain_mask $subj_dir/mask/${mni_mask}.nii.gz -odt short
-    gunzip -f $subj_dir/mask/${mni_mask}.nii.gz;done
-        #rm $subj_dir/mask/${mni_mask}.nii.gz
-     
-    
     echo "+ INSPECT"
     echo "++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++"
     fsleyes ${latest_ref}_brain  $subj_dir/mask/cen.nii -cm red $subj_dir/mask/dmn.nii -cm blue  #$subj_dir/mask/smc.nii -cm yellow $subj_dir/mask/stg.nii -cm green
