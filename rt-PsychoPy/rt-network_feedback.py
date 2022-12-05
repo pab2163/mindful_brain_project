@@ -30,7 +30,7 @@ dlg = gui.DlgFromDict(dictionary=expInfo, title=expName)
 if dlg.OK == False: core.quit()  # user pressed cancel
 expInfo['date'] = data.getDateStr()  # add a simple timestamp
 expInfo['expName'] = expName
-expInfo['Scale_Factor'] = 5
+expInfo['Scale_Factor'] = 20
 roi_number= str('%s') %(expInfo['No_of_ROIs'])
 roi_number=int(roi_number)
 
@@ -94,7 +94,7 @@ endExpNow = False  # flag for 'escape' or other condition => quit the exp
 
 # Setup the Window
 win = visual.Window(size=(1080,1080), fullscr=False, screen=1, allowGUI=False, allowStencil=False,#1024, 1024
-    monitor='testMonitor', color=[0,0,0], colorSpace='rgb',
+    monitor='testMonitor', color=[-1,-1,-1], colorSpace='rgb',
     blendMode='avg', useFBO=True,
     )
 # store frame rate of monitor if we can measure it successfully
@@ -181,7 +181,6 @@ in_target_counter=[]
 home=[]
 for i in range(n_roi):
     roi_circle_i = visual.Circle(win, pos=(roi_pos[i, 1],roi_pos[i, 0]), radius=0.15,fillColor=None, lineColor=colors[i])
-    #roi_circle_i.draw()
     target_circles.append(roi_circle_i)
     in_target_counter.append(0)
     print (in_target_counter)
@@ -440,6 +439,7 @@ if thisTrial != None:
 #prepare to start routine feedback
 #create file to save DMN and CEN activity per TR 
 for thisTrial in trials:
+    print('Starting Trial Loop!')
     currentLoop = trials
     # abbreviate parameter names if possible (e.g. rgb = thisTrial.rgb)
     if thisTrial != None:
@@ -485,6 +485,8 @@ for thisTrial in trials:
         activity_i=0
     continueRoutine = True
     
+
+    # Loop keeps going until RUN_TIME is up
     while continueRoutine and routineTimer.getTime() > 0:
         # get current time
         t = feedbackClock.getTime()
@@ -539,12 +541,6 @@ for thisTrial in trials:
         for i in range(n_roi):
             roi_raw_i=communicator.get_roi_activation(roi_names_list[i], frame)
             roi_raw_activations.append(roi_raw_i)
-        #drift_roi_raw=communicator.get_roi_activation(drift_roi[0], frame)
-        
-        """pcc = communicator.get_roi_activation('pcc', frame)
-        mpfc = communicator.get_roi_activation('mpfc', frame)
-        dlpfc = communicator.get_roi_activation('dlpfc', frame)
-        wm = communicator.get_roi_activation('wm', frame)"""
         
         # So psychopy doesn't start too early if MURFI has started sending data early (real feedback values shouldn't be 0)
         if roi_raw_activations[0] ==0: #and roi_raw_activations[0]==0:
@@ -557,95 +553,73 @@ for thisTrial in trials:
             continue
         
         # a list of [CEN, DMN] for the current frame
-        roi_activities=[]
+        roi_activities=roi_raw_activations
         
-        for i in range(n_roi):
-            target_roi_i=(roi_raw_activations[i])#-drift_roi_raw) include this if wm mask is used to substract activity
-            roi_activities.append(target_roi_i)
-        """target_pcc=(pcc-wm)
-        target_mpfc=(mpfc-wm)
-        target_dlpfc=(dlpfc-wm)"""
-        #print "roi actitivities",roi_activities
+
         print ("got feedback at time : ", frame, roi_raw_activations, roi_names_list)
      
-        
-  
-        
-        #print frame, "PCC= ",roi_activities[0], "MPFC= ",roi_activities[1], "DLPFC= ", roi_activities[2]
-        
-        #test for one direction unmark this
-        #roi_activities[1]=roi_activities[1]+1
-        
-        """print "di at time %d: %f, %f, %f, %f" % (frame, pcc, mpfc,dlpfc,wm)
-        print frame, "PCC= ",target_pcc, "MPFC= ",target_mpfc, "DLPFC= ", target_dlpfc
-        roi_activities=(target_pcc,target_mpfc,target_dlpfc)"""
-        
-        #print "roi activities", roi_activities
-        # Cursor position is position of main ball
-        cursor_position = np.dot(activity, positions)
-        #print frame, cursor_position
-        #print 'max_roi: ',max(roi_activities),'index:',roi_activities.index(max(roi_activities))
 
+        # function to check whether ball is in a given circle
         def in_circle(center_x, center_y, radius, x, y):
             square_dist = (center_x - x) ** 2 + (center_y - y) ** 2
             return square_dist <= radius ** 2
         
-        for i in range(n_roi):
-            
-            if in_circle(0,0,(out_of_bounds),TargetCircle_blue.pos[1],TargetCircle_blue.pos[0])==True:
-                #print "fareway",in_circle(0,0,0.9,TargetCircle_blue.pos[0],TargetCircle_blue.pos[1])
-                pass
-            else:
-                #print "out of bounds"
-                TargetCircleBlue_X=0
-                TargetCircleBlue_Y=0
-                TargetCircle_blue.pos=(TargetCircleBlue_X,TargetCircleBlue_Y)
+        if in_circle(0,0,(out_of_bounds),TargetCircle_blue.pos[1],TargetCircle_blue.pos[0])==True:
+            pass
+        else:
+            print('out of bounds!')
+            TargetCircleBlue_X=0
+            TargetCircleBlue_Y=0
+            TargetCircle_blue.pos=(TargetCircleBlue_X,TargetCircleBlue_Y)
 
+        # loop through ROIs
+        for i in range(n_roi):
             # for each ROI, look for the index -- see whether that ROI has the highest activity
             if roi_activities.index(np.nanmax(roi_activities))==i and np.nanmean(roi_activities)!=0:
-                
-                #activity=abs((np.max(roi_activities))/5)
+                # Activity=absolute difference between ROI activations (always positive)
                 activity=abs(np.nanmax(roi_activities)-(np.nanmin(roi_activities)))/10
-                #print "activity_dif",activity_diff
                 print ("activity",activity, " roi_activities",roi_activities)
 
                 # activity will always be positive (PDA)
                 # positions refers to either CEN position positions[0] or DMN position positions[1]
                 print('positions:', positions)
+
+                # New cursor position (of ball) will be dot product of position (negative if DMN, positive if CEN) and activity (always positive)
                 cursor_position = np.dot(positions[i], activity)
                 
-                TargetCircleBlue_Y=TargetCircleBlue_Y+ (np.real(cursor_position) * scale_factor_z2pixels/20) #
+                # The position of the target circle cumulatively adds the scaled cursor position on each frame
+                TargetCircleBlue_Y=TargetCircleBlue_Y+ (np.real(cursor_position) * scale_factor_z2pixels/20) 
                 TargetCircleBlue_X=TargetCircleBlue_X+ (np.imag(cursor_position) * scale_factor_z2pixels/20)
+                TargetCircle_blue.pos=(TargetCircleBlue_X,TargetCircleBlue_Y)
+                print("TargetCircleBlue:", TargetCircleBlue_X, TargetCircleBlue_Y)
                 print ("direction -->", roi_names_list[i])
                 roi_write=roi_names_list[i]
                 
-                TargetCircle_blue.pos=(TargetCircleBlue_X,TargetCircleBlue_Y)
-                #print "dir position:",np.real(positions[i])
-                #print frame,"direction: ",roi_names_list[i], "in circle:", in_circle(target_circles[i].pos[0],target_circles[i].pos[1],target_circles[i].radius,TargetCircle_blue.pos[0],TargetCircle_blue.pos[1])
+                # if the ball has hit the target circle for the current ROI, update target counter for that ROI by 1
                 if in_circle(target_circles[i].pos[0],target_circles[i].pos[1],target_circles[i].radius,TargetCircle_blue.pos[0],TargetCircle_blue.pos[1]) ==True:
-                    #print traget_circles_clock[i].getTime()
                     in_target_counter[i]=in_target_counter[i]+1
-                    
+                    print('HIT', roi_names_list[i])
+                
+                # if ball has not hit target, go to next iteration of ROI loop
                 else:
                     continue
+
+                # If 5 hits to that target, decrease radius of that target only
                 if in_target_counter[i]==5:
                     TargetCircleBlue_X=0
                     TargetCircleBlue_Y=0
-                    #print "cero"
-                    #TargetCircle_blue.pos=(TargetCircleBlue_X,TargetCircleBlue_Y)
                     target_circles[i].radius=0.1
                     continue
+
+                # If 10 hits to that target, decrease radius again of that target only
                 elif in_target_counter[i]==10:
                     TargetCircleBlue_X=0
                     TargetCircleBlue_Y=0
-                    #print "cero"
-                    #TargetCircle_blue.pos=(TargetCircleBlue_X,TargetCircleBlue_Y)
                     target_circles[i].radius=0.05
                     continue
+
+                # If 11 hits to that target, decrease radius once more for that target only, and move both targets further from center
                 elif in_target_counter[i]==11:
-                    
-                    #print "cero"
-                    #TargetCircle_blue.pos=(TargetCircleBlue_X,TargetCircleBlue_Y)
                     target_circles[i].pos[0]=(target_circles[i].pos[0]*1.25)
                     target_circles[i].pos[1]=(target_circles[i].pos[1]*1.25)
                     out_of_bounds=out_of_bounds*2
@@ -657,27 +631,23 @@ for thisTrial in trials:
                 else:
                     continue
                 
-                # print frame,"direction: ",roi_names_list[i],'roi_pos:',target_circles[i].pos[0],target_circles[i].pos[1], "position:", TargetCircle_blue.pos
-                for i in range(n_roi):
-                    target_circles[i].draw()
-                TargetCircle_blue.draw()
+                #for i in range(n_roi):
+                #    target_circles[i].draw()
+                #TargetCircle_blue.draw()
                          
-            #win.flip()
-            #core.wait(1)
             else:
                 continue
                 
     
         #Draw the Target
-        
         times.append(frame)
         frame += 1
         
         for i in range(n_roi):
             target_circles[i].draw()
             print (roi_names_list[i],"hits:",in_target_counter[i])
-        TargetCircle_blue.draw()#,home[0].draw()
-        core.wait(1)
+        TargetCircle_blue.draw()
+        core.wait(0.5)
         #print"wait 1"
         win.flip()
 
@@ -696,7 +666,7 @@ for thisTrial in trials:
                     stim_writer.writerow([frame,roi_write,roi_raw_activations[0],roi_raw_activations[1]])
                     print ("direction write:",   roi_write)
 
-    
+    # END OF FEEDBACK LOOP
           
     #------Prepare to start Routine "baseline"-------
     t = 0
