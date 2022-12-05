@@ -1,6 +1,9 @@
 #! /bin/bash
+# Clemens Bauer
+# Modified by Paul Bloom December 202
 
-##Input taken: subject_ID, Step#, roi, run##
+
+## 4 ARGS: [subid] [ses] [run] [step]
 
 #Step 1: disable wireless internet, set MURFI_SUBJECTS_DIR, and NAMEcd
 #Step 2: receive 2 volume scan
@@ -12,12 +15,15 @@ ses=$2
 run=$3
 step=$4
 
+# Set initial paths
 subj_dir=../subjects/$subj
 cwd=$(pwd)
 absolute_path=$(dirname $cwd)
 subj_dir_absolute="${absolute_path}/subjects/$subj"
-#subject_data_dir=../data/${subj}/ses-localizer/func/
 fsl_scripts=../scripts/fsl_scripts
+
+
+# Set paths & check that computers are properly connected with scanner via Ethernet
 if [ ${step} = setup ]
 then
     clear
@@ -38,15 +44,16 @@ then
     echo "make sure you are Wired Connected to rt-fMRI"
     echo "++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++"
 fi  
-  
+
+# run MURFI for 2vol scan (to be used for registering masks to native space)  
 if [ ${step} = 2vol ]
 then
     clear
     echo "ready to receive 2 volume scan"
     singularity exec /home/auerbachlinux/singularity-images/murfi2.sif murfi -f $subj_dir/xml/2vol.xml
 fi
- #this step is no longer needed since we are processing everything in subjectspace, see localizer.sh
 
+# For registering masks in MNI space to native space (based on 2vol scan)
 if [ ${step} = register ]
 then
     clear
@@ -60,21 +67,21 @@ then
 
     # CCCB version (direct flirt from subject functional to MNI structural: step 1)
     # because the images that we get from Prisma through Vsend are in LPS orientation we need to change both our MNI mean image and our mni masks accordingly: 
-   fslswapdim MNI152_T1_2mm.nii.gz x -y z MNI152_T1_2mm_LPS.nii.gz
-   fslorient -forceneurological MNI152_T1_2mm_LPS.nii.gz
-#   once the images are in the same orientation we can do registration
+    fslswapdim MNI152_T1_2mm.nii.gz x -y z MNI152_T1_2mm_LPS.nii.gz
+    fslorient -forceneurological MNI152_T1_2mm_LPS.nii.gz
+    # once the images are in the same orientation we can do registration
     rm -r $subj_dir/xfm/epi2reg
     mkdir $subj_dir/xfm/epi2reg
     mkdir $subj_dir/mask/lps
 
-#for mni_mask in {dmn,cen,smc}; #include this for DMN feedback
-    for mni_mask in {dmn,cen,smc,stg};do 
+    # For each MNI mask in the participant's MNI mask directory
+    for mni_mask in {dmn,cen};do 
         echo "+ REGISTERING ${mni_mask} TO study_ref" 
     flirt -in MNI152_T1_2mm_LPS.nii.gz -ref ${latest_ref} -out $subj_dir/xfm/epi2reg/mnilps2studyref -omat $subj_dir/xfm/epi2reg/mnilps2studyref.mat
     flirt -in MNI152_T1_2mm_LPS_brain.nii.gz -ref ${latest_ref}_brain -out $subj_dir/xfm/epi2reg/mnilps2studyref_brain -omat $subj_dir/xfm/epi2reg/mnilps2studyref.mat
 
     fslswapdim $subj_dir/mask/mni/${mni_mask}_mni x -y z $subj_dir/mask/lps/${mni_mask}_mni_lps
-       fslorient -forceneurological $subj_dir/mask/lps/${mni_mask}_mni_lps
+    fslorient -forceneurological $subj_dir/mask/lps/${mni_mask}_mni_lps
     #start registration
 
       flirt -in $subj_dir/mask/lps/${mni_mask}_mni_lps -ref ${latest_ref} -out $subj_dir/mask/${mni_mask} -init $subj_dir/xfm/epi2reg/mnilps2studyref.mat -applyxfm -interp nearestneighbour -datatype short
@@ -83,7 +90,6 @@ then
         #rm $subj_dir/mask/${mni_mask}.nii.gz
      
     
-    #cp $subj_dir/mask/dmn.nii $subj_dir/mask/non.nii
     echo "+ INSPECT"
     echo "++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++"
     fsleyes ${latest_ref}_brain  $subj_dir/mask/stg.nii -cm green $subj_dir/mask/cen.nii -cm red $subj_dir/mask/dmn.nii -cm blue  $subj_dir/mask/smc.nii -cm yellow
