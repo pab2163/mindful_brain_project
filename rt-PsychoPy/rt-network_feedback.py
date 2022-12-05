@@ -391,8 +391,6 @@ print("starting baseline")
 while continueRoutine and routineTimer.getTime() > 0:
     # get current time
     communicator.update()
-    for i in range(n_roi):
-            print(communicator.get_roi_activation(roi_names_list[i], tr=None))
     t = baselineClock.getTime()
     frameN = frameN + 1  # number of completed frames (so 0 is the first frame)
     # update/draw components on each frame
