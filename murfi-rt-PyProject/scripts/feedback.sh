@@ -113,16 +113,21 @@ then
 clear
     echo "+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++"
     echo "+ compiling resting state run into analysis folder"
-    #cp $subj_dir/img/img-00002-00002.nii  $subj_dir/rest/$subj'_'$ses'_task-rest_'$run'_bold'.nii
-    #yes n | gzip $subj_dir/rest/$subj'_'$ses'_task-rest_'$run'_bold'.nii
-    
+
     # get all volumes of resting data (no matter how many) merged into 1 .nii.gz file
     # NOTE: the -00002 extensipn will likely need to be adjusted depending on where this scan falls in the protocol
     fslmerge -tr $subj_dir/rest/$subj'_'$ses'_task-rest_'$run'_bold'.nii.gz $subj_dir/img/img-00002* 1.2
+    
+    # make sure file permissisions are set so the resting-state data can be picked up by FSL
     chmod 777 $subj_dir/rest/$subj'_'$ses'_task-rest_'$run'_bold'.nii.gz 
 
+    expected_volumes = 250
     # figure out how many volumes of resting state data there were to be used in ICA
     restvolumes=$(fslnvols $subj_dir/rest/$subj'_'$ses'_task-rest_'$run'_bold'.nii.gz)
+    if [ ${restvolumes} != ${expected_volumes} ]
+    then
+        echo "WARNING! Only ${restvolumes} volumes of resting-state data found for ICA. ${expected_volumes} expected?"
+    fi
 
     echo "+ computing resting state networks this will take about 25 minutes"
     echo "+ started at: $(date)"
@@ -147,77 +152,77 @@ clear
     echo "++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++"
     echo "+ Generating DMN & CEN Masks "
     echo "++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++"
-    touch $subj_dir/rest/$subj'_'$ses'_task-rest_'$run'_bold'.ica/filtered_func_data.ica/Yeo_rsn_correl.txt
-correlfile=$subj_dir/rest/$subj'_'$ses'_task-rest_'$run'_bold'.ica/filtered_func_data.ica/Yeo_rsn_correl.txt
+    
 
+# Set up file paths needed for mask creation
+
+## File to contain spatial correlations between ICs & template networks
+correlfile=$subj_dir/rest/$subj'_'$ses'_task-rest_'$run'_bold'.ica/filtered_func_data.ica/template_rsn_correlations_with_ICs.txt
+touch ${correlfile}
+
+# ICs in native space
 infile=$subj_dir/rest/$subj'_'$ses'_task-rest_'$run'_bold'.ica/filtered_func_data.ica/melodic_IC.nii.gz 
 
-infile_2mm=$subj_dir/rest/$subj'_'$ses'_task-rest_'$run'_bold'.ica/filtered_func_data.ica/melodic_IC_2mm.nii.gz
+# ICs in 
+#infile_2mm=$subj_dir/rest/$subj'_'$ses'_task-rest_'$run'_bold'.ica/filtered_func_data.ica/melodic_IC_2mm.nii.gz
 
+# Template & transform matrices needed for registration
 examplefunc=$subj_dir/rest/$subj'_'$ses'_task-rest_'$run'_bold'.ica/reg/example_func.nii.gz
-
 standard=$subj_dir/rest/$subj'_'$ses'_task-rest_'$run'_bold'.ica/reg/standard.nii.gz
-
 example_func2standard_mat=$subj_dir/rest/$subj'_'$ses'_task-rest_'$run'_bold'.ica/reg/example_func2standard.mat
-
 standard2example_func_mat=$subj_dir/rest/$subj'_'$ses'_task-rest_'$run'_bold'.ica/reg/standard2example_func.mat
 template_networks='template_networks.nii.gz'
 
-#yeo7networks=../scripts/FSL_7networks.nii
-#yeo7networks2example_func=$subj_dir/rest/$subj'_'$ses'_task-rest_'$run'_bold'.ica/reg/yeo7networks2example_func.nii.gz
 
+# Set template files
 template_dmn='DMNa_brainmaskero2.nii'
 template_cen='CENa_brainmaskero2.nii'
+
+# Merge template files to 1 image
 fslmerge -tr ${template_networks} ${template_dmn} ${template_cen} 1
 
+# Warp template to native space (based on the resting state data used for ICA)
 template2example_func=$subj_dir/rest/$subj'_'$ses'_task-rest_'$run'_bold'.ica/reg/template_networks2example_func.nii.gz
-
 flirt -in ${template_networks} -ref ${examplefunc} -out ${template2example_func} -init ${standard2example_func_mat} -applyxfm
 
-
-split_outfile=$subj_dir/rest/$subj'_'$ses'_task-rest_'$run'_bold'.ica/filtered_func_data.ica/melodic_IC_
-
-# SHOULD we correlate with just DMN & CEN, rather than all yeo networks?
+# Correlate (spatially) ICA components (not thresholded) with DMN & CEN template files
 fslcc --noabs -p 3 -t 0.05 ${infile} ${template2example_func} >>${correlfile}
+
+# Split ICs to separate files
+split_outfile=$subj_dir/rest/$subj'_'$ses'_task-rest_'$run'_bold'.ica/filtered_func_data.ica/melodic_IC_
 fslsplit ${infile} ${split_outfile}
 
+# Selection of ICs most highly correlated with template networks
 python rsn_get.py ${subj} ${ses} ${run}
 
 
+# Set paths for files needed for the next few steps 
+## Unthresholded masks in native space
 dmn_uthresh=$subj_dir/rest/$subj'_'$ses'_task-rest_'$run'_bold'.ica/filtered_func_data.ica/dmn_uthresh.nii.gz
 cen_uthresh=$subj_dir/rest/$subj'_'$ses'_task-rest_'$run'_bold'.ica/filtered_func_data.ica/cen_uthresh.nii.gz
 
-#dmn_thresh=$subj_dir/rest/$subj'_'$ses'_task-rest_'$run'_bold'.ica/filtered_func_data.ica/dmn_thresh.txt
-#cen_thresh=$subj_dir/rest/$subj'_'$ses'_task-rest_'$run'_bold'.ica/filtered_func_data.ica/cen_thresh.txt
-
-dmn_mni_thresh=$subj_dir/rest/$subj'_'$ses'_task-rest_'$run'_bold'.ica/filtered_func_data.ica/dmn_mni_thresh.nii.gz
-cen_mni_thresh=$subj_dir/rest/$subj'_'$ses'_task-rest_'$run'_bold'.ica/filtered_func_data.ica/cen_mni_thresh.nii.gz
+## Unthresholded masks in mni space
 dmn_mni_uthresh=$subj_dir/rest/$subj'_'$ses'_task-rest_'$run'_bold'.ica/filtered_func_data.ica/dmn_mni_uthresh.nii.gz
 cen_mni_uthresh=$subj_dir/rest/$subj'_'$ses'_task-rest_'$run'_bold'.ica/filtered_func_data.ica/cen_mni_uthresh.nii.gz
 
+## Thresholded masks in MNI space
+dmn_mni_thresh=$subj_dir/rest/$subj'_'$ses'_task-rest_'$run'_bold'.ica/filtered_func_data.ica/dmn_mni_thresh.nii.gz
+cen_mni_thresh=$subj_dir/rest/$subj'_'$ses'_task-rest_'$run'_bold'.ica/filtered_func_data.ica/cen_mni_thresh.nii.gz
 
-#ERODE
-#top X voxels?
 
-
-# UPDATE Pipeline
-# pull in eroded DMN / CEN masks
-# zero out any voxels in the unthresholded personalized networks that aren't in the masks
-# take the top N (hardcoded) voxels from that 
-
-num_voxels_desired=1500
+# Hard code the number of voxels desired for each mask
+num_voxels_desired=1000
 
 # register non-thresholded masks to MNI space
 flirt -in  ${dmn_uthresh} -ref ${standard} -out ${dmn_mni_uthresh} -init ${example_func2standard_mat} -applyxfm
 flirt -in  ${cen_uthresh} -ref ${standard} -out ${cen_mni_uthresh} -init ${example_func2standard_mat} -applyxfm
 
-
-# zero out voxels not included in the template mask
+# zero out voxels not included in the template masks (i.e. so we only select voxels within template DMN/CEN)
 fslmaths ${dmn_mni_uthresh} -mul ${template_dmn} ${dmn_mni_uthresh}
 fslmaths ${cen_mni_uthresh} -mul ${template_cen} ${cen_mni_uthresh}
 
 
-# get number of non-zero voxels in masks, calculate percentile of voxels desired
+# get number of non-zero voxels in masks, calculate percentile cutofff needed for the desired absolute number of voxels
 voxels_in_dmn=$(fslstats ${dmn_mni_uthresh} -V | awk '{print $1}')
 percentile_dmn=$(python -c "print(100*(1-${num_voxels_desired}/${voxels_in_dmn}))")
 voxels_in_cen=$(fslstats ${cen_mni_uthresh} -V | awk '{print $1}')
@@ -236,7 +241,7 @@ fslmaths ${cen_mni_uthresh} -thr ${cen_thresh_value} -bin ${cen_mni_thresh} -odt
 echo "Number of voxels in dmn mask: $(fslstats ${dmn_mni_thresh} -V)"
 echo "Number of voxels in cen mask: $(fslstats ${cen_mni_thresh} -V)"
 
-# copy masks to mask directory
+# copy masks to participant's mask directory
 cp ${dmn_mni_thresh} ${subj_dir}/mask/mni/dmn_mni.nii.gz
 cp ${cen_mni_thresh} ${subj_dir}/mask/mni/cen_mni.nii.gz
 
@@ -244,37 +249,5 @@ cp ${cen_mni_thresh} ${subj_dir}/mask/mni/cen_mni.nii.gz
 # Display masks with FSLEYES
 fsleyes  mean_brain.nii.gz ${dmn_mni_thresh} -cm blue ${cen_mni_thresh} -cm red
 
-
 fi
 
-# #Here you can change the size of the DMN/CEN mask
-# #thresh=500
-# threshvalue=99.7
-# #while [$thresh>=100]
-# #do
-# #threshvalue=$(($threshvalue +0.01)) | bc
-# fslstats ${dmn_uthresh} -P $threshvalue >${dmn_thresh}
-# thresh="$(awk '{print $1}' ${dmn_thresh})"
-# fslmaths ${dmn_uthresh} -thr ${thresh} -bin ${dmn_mni_thresh} -odt short
-# flirt -in  ${dmn_mni_thresh} -ref ${standard} -out ${dmn_mni_thresh} -init ${example_func2standard_mat} -applyxfm
-# fslmaths ${dmn_mni_thresh} -mul ../scripts/FSL_7networks_DMN.nii.gz ${dmn_mni_thresh}
-
-# fslstats ${cen_uthresh} -P $threshvalue >${cen_thresh}
-# thresh="$(awk '{print $1}' ${cen_thresh})"
-# fslmaths ${cen_uthresh} -thr ${thresh} -bin ${cen_mni_thresh} -odt short
-# flirt -in  ${cen_mni_thresh} -ref ${standard} -out ${cen_mni_thresh} -init ${example_func2standard_mat} -applyxfm
-# fslmaths ${cen_mni_thresh} -mul ../scripts/FSL_7networks_CEN.nii.gz ${cen_mni_thresh}
-
-# # fslstats ${smc_uthresh} -P $threshvalue >${smc_thresh}
-# # thresh="$(awk '{print $1}' ${smc_thresh})"
-# # fslmaths ${smc_uthresh} -thr ${thresh} -bin ${smc_mni_thresh} -odt short
-# # flirt -in  ${smc_mni_thresh} -ref ${standard} -out ${smc_mni_thresh} -init ${example_func2standard_mat} -applyxfm
-# # fslmaths ${smc_mni_thresh} -mul ../scripts/FSL_7networks_SMC.nii.gz ${smc_mni_thresh}
-
-# cp ${dmn_mni_thresh} ${subj_dir}/mask/mni/dmn_mni.nii.gz
-# cp ${cen_mni_thresh} ${subj_dir}/mask/mni/cen_mni.nii.gz
-# cp ${smc_mni_thresh} ${subj_dir}/mask/mni/smc_mni.nii.gz
-
-# fsleyes  mean_brain.nii.gz ${subj_dir}/mask/mni/dmn_mni.nii.gz -cm blue ${subj_dir}/mask/mni/cen_mni.nii.gz -cm red ${subj_dir}/mask/mni/smc_mni.nii.gz -cm green
-
-# fi
