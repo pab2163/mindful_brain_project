@@ -24,7 +24,7 @@ run = sys.argv[3]
 
 
 # # get correls to Yeo 7networks
-correlfile="../subjects/%s/rest/%s_%s_task-rest_%s_bold.ica/filtered_func_data.ica/Yeo_rsn_correl.txt" %(subjID,subjID,ses,run)
+correlfile="../subjects/%s/rest/%s_%s_task-rest_%s_bold.ica/filtered_func_data.ica/template_rsn_correlations_with_ICs.txt" %(subjID,subjID,ses,run)
 split_outfile='../subjects/%s/rest/%s_%s_task-rest_%s_bold.ica/filtered_func_data.ica/melodic_IC_' %(subjID,subjID,ses,run)
 dmn_component='../subjects/%s/rest/%s_%s_task-rest_%s_bold.ica/filtered_func_data.ica/dmn_uthresh.nii.gz' %(subjID,subjID,ses,run)
 cen_component='../subjects/%s/rest/%s_%s_task-rest_%s_bold.ica/filtered_func_data.ica/cen_uthresh.nii.gz' %(subjID,subjID,ses,run)
