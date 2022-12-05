@@ -370,6 +370,8 @@ if key_resp_3.keys != None:  # we had a response
     thisExp.addData('key_resp_3.rt', key_resp_3.rt)
 thisExp.nextEntry()
 
+
+# BASELINE: wait for 30s before delivering feedback
 #------Prepare to start Routine "baseline"-------
 t = 0
 baselineClock.reset()  # clock 
@@ -389,6 +391,8 @@ print("starting baseline")
 while continueRoutine and routineTimer.getTime() > 0:
     # get current time
     communicator.update()
+    for i in range(n_roi):
+            print(communicator.get_roi_activation(roi_names_list[i], tr=None))
     t = baselineClock.getTime()
     frameN = frameN + 1  # number of completed frames (so 0 is the first frame)
     # update/draw components on each frame
@@ -469,7 +473,8 @@ for thisTrial in trials:
     subject_key_reset.status = NOT_STARTED
     routineTimer.add(RUN_TIME)
     
-    frame = 1
+    # Should we start delivering feedback based on frame 25 (24 when zero-indexing), since there is 30s of basline? (25volumes * 1.2s TR)
+    frame = 24
     dmn_feedback = []
     #mpfc_feedback = []
     cen_feedback = []
@@ -538,6 +543,7 @@ for thisTrial in trials:
 
         # Where ROI activation first comes in
         # CEN, DMN
+        print(routineTimer.getTime())
         for i in range(n_roi):
             roi_raw_i=communicator.get_roi_activation(roi_names_list[i], frame)
             roi_raw_activations.append(roi_raw_i)
@@ -547,9 +553,12 @@ for thisTrial in trials:
             #win.close()
             print ("let's begin feedback")
            
-
-        elif roi_raw_activations[0] != roi_raw_activations[0] or roi_raw_activations[0] != roi_raw_activations[0]:
-            print ("began baseline")
+        # check for any missing values (nan) in the roi_raw_activatinp.isnan(roi_raw_activations[0])ons pulled for the current frame
+        # If there is a nan value, this most likely indicates that data hasn't been acquired yet for the current volume. 
+        # In this case, continue, and keep trying to acquire roi_raw_activations from MURFI (without advancing the frame)
+        elif np.isnan(roi_raw_activations[0]) or np.isnan(roi_raw_activations[1]):
+            print('err: ', roi_raw_activations)
+            print (f"Did not get data for frame {frame}")
             continue
         
         # a list of [CEN, DMN] for the current frame
@@ -647,8 +656,9 @@ for thisTrial in trials:
             target_circles[i].draw()
             print (roi_names_list[i],"hits:",in_target_counter[i])
         TargetCircle_blue.draw()
-        core.wait(0.5)
-        #print"wait 1"
+
+        # This should be the TR?
+        core.wait(exp_tr)
         win.flip()
 
         #Write roi_activity to csv
