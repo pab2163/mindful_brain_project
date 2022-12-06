@@ -22,7 +22,7 @@ os.chdir(_thisDir)
 
 # Store info about the experiment 
 expName = 'DMN_BallTask'  # from the Builder filename that created this script
-expInfo = {'participant':'','session':'','No_of_ROIs':'2','Level_1_2_3':'1','No_repetitions':'1','Run_Time':'120'}#Run_Time in seconds and direction  
+expInfo = {'participant':'','session':'','No_of_ROIs':'2','Level_1_2_3':'1','No_repetitions':'1','Run_Time':'120', 'debug': False}#Run_Time in seconds and direction  
 BaseLineTime=30 #30 
 exp_tr=1.2
 murfi_FAKE=False
@@ -456,6 +456,12 @@ for thisTrial in trials:
                         fillColor='white',
                         lineColor='white',#str(TargetColor_red_yellow_blue),
                         lineWidth=3)
+    out_of_bounds_circle = visual.Circle(win, 
+                        pos=(0,0), 
+                        radius=position_distance*0.4,
+                        fillColor='none',
+                        lineColor='white',
+                        lineWidth=3)
     TargetColor_red_yellow_blue= str('white') 
     #TargetCircle_blue.lineColor=str(TargetColor_red_yellow_blue)
     #print "The color is now: ",TargetColor_red_yellow_blue
@@ -630,6 +636,7 @@ for thisTrial in trials:
                     target_circles[i].pos[0]=(target_circles[i].pos[0]*1.25)
                     target_circles[i].pos[1]=(target_circles[i].pos[1]*1.25)
                     out_of_bounds=out_of_bounds*2
+                    out_of_bounds_circle.radius = out_of_bounds_circle.radius *2
                     TargetCircleBlue_X=0
                     TargetCircleBlue_Y=0
                     target_circles[i].radius=0.033
@@ -650,6 +657,8 @@ for thisTrial in trials:
             target_circles[i].draw()
             print (roi_names_list[i],"hits:",in_target_counter[i])
         TargetCircle_blue.draw()
+        if expInfo['debug'] == True:
+            out_of_bounds_circle.draw()
 
         # This should be the TR?
         #core.wait(0.2)
