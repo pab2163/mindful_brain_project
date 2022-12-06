@@ -555,8 +555,8 @@ for thisTrial in trials:
         # If there is a nan value, this most likely indicates that data hasn't been acquired yet for the current volume. 
         # In this case, continue, and keep trying to acquire roi_raw_activations from MURFI (without advancing the frame)
         elif np.isnan(roi_raw_activations[0]) or np.isnan(roi_raw_activations[1]):
-            print('err: ', roi_raw_activations)
-            print (f"Did not get data for frame {frame}")
+            #print('err: ', roi_raw_activations)
+            #print (f"Did not get data for frame {frame}")
             continue
         
         # a list of [CEN, DMN] for the current frame
@@ -652,7 +652,7 @@ for thisTrial in trials:
         TargetCircle_blue.draw()
 
         # This should be the TR?
-        core.wait(exp_tr)
+        #core.wait(0.2)
         win.flip()
 
         #Write roi_activity to csv
