@@ -37,7 +37,7 @@ dlg = gui.DlgFromDict(dictionary=expInfo, title=expName)
 if dlg.OK == False: core.quit()  # user pressed cancel
 expInfo['date'] = data.getDateStr()  # add a simple timestamp
 expInfo['expName'] = expName
-expInfo['Scale_Factor'] = 20
+expInfo['Scale_Factor'] = 100
 roi_number= str('%s') %(expInfo['No_of_ROIs'])
 roi_number=int(roi_number)
 
@@ -553,9 +553,9 @@ while continueRoutine and routineTimer.getTime() > 0:
         if len(theseKeys) > 0:  # at least one key was pressed
             subject_key_target.keys = theseKeys[-1]  # just the last key pressed
             subject_key_target.rt = subject_key_target.clock.getTime()
-        
-    communicator.update()
     
+    # get updated data from MURFI    
+    communicator.update()
     roi_raw_activations=[]
 
     # Where ROI activation first comes in
@@ -572,9 +572,8 @@ while continueRoutine and routineTimer.getTime() > 0:
     # check for any missing values (nan) in the roi_raw_activatinp.isnan(roi_raw_activations[0])ons pulled for the current frame
     # If there is a nan value, this most likely indicates that data hasn't been acquired yet for the current volume. 
     # In this case, continue, and keep trying to acquire roi_raw_activations from MURFI (without advancing the frame)
+    # This will happen several times for each volume before the data for the next volume are available
     elif np.isnan(roi_raw_activations[0]) or np.isnan(roi_raw_activations[1]):
-        #print('err: ', roi_raw_activations)
-        #print (f"Did not get data for frame {frame}")
         continue
     
     # a list of [CEN, DMN] for the current frame
@@ -583,13 +582,14 @@ while continueRoutine and routineTimer.getTime() > 0:
     print('time: ', routineTimer.getTime())
     print ("got feedback at frame : ",  frame, roi_raw_activations, roi_names_list)
     
-    if in_circle(0,0,(out_of_bounds),TargetCircle_blue.pos[1],TargetCircle_blue.pos[0])==True:
-        pass
-    else:
-        print('out of bounds!')
-        TargetCircleBlue_X=0
-        TargetCircleBlue_Y=0
-        TargetCircle_blue.pos=(TargetCircleBlue_X,TargetCircleBlue_Y)
+    # # if the ball goes out of bounds, bring back
+    # if in_circle(0,0,(out_of_bounds),TargetCircle_blue.pos[1],TargetCircle_blue.pos[0])==True:
+    #     pass
+    # else:
+    #     print('out of bounds!')
+    #     TargetCircleBlue_X=0
+    #     TargetCircleBlue_Y=0
+    #     TargetCircle_blue.pos=(TargetCircleBlue_X,TargetCircleBlue_Y)
 
     # loop through ROIs
     for i in range(n_roi):
@@ -614,24 +614,43 @@ while continueRoutine and routineTimer.getTime() > 0:
             print ("direction -->", roi_names_list[i])
             roi_write=roi_names_list[i]
 
+            # the frame after a hit, move the hit target (smaller radius, center further from middle)
             if adjust_targets_after_hit:
-                TargetCircleBlue_X=0
-                TargetCircleBlue_Y=0
-
                 # for each hit, radius of target circle gets smaller (up to a point)
                 target_circles[i].radius = max(target_circles[i].radius * 0.8, 0.033)
 
                 # for each hit, position of target circle moves away from the middle (up to a point)
-                target_circles[i].pos=((target_circles[i].pos[0]*1.2), (target_circles[i].pos[1]*1.2))
+                target_circles[i].pos=((target_circles[i].pos[0]*1.1), (target_circles[i].pos[1]*1.1))
+
+                out_of_bounds_circle.radius = out_of_bounds_circle.radius *1.1
+                out_of_bounds = out_of_bounds*1.1
 
                 adjust_targets_after_hit=False
 
+
+            # checks if ball has gone out of bounds above/below bounds of the circles
+            def further_than_circles(position, circle_center, circle_radius, ball_center):
+                # if ball is above center of top circle
+                if position == 0:
+                    further = ball_center > circle_center + circle_radius
+                # if ball is below center of bottom circle
+                elif position == 1:
+                    further = ball_center < circle_center - circle_radius
+                print(f'further {further}')
+                return(further)
             
             # if the ball has hit the target circle for the current ROI, update target counter for that ROI by 1
             # Then, put ball back in the middle
-            if in_circle(target_circles[i].pos[0],target_circles[i].pos[1],target_circles[i].radius,TargetCircle_blue.pos[0],TargetCircle_blue.pos[1]) ==True:
+            if (in_circle(target_circles[i].pos[0],
+                target_circles[i].pos[1],
+                target_circles[i].radius,
+                TargetCircle_blue.pos[0],
+                TargetCircle_blue.pos[1]) ==True) or (further_than_circles(i, target_circles[i].pos[1], target_circles[i].radius, TargetCircle_blue.pos[1]) == True):
                 in_target_counter[i]=in_target_counter[i]+1
                 print('HIT', roi_names_list[i])
+                
+                TargetCircleBlue_X=0
+                TargetCircleBlue_Y=0
                 adjust_targets_after_hit=True
 
 
