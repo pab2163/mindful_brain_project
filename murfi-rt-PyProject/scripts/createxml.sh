@@ -28,9 +28,6 @@ mkdir ${subject_dir}$subject/mask
 mkdir ${subject_dir}$subject/mask/mni
 mkdir ${subject_dir}$subject/xfm
 mkdir ${subject_dir}$subject/xml
-mkdir -p ${subject_dir}$subject/ses-localizer/func
-mkdir -p ${subject_dir}$subject/ses-real/func
-mkdir -p ${subject_dir}$subject/ses-sham/func
 mkdir ${subject_dir}$subject/rest
 mkdir ${subject_dir}$subject/fsfs
 #mkdir ${subject_dir}$subject/scripts76
