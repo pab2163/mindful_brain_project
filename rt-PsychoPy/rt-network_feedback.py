@@ -199,6 +199,18 @@ def in_circle(center_x, center_y, radius, x, y):
     square_dist = (center_x - x) ** 2 + (center_y - y) ** 2
     return square_dist <= radius ** 2
 
+
+# checks if ball has gone out of bounds above/below bounds of the circles
+def further_than_circles(position, circle_center, circle_radius, ball_center):
+    # if ball is above center of top circle
+    if position == 0:
+        further = ball_center > circle_center + circle_radius
+    # if ball is below center of bottom circle
+    elif position == 1:
+        further = ball_center < circle_center - circle_radius
+    print(f'further {further}')
+    return(further)
+
 # Initialize components for Routine "finish"
 finishClock = core.Clock()
 text_5 = visual.TextStim(win=win, ori=0, name='text_5',
@@ -626,18 +638,6 @@ while continueRoutine and routineTimer.getTime() > 0:
                 out_of_bounds = out_of_bounds*1.1
 
                 adjust_targets_after_hit=False
-
-
-            # checks if ball has gone out of bounds above/below bounds of the circles
-            def further_than_circles(position, circle_center, circle_radius, ball_center):
-                # if ball is above center of top circle
-                if position == 0:
-                    further = ball_center > circle_center + circle_radius
-                # if ball is below center of bottom circle
-                elif position == 1:
-                    further = ball_center < circle_center - circle_radius
-                print(f'further {further}')
-                return(further)
             
             # if the ball has hit the target circle for the current ROI, update target counter for that ROI by 1
             # Then, put ball back in the middle
@@ -653,42 +653,13 @@ while continueRoutine and routineTimer.getTime() > 0:
                 TargetCircleBlue_Y=0
                 adjust_targets_after_hit=True
 
-
-            # # if ball has not hit target, go to next iteration of ROI loop
-            # else:
-            #     continue
-
-            # # If 5 hits to that target, decrease radius of that target only
-            # if in_target_counter[i]==1:
-            #     TargetCircleBlue_X=0
-            #     TargetCircleBlue_Y=0
-            #     target_circles[i].radius=0.1
-            #     continue
-
-            # # If 10 hits to that target, decrease radius again of that target only
-            # elif in_target_counter[i]==2:
-            #     TargetCircleBlue_X=0
-            #     TargetCircleBlue_Y=0
-            #     target_circles[i].radius=0.05
-            #     continue
-
-            # # If 11 hits to that target, decrease radius once more for that target only, and move both targets further from center
-            # elif in_target_counter[i]==3:
-            #     target_circles[i].pos=((target_circles[i].pos[0]*2), (target_circles[i].pos[1]*2))
-            #     out_of_bounds=out_of_bounds*2
-            #     out_of_bounds_circle.radius = out_of_bounds_circle.radius *2
-            #     TargetCircleBlue_X=0
-            #     TargetCircleBlue_Y=0
-            #     target_circles[i].radius=0.033
-            #     continue
-                
-            # else:
-            #     continue
-
+    # Draw stimuli
     for i in range(n_roi):
         target_circles[i].draw()
         print (roi_names_list[i],"hits:",in_target_counter[i])
     TargetCircle_blue.draw()
+
+    # If on debug mode, draw OOB circle
     if expInfo['debug'] == True:
         out_of_bounds_circle.draw()
     
