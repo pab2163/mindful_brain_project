@@ -668,8 +668,7 @@ for thisTrial in trials:
 
                 # If 11 hits to that target, decrease radius once more for that target only, and move both targets further from center
                 elif in_target_counter[i]==11:
-                    target_circles[i].pos[0]=(target_circles[i].pos[0]*2)
-                    target_circles[i].pos[1]=(target_circles[i].pos[1]*2)
+                    target_circles[i].pos=((target_circles[i].pos[0]*2), (target_circles[i].pos[1]*2))
                     out_of_bounds=out_of_bounds*2
                     out_of_bounds_circle.radius = out_of_bounds_circle.radius *2
                     TargetCircleBlue_X=0
