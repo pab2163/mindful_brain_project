@@ -506,6 +506,7 @@ for i in range(n_roi):
     activity_i=0
 continueRoutine = True
 
+adjust_targets_after_hit=False
 
 # Loop keeps going until RUN_TIME is up
 while continueRoutine and routineTimer.getTime() > 0:
@@ -612,47 +613,67 @@ while continueRoutine and routineTimer.getTime() > 0:
             print("TargetCircleBlue:", TargetCircleBlue_X, TargetCircleBlue_Y)
             print ("direction -->", roi_names_list[i])
             roi_write=roi_names_list[i]
+
+            if adjust_targets_after_hit:
+                TargetCircleBlue_X=0
+                TargetCircleBlue_Y=0
+
+                # for each hit, radius of target circle gets smaller (up to a point)
+                target_circles[i].radius = max(target_circles[i].radius * 0.8, 0.033)
+
+                # for each hit, position of target circle moves away from the middle (up to a point)
+                target_circles[i].pos=((target_circles[i].pos[0]*1.2), (target_circles[i].pos[1]*1.2))
+
+                adjust_targets_after_hit=False
+
             
             # if the ball has hit the target circle for the current ROI, update target counter for that ROI by 1
+            # Then, put ball back in the middle
             if in_circle(target_circles[i].pos[0],target_circles[i].pos[1],target_circles[i].radius,TargetCircle_blue.pos[0],TargetCircle_blue.pos[1]) ==True:
                 in_target_counter[i]=in_target_counter[i]+1
                 print('HIT', roi_names_list[i])
-            
-            # if ball has not hit target, go to next iteration of ROI loop
-            else:
-                continue
+                adjust_targets_after_hit=True
 
-            # If 5 hits to that target, decrease radius of that target only
-            if in_target_counter[i]==5:
-                TargetCircleBlue_X=0
-                TargetCircleBlue_Y=0
-                target_circles[i].radius=0.1
-                continue
 
-            # If 10 hits to that target, decrease radius again of that target only
-            elif in_target_counter[i]==10:
-                TargetCircleBlue_X=0
-                TargetCircleBlue_Y=0
-                target_circles[i].radius=0.05
-                continue
+            # # if ball has not hit target, go to next iteration of ROI loop
+            # else:
+            #     continue
 
-            # If 11 hits to that target, decrease radius once more for that target only, and move both targets further from center
-            elif in_target_counter[i]==11:
-                target_circles[i].pos=((target_circles[i].pos[0]*2), (target_circles[i].pos[1]*2))
-                out_of_bounds=out_of_bounds*2
-                out_of_bounds_circle.radius = out_of_bounds_circle.radius *2
-                TargetCircleBlue_X=0
-                TargetCircleBlue_Y=0
-                target_circles[i].radius=0.033
-                continue
+            # # If 5 hits to that target, decrease radius of that target only
+            # if in_target_counter[i]==1:
+            #     TargetCircleBlue_X=0
+            #     TargetCircleBlue_Y=0
+            #     target_circles[i].radius=0.1
+            #     continue
+
+            # # If 10 hits to that target, decrease radius again of that target only
+            # elif in_target_counter[i]==2:
+            #     TargetCircleBlue_X=0
+            #     TargetCircleBlue_Y=0
+            #     target_circles[i].radius=0.05
+            #     continue
+
+            # # If 11 hits to that target, decrease radius once more for that target only, and move both targets further from center
+            # elif in_target_counter[i]==3:
+            #     target_circles[i].pos=((target_circles[i].pos[0]*2), (target_circles[i].pos[1]*2))
+            #     out_of_bounds=out_of_bounds*2
+            #     out_of_bounds_circle.radius = out_of_bounds_circle.radius *2
+            #     TargetCircleBlue_X=0
+            #     TargetCircleBlue_Y=0
+            #     target_circles[i].radius=0.033
+            #     continue
                 
-            else:
-                continue
-                     
-        else:
-            continue
+            # else:
+            #     continue
+
+    for i in range(n_roi):
+        target_circles[i].draw()
+        print (roi_names_list[i],"hits:",in_target_counter[i])
+    TargetCircle_blue.draw()
+    if expInfo['debug'] == True:
+        out_of_bounds_circle.draw()
     
-    # Save info to outfile        
+    # Save info to outfile for each volume       
     with open(filename+'_roi_outputs.csv', 'a') as csvfile:
         stim_writer = csv.writer(csvfile, delimiter=',', quotechar='|', quoting=csv.QUOTE_MINIMAL)
         print(([frame, triggerClock.getTime(), roi_raw_activations[0], roi_raw_activations[1]]))
@@ -661,14 +682,6 @@ while continueRoutine and routineTimer.getTime() > 0:
     # Increment the frame
     frame += 1
     
-    for i in range(n_roi):
-        target_circles[i].draw()
-        print (roi_names_list[i],"hits:",in_target_counter[i])
-
-    TargetCircle_blue.draw()
-    if expInfo['debug'] == True:
-        out_of_bounds_circle.draw()
-
     # This should be the TR?
     #core.wait(0.2)
     win.flip()
