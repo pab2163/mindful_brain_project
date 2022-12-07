@@ -15,6 +15,13 @@ from numpy import sin, cos, tan, log, log10, pi, average, sqrt, std, deg2rad, ra
 from numpy.random import random, randint, normal, shuffle
 import os  # handy system and path functions
 from murfi_activation_communicator import MurfiActivationCommunicator
+import time
+import numpy as np
+import matplotlib.pyplot as plt
+import matplotlib
+import random
+import csv
+import math
 
 # Ensure that relative paths start from the same directory as this script
 _thisDir = os.path.dirname(os.path.abspath(__file__))
@@ -33,6 +40,7 @@ expInfo['expName'] = expName
 expInfo['Scale_Factor'] = 20
 roi_number= str('%s') %(expInfo['No_of_ROIs'])
 roi_number=int(roi_number)
+
 
 '''
 PSUDO CODE
@@ -77,6 +85,11 @@ if not os.path.isdir('data'):
 filename = 'data' + os.path.sep + '%s_DMN_Feedback_%s_Scale%s' %(expInfo['participant'],expInfo['session'],expInfo['Scale_Factor'])
 logFile = logging.LogFile(filename+'.log', level=logging.EXP)
 logging.console.setLevel(logging.WARNING)  # this outputs to the screen, not a file
+
+# Column headers for outfile
+with open(filename+'_roi_outputs.csv', 'a') as csvfile:
+    stim_writer = csv.writer(csvfile, delimiter=',', quotechar='|', quoting=csv.QUOTE_MINIMAL)
+    stim_writer.writerow(['tr', 'time', 'cen', 'dmn', 'stage', 'cen_cumulative_hits', 'dmn_cumulative_hits'])       
 
 # An ExperimentHandler isn't essential but helps with data saving
 thisExp = data.ExperimentHandler(name=expName, version='',
@@ -132,13 +145,6 @@ text_2 = visual.TextStim(win=win, ori=0, name='text_2',
 
 # Initialize components for Routine "feedback"
 feedbackClock = core.Clock()
-import time
-import numpy as np
-import matplotlib.pyplot as plt
-import matplotlib
-import random
-import csv
-import math
 
  #murfi communicator
 roi_names = ['cen', 'dmn']#, 'mpfc','wm']
@@ -336,6 +342,9 @@ while continueRoutine:
             key_resp_3.rt = key_resp_3.clock.getTime()
             # a response ends the routine
             continueRoutine = False
+
+            # reset trigger clock -- now it is keeping track of time relative to trigger!
+            triggerClock.reset()
     
     # check if all components have finished
     if not continueRoutine:  # a component has requested a forced-end of Routine
@@ -376,6 +385,7 @@ thisExp.nextEntry()
 t = 0
 baselineClock.reset()  # clock 
 frameN = -1
+frame = 0
 routineTimer.add(BaseLineTime)
 # update component parameters for each repeat
 # keep track of which components have finished
@@ -389,8 +399,35 @@ for thisComponent in baselineComponents:
 continueRoutine = True
 print("starting baseline")
 while continueRoutine and routineTimer.getTime() > 0:
+    # During baseline period, we still want to record MURFI outputs
     # get current time
     communicator.update()
+    roi_raw_activations=[]
+
+    # Where ROI activation first comes in
+    # CEN, DMN
+    try:
+        for i in range(n_roi):
+            roi_raw_i=communicator.get_roi_activation(roi_names_list[i], frame)
+            roi_raw_activations.append(roi_raw_i)
+    except:
+        print (f"Did not get data for frame {frame}")
+        roi_raw_activations = [np.nan, np.nan]
+
+    # check for any missing values (nan) in the roi_raw_activatinp.isnan(roi_raw_activations[0])ons pulled for the current frame
+    # If there is a nan value, this most likely indicates that data hasn't been acquired yet for the current volume. 
+    # In this case, continue, and keep trying to acquire roi_raw_activations from MURFI (without advancing the frame)
+    if np.isnan(roi_raw_activations[0]) or np.isnan(roi_raw_activations[1]):
+        pass
+    else:
+        # If there is a new volume of output from MURFI, record it, and advance frame
+        with open(filename+'_roi_outputs.csv', 'a') as csvfile:
+            stim_writer = csv.writer(csvfile, delimiter=',', quotechar='|', quoting=csv.QUOTE_MINIMAL)
+            print(([frame, triggerClock.getTime(), roi_raw_activations[0], roi_raw_activations[1]]))
+            stim_writer.writerow([frame, triggerClock.getTime(), roi_raw_activations[0], roi_raw_activations[1], 'baseline', 0, 0])      
+        frame +=1       
+
+
     t = baselineClock.getTime()
     frameN = frameN + 1  # number of completed frames (so 0 is the first frame)
     # update/draw components on each frame
@@ -478,14 +515,13 @@ for thisTrial in trials:
     routineTimer.add(RUN_TIME)
     
     # Should we start delivering feedback based on frame 26 (25 when zero-indexing), since there is 30s of basline? (25volumes * 1.2s TR = 30s, then we want the one after that?)
-    frame = 25
+    #frame = 25
     dmn_feedback = []
     #mpfc_feedback = []
     cen_feedback = []
-    dmn_mpfc_feedback=[]
-    mpfc_cen_feedback=[]
-    wm_feedback = []
-    times = []
+    #dmn_mpfc_feedback=[]
+    #mpfc_cen_feedback=[]
+    #wm_feedback = []
     
     #-------Start Routine "feedback"-------
     activity=0
@@ -547,7 +583,6 @@ for thisTrial in trials:
 
         # Where ROI activation first comes in
         # CEN, DMN
-        print(routineTimer.getTime())
         for i in range(n_roi):
             roi_raw_i=communicator.get_roi_activation(roi_names_list[i], frame)
             roi_raw_activations.append(roi_raw_i)
@@ -568,8 +603,8 @@ for thisTrial in trials:
         # a list of [CEN, DMN] for the current frame
         roi_activities=roi_raw_activations
         
-
-        print ("got feedback at time : ", frame, roi_raw_activations, roi_names_list)
+        print('time: ', routineTimer.getTime())
+        print ("got feedback at frame : ",  frame, roi_raw_activations, roi_names_list)
      
 
         # function to check whether ball is in a given circle
@@ -633,8 +668,8 @@ for thisTrial in trials:
 
                 # If 11 hits to that target, decrease radius once more for that target only, and move both targets further from center
                 elif in_target_counter[i]==11:
-                    target_circles[i].pos[0]=(target_circles[i].pos[0]*1.25)
-                    target_circles[i].pos[1]=(target_circles[i].pos[1]*1.25)
+                    target_circles[i].pos[0]=(target_circles[i].pos[0]*2)
+                    target_circles[i].pos[1]=(target_circles[i].pos[1]*2)
                     out_of_bounds=out_of_bounds*2
                     out_of_bounds_circle.radius = out_of_bounds_circle.radius *2
                     TargetCircleBlue_X=0
@@ -649,8 +684,12 @@ for thisTrial in trials:
                 continue
                 
     
-        #Draw the Target
-        times.append(frame)
+        with open(filename+'_roi_outputs.csv', 'a') as csvfile:
+            stim_writer = csv.writer(csvfile, delimiter=',', quotechar='|', quoting=csv.QUOTE_MINIMAL)
+            print(([frame, triggerClock.getTime(), roi_raw_activations[0], roi_raw_activations[1]]))
+            stim_writer.writerow([frame, triggerClock.getTime(), roi_raw_activations[0], roi_raw_activations[1], 'feedback', in_target_counter[0], in_target_counter[1]])   
+
+        # Increment the frame
         frame += 1
         
         for i in range(n_roi):
@@ -678,6 +717,8 @@ for thisTrial in trials:
               
                     stim_writer.writerow([frame,roi_write,roi_raw_activations[0],roi_raw_activations[1]])
                     print ("direction write:",   roi_write)
+
+
 
     # END OF FEEDBACK LOOP
           
