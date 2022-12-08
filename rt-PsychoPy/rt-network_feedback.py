@@ -37,13 +37,25 @@ dlg = gui.DlgFromDict(dictionary=expInfo, title=expName)
 if dlg.OK == False: core.quit()  # user pressed cancel
 expInfo['date'] = data.getDateStr()  # add a simple timestamp
 expInfo['expName'] = expName
-expInfo['Scale_Factor'] = 100
+expInfo['Scale_Factor'] = 20
 roi_number= str('%s') %(expInfo['No_of_ROIs'])
 roi_number=int(roi_number)
 
+'''
+Instructions updates -- more reinforcement of what they were already doing in mindfulness
+Selection of anchor (personalized) into the instructions
+reminders based on mindfulness skills!
+take out 5sec
+Do we need a 4min mindfulness session in the scanner before feedback?
+
+enhance smoothness of movement
+
+During fixation -- just relax.
+'''
 
 '''
 PSUDO CODE
+change criteria to outer bound of circle
 if run == 1:
     expInfo['Scale_Factor'] = 5
 else:
@@ -480,10 +492,10 @@ for thisComponent in baselineComponents:
         thisComponent.setAutoDraw(False)
 
  
-TargetCircleBlue_X=0   
-TargetCircleBlue_Y=0
-TargetCircle_blue = visual.Circle(win, 
-                    pos=(TargetCircleBlue_X,TargetCircleBlue_Y), 
+ball_X=0   
+ball_Y=0
+ball = visual.Circle(win, 
+                    pos=(ball_X,ball_Y), 
                     radius=0.03,
                     fillColor='white',
                     lineColor='white',#str(TargetColor_red_yellow_blue),
@@ -537,27 +549,27 @@ while continueRoutine and routineTimer.getTime() > 0:
         subject_key_target.clock.reset()  # now t=0
         event.clearEvents(eventType='keyboard')
     if subject_key_target.status == STARTED:
-        theseKeys = event.getKeys(keyList=['1', '2', '3', '4'])
+        theseKeys = event.getKeys(keyList=['1', '2', '3', '4', 'escape'])
         theseKeys_num=theseKeys
         
         #print theseKeys_num, TargetColor_red_yellow_blue
         
         if '4' in theseKeys:
-            TargetCircleBlue_X=0
-            TargetCircleBlue_Y=0 
+            ball_X=0
+            ball_Y=0 
         elif '1' in theseKeys:
             TargetColor_red_yellow_blue= str('blue') 
-            TargetCircle_blue.lineColor=str(TargetColor_red_yellow_blue)
+            ball.lineColor=str(TargetColor_red_yellow_blue)
             print ("The color is still: ",TargetColor_red_yellow_blue)
         
         elif '2' in theseKeys:
             TargetColor_red_yellow_blue= str('yellow') 
-            TargetCircle_blue.lineColor=str(TargetColor_red_yellow_blue)
+            ball.lineColor=str(TargetColor_red_yellow_blue)
             print ("The color is now: ",TargetColor_red_yellow_blue)
       
         elif '3' in theseKeys:
             TargetColor_red_yellow_blue= str('red') 
-            TargetCircle_blue.lineColor=str(TargetColor_red_yellow_blue)
+            ball.lineColor=str(TargetColor_red_yellow_blue)
             print ("The color is now: ",TargetColor_red_yellow_blue)
         # check for quit:
         if "escape" in theseKeys:
@@ -577,15 +589,15 @@ while continueRoutine and routineTimer.getTime() > 0:
         roi_raw_activations.append(roi_raw_i)
     
     # So psychopy doesn't start too early if MURFI has started sending data early (real feedback values shouldn't be 0)
-    if roi_raw_activations[0] ==0: #and roi_raw_activations[0]==0:
-        #win.close()
-        print ("let's begin feedback")
+    # if roi_raw_activations[0] ==0: #and roi_raw_activations[0]==0:
+    #     #win.close()
+    #     print ("let's begin feedback")
        
     # check for any missing values (nan) in the roi_raw_activatinp.isnan(roi_raw_activations[0])ons pulled for the current frame
     # If there is a nan value, this most likely indicates that data hasn't been acquired yet for the current volume. 
     # In this case, continue, and keep trying to acquire roi_raw_activations from MURFI (without advancing the frame)
     # This will happen several times for each volume before the data for the next volume are available
-    elif np.isnan(roi_raw_activations[0]) or np.isnan(roi_raw_activations[1]):
+    if np.isnan(roi_raw_activations[0]) or np.isnan(roi_raw_activations[1]):
         continue
     
     # a list of [CEN, DMN] for the current frame
@@ -595,13 +607,13 @@ while continueRoutine and routineTimer.getTime() > 0:
     print ("got feedback at frame : ",  frame, roi_raw_activations, roi_names_list)
     
     # # if the ball goes out of bounds, bring back
-    # if in_circle(0,0,(out_of_bounds),TargetCircle_blue.pos[1],TargetCircle_blue.pos[0])==True:
+    # if in_circle(0,0,(out_of_bounds),ball.pos[1],ball.pos[0])==True:
     #     pass
     # else:
     #     print('out of bounds!')
-    #     TargetCircleBlue_X=0
-    #     TargetCircleBlue_Y=0
-    #     TargetCircle_blue.pos=(TargetCircleBlue_X,TargetCircleBlue_Y)
+    #     ball_X=0
+    #     ball_Y=0
+    #     ball.pos=(ball_X,ball_Y)
 
     # loop through ROIs
     for i in range(n_roi):
@@ -614,22 +626,29 @@ while continueRoutine and routineTimer.getTime() > 0:
             # activity will always be positive (PDA)
             # positions refers to either CEN position positions[0] or DMN position positions[1]
             print('positions:', positions)
-
-            # New cursor position (of ball) will be dot product of position (negative if DMN, positive if CEN) and activity (always positive)
-            cursor_position = np.dot(positions[i], activity)
-            
-            # The position of the target circle cumulatively adds the scaled cursor position on each frame
-            TargetCircleBlue_Y=TargetCircleBlue_Y+ (np.real(cursor_position) * scale_factor_z2pixels/20) 
-            TargetCircleBlue_X=TargetCircleBlue_X+ (np.imag(cursor_position) * scale_factor_z2pixels/20)
-            TargetCircle_blue.pos=(TargetCircleBlue_X,TargetCircleBlue_Y)
-            print("TargetCircleBlue:", TargetCircleBlue_X, TargetCircleBlue_Y)
             print ("direction -->", roi_names_list[i])
             roi_write=roi_names_list[i]
+
+            def calculate_ball_position(circle_reference_position, activation, ball_x_position, ball_y_position):
+                # New cursor position (of ball) will be dot product of position (negative if DMN, positive if CEN) and activity (always positive)
+                cursor_position = np.dot(circle_reference_position, activation)
+                # The position of the target circle cumulatively adds the scaled cursor position on each frame
+                ball_y_position =ball_y_position+ (np.real(cursor_position) * scale_factor_z2pixels/20) 
+                ball_x_position=ball_x_position+ (np.imag(cursor_position) * scale_factor_z2pixels/20)
+                ball_position=(ball_x_position,ball_y_position)
+                print("Ball position:", ball_position)
+                return(ball_position)
+
+            ball.pos, roi_write = calculate_ball_position(
+                circle_reference_position=positions[i], 
+                activation=activity, 
+                ball_x_position=ball.pos[0], 
+                ball_y_position=ball.pos[1])
 
             # the frame after a hit, move the hit target (smaller radius, center further from middle)
             if adjust_targets_after_hit:
                 # for each hit, radius of target circle gets smaller (up to a point)
-                target_circles[i].radius = max(target_circles[i].radius * 0.8, 0.033)
+                #target_circles[i].radius = max(target_circles[i].radius * 0.8, 0.033)
 
                 # for each hit, position of target circle moves away from the middle (up to a point)
                 target_circles[i].pos=((target_circles[i].pos[0]*1.1), (target_circles[i].pos[1]*1.1))
@@ -641,23 +660,23 @@ while continueRoutine and routineTimer.getTime() > 0:
             
             # if the ball has hit the target circle for the current ROI, update target counter for that ROI by 1
             # Then, put ball back in the middle
-            if (in_circle(target_circles[i].pos[0],
-                target_circles[i].pos[1],
-                target_circles[i].radius,
-                TargetCircle_blue.pos[0],
-                TargetCircle_blue.pos[1]) ==True) or (further_than_circles(i, target_circles[i].pos[1], target_circles[i].radius, TargetCircle_blue.pos[1]) == True):
+            # if (in_circle(target_circles[i].pos[0],
+            #     target_circles[i].pos[1],
+            #     target_circles[i].radius,
+            #     ball.pos[0],
+            #     ball.pos[1]) ==True) or (further_than_circles(i, target_circles[i].pos[1], target_circles[i].radius, ball.pos[1]) == True):
+            if further_than_circles(i, target_circles[i].pos[1], target_circles[i].radius, ball.pos[1]):
                 in_target_counter[i]=in_target_counter[i]+1
                 print('HIT', roi_names_list[i])
-                
-                TargetCircleBlue_X=0
-                TargetCircleBlue_Y=0
+                ball_X=0
+                ball_Y=0
                 adjust_targets_after_hit=True
 
     # Draw stimuli
     for i in range(n_roi):
         target_circles[i].draw()
         print (roi_names_list[i],"hits:",in_target_counter[i])
-    TargetCircle_blue.draw()
+    ball.draw()
 
     # If on debug mode, draw OOB circle
     if expInfo['debug'] == True:
