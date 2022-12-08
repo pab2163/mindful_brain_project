@@ -40,6 +40,7 @@ expInfo['expName'] = expName
 expInfo['Scale_Factor'] = 20
 roi_number= str('%s') %(expInfo['No_of_ROIs'])
 roi_number=int(roi_number)
+internal_scaler=10
 
 '''
 Instructions updates -- more reinforcement of what they were already doing in mindfulness
@@ -101,7 +102,7 @@ logging.console.setLevel(logging.WARNING)  # this outputs to the screen, not a f
 # Column headers for outfile
 with open(filename+'_roi_outputs.csv', 'a') as csvfile:
     stim_writer = csv.writer(csvfile, delimiter=',', quotechar='|', quoting=csv.QUOTE_MINIMAL)
-    stim_writer.writerow(['tr', 'time', 'cen', 'dmn', 'stage', 'cen_cumulative_hits', 'dmn_cumulative_hits'])       
+    stim_writer.writerow(['tr', 'time', 'cen', 'dmn', 'stage', 'cen_cumulative_hits', 'dmn_cumulative_hits', 'ball_y_position', 'top_circle_y_position', 'bottom_circle_y_position'])       
 
 # An ExperimentHandler isn't essential but helps with data saving
 thisExp = data.ExperimentHandler(name=expName, version='',
@@ -167,8 +168,6 @@ feedbackClock = core.Clock()
  #murfi communicator
 roi_names = ['cen', 'dmn']#, 'mpfc','wm']
 # REPLACE THIS IP WITH THE MURFI COMPUTER'S IP 192.168.2.5
-#communicator = MurfiActivationCommunicator('18.111.80.133',
-#communicator = MurfiActivationCommunicator('18.189.76.118',
 communicator = MurfiActivationCommunicator('192.168.2.5',
                                            15001, 210,
                                            roi_names,exp_tr,murfi_FAKE)
@@ -198,10 +197,7 @@ positions = [1, -1]
 # target_positions:
 roi_pos = np.zeros((n_roi, 2))
 for i in range(n_roi):
-    #roi_pos[i, :] = [(np.imag(positions[i]))/3, (np.real(positions[i]))/3] #changes x y axis of circles
     roi_pos[i, :] = [(np.real(positions[i]))/3, (np.imag(positions[i]))/3]
-    #print roi_pos
-
 
 
 target_circles=[]
@@ -462,7 +458,7 @@ while continueRoutine and routineTimer.getTime() > 0:
         with open(filename+'_roi_outputs.csv', 'a') as csvfile:
             stim_writer = csv.writer(csvfile, delimiter=',', quotechar='|', quoting=csv.QUOTE_MINIMAL)
             print(([frame, triggerClock.getTime(), roi_raw_activations[0], roi_raw_activations[1]]))
-            stim_writer.writerow([frame, triggerClock.getTime(), roi_raw_activations[0], roi_raw_activations[1], 'baseline', 0, 0])      
+            stim_writer.writerow([frame, triggerClock.getTime(), roi_raw_activations[0], roi_raw_activations[1], 'baseline', 0, 0,  np.nan, np.nan, np.nan])      
         frame +=1       
 
 
@@ -525,8 +521,8 @@ def calculate_ball_position(circle_reference_position, activation, ball_x_positi
     # New cursor position (of ball) will be dot product of position (negative if DMN, positive if CEN) and activity (always positive)
     cursor_position = np.dot(circle_reference_position, activation)
     # The position of the target circle cumulatively adds the scaled cursor position on each frame
-    ball_y_position =ball_y_position+ (np.real(cursor_position) * (scale_factor_z2pixels/20) / tr_to_frame_ratio) 
-    ball_x_position=ball_x_position+ (np.imag(cursor_position) * scale_factor_z2pixels/20 / tr_to_frame_ratio )
+    ball_y_position =ball_y_position+ (np.real(cursor_position) * (scale_factor_z2pixels/internal_scaler) / tr_to_frame_ratio) 
+    ball_x_position=ball_x_position+ (np.imag(cursor_position) * scale_factor_z2pixels/internal_scaler / tr_to_frame_ratio )
     ball_position=(ball_x_position,ball_y_position)
     #print("Ball position:", ball_position)
     return(ball_position)
@@ -574,9 +570,7 @@ while continueRoutine and routineTimer.getTime() > 0:
     if subject_key_target.status == STARTED:
         theseKeys = event.getKeys(keyList=['1', '2', '3', '4', 'escape'])
         theseKeys_num=theseKeys
-        
-        #print theseKeys_num, TargetColor_red_yellow_blue
-        
+                
         if '4' in theseKeys:
             ball_X=0
             ball_Y=0 
@@ -616,10 +610,14 @@ while continueRoutine and routineTimer.getTime() > 0:
     #     #win.close()
     #     print ("let's begin feedback")
        
-    # check for any missing values (nan) in the roi_raw_activatinp.isnan(roi_raw_activations[0])ons pulled for the current frame
-    # If there is a nan value, this most likely indicates that data hasn't been acquired yet for the current volume. 
-    # In this case, continue, and keep trying to acquire roi_raw_activations from MURFI (without advancing the frame)
-    # This will happen several times for each volume before the data for the next volume are available
+    
+
+    '''
+    Check for any missing values (nan) from MURFI on the current frame. If there is a nan value, this most likely
+    indicates that data hasn't been acquired yet for the current volume. In this case, continue, and keep trying to acquire
+    roi_raw_activations from MURFI (without advancing the frame). This will happen several times for each volume before the data 
+    for the next volume are available. 
+    '''
     if np.isnan(roi_raw_activations[0]) or np.isnan(roi_raw_activations[1]):
         pass
         #print('Still waiting for next frame')
@@ -672,7 +670,7 @@ while continueRoutine and routineTimer.getTime() > 0:
         with open(filename+'_roi_outputs.csv', 'a') as csvfile:
             stim_writer = csv.writer(csvfile, delimiter=',', quotechar='|', quoting=csv.QUOTE_MINIMAL)
             print(([frame, triggerClock.getTime(), roi_raw_activations[0], roi_raw_activations[1]]))
-            stim_writer.writerow([frame, triggerClock.getTime(), roi_raw_activations[0], roi_raw_activations[1], 'feedback', in_target_counter[0], in_target_counter[1]])   
+            stim_writer.writerow([frame, triggerClock.getTime(), roi_raw_activations[0], roi_raw_activations[1], 'feedback', in_target_counter[0], in_target_counter[1], ball.pos[1], target_circles[0].pos[1], target_circles[1].pos[1]])   
 
         # Increment the frame
         frame += 1
