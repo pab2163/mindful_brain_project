@@ -22,6 +22,7 @@ import matplotlib
 import random
 import csv
 import math
+import pandas as pd
 
 # Ensure that relative paths start from the same directory as this script
 _thisDir = os.path.dirname(os.path.abspath(__file__))
@@ -29,7 +30,7 @@ os.chdir(_thisDir)
 
 # Store info about the experiment 
 expName = 'DMN_BallTask'  # from the Builder filename that created this script
-expInfo = {'participant':'','session':''}  
+expInfo = {'participant':'','run':''}  
 
 # Baseline time before feedback (seconds)
 BaseLineTime=30 
@@ -44,13 +45,20 @@ if dlg.OK == False: core.quit()  # user pressed cancel
 ## Timestamp
 expInfo['date'] = data.getDateStr()  
 expInfo['expName'] = expName
-expInfo['Scale_Factor'] = 20
 expInfo['No_of_ROIs'] = 2
 expInfo['Level_1_2_3'] = 1
 expInfo['Run_Time'] = 120
 
+
 roi_number= str('%s') %(expInfo['No_of_ROIs'])
 roi_number=int(roi_number)
+
+
+# default scale factor (higher means ball moves up/down faster)
+
+default_scale_factor = 25
+
+# another interal scale factor to make sure scaling of feedback is appropriate (higher means ball moves up/down more SLOWLY)
 internal_scaler=10
 
 '''
@@ -65,29 +73,59 @@ enhance smoothness of movement
 During fixation -- just relax.
 '''
 
-'''
-PSUDO CODE
-change criteria to outer bound of circle
-if run == 1:
-    expInfo['Scale_Factor'] = 5
+# Setup files for saving
+if not os.path.isdir('data'):
+    os.makedirs('data')  # if this fails (e.g. permissions) we will get error
+
+# output file string
+filename = 'data' + os.path.sep + '%s_DMN_Feedback_%s' %(expInfo['participant'],expInfo['run'])
+
+# if filepath already exists, stop run
+if os.path.exists(filename + '_roi_outputs.csv'):
+    warning_box = gui.Dlg(title = 'WARNING')
+    warning_box.addText(f'Already have data for {expInfo["participant"]} run {expInfo["run"]}!\nClick OK to overwrite the file, or Cancel to exit without overwriting')
+    warning_box.show()
+    if not warning_box.OK:
+        core.quit()
+
+
+
+
+
+if int(expInfo['run']) == 1:
+    print('Run 1: starting with default scale scale factor')
+    expInfo['scale_factor'] = default_scale_factor
 else:
     try:
-        last_run_info = read_file(last_run_file_path)
-        change_scale_factor_accordingly(last_run_info)
+        last_run_filename = filename.replace(expInfo['run'], str(int(expInfo['run'])-1)) + '_roi_outputs.csv'
+        last_run_info = pd.read_csv(last_run_filename)
+
+        # Max values in cumulative hits columns give the total number of hits each in the last run
+        last_run_cen_hits = last_run_info.cen_cumulative_hits.max()
+        last_run_dmn_hits = last_run_info.dmn_cumulative_hits.max()
+
+        print('Last run CEN hits: ', last_run_cen_hits, ' Last run DMN hits: ', last_run_dmn_hits)
+
+        # last_run_scale_factor
+        last_run_scale_factor = last_run_info.scale_factor[0]
+
+        # if 3+ hits in either direction, decrease scale factor
+        if last_run_dmn_hits >= 3 or last_run_cen_hits >= 3:
+            expInfo['scale_factor'] = last_run_scale_factor * 0.75
+        
+        # if 0 hits at all, increase scale factor
+        elif last_run_cen_hits + last_run_dmn_hits == 0:
+            expInfo['scale_factor'] = last_run_scale_factor * 1.5
+
+        # otherwise, keep scale factor the same
+        else:
+            expInfo['scale_factor'] = last_run_scale_factor 
+
+        print('Last run scale factor: ', last_run_scale_factor, ' This run scale factor: ', expInfo['scale_factor'])
     except:
-        expInfo['Scale_Factor'] = 5
-'''
+        print('WARNING: could not pull scale factor from previous run. Settting to default scale factor.')
+        expInfo['scale_factor'] = default_scale_factor
 
-
-'''
-Scale factor updates:
-
-Everyone starts at scale factor 5
-If <3 to either circle: increase scale factor
-If 3-5 hits: keep scale factor the same
-If >5 hits: decrease scale factor
-Write # of hits to a file, then next run pulls that info
-'''
 
 RUN_TIME= str('%s') %(expInfo['Run_Time'])
 RUN_TIME=int(RUN_TIME)
@@ -96,21 +134,18 @@ RUN_TIME=RUN_TIME
 
 position_distance=expInfo['Level_1_2_3']
 position_distance=int(position_distance)
-scale_factor_z2pixels=expInfo['Scale_Factor']
+scale_factor_z2pixels=expInfo['scale_factor']
 scale_factor_z2pixels=int(scale_factor_z2pixels)
 
 
-# Setup files for saving
-if not os.path.isdir('data'):
-    os.makedirs('data')  # if this fails (e.g. permissions) we will get error
-filename = 'data' + os.path.sep + '%s_DMN_Feedback_%s_Scale%s' %(expInfo['participant'],expInfo['session'],expInfo['Scale_Factor'])
+
 logFile = logging.LogFile(filename+'.log', level=logging.EXP)
 logging.console.setLevel(logging.WARNING)  # this outputs to the screen, not a file
 
 # Column headers for outfile
 with open(filename+'_roi_outputs.csv', 'a') as csvfile:
     stim_writer = csv.writer(csvfile, delimiter=',', quotechar='|', quoting=csv.QUOTE_MINIMAL)
-    stim_writer.writerow(['tr', 'time', 'cen', 'dmn', 'stage', 'cen_cumulative_hits', 'dmn_cumulative_hits', 'ball_y_position', 'top_circle_y_position', 'bottom_circle_y_position'])       
+    stim_writer.writerow(['tr', 'scale_factor', 'time', 'cen', 'dmn', 'stage', 'cen_cumulative_hits', 'dmn_cumulative_hits', 'ball_y_position', 'top_circle_y_position', 'bottom_circle_y_position'])       
 
 # An ExperimentHandler isn't essential but helps with data saving
 thisExp = data.ExperimentHandler(name=expName, version='',
@@ -139,7 +174,6 @@ else:
     print('FRAME RATE GUESSING')
     frameDur = 1.0/60.0 # couldn't get a reliable measure so guess
 
-
 # Approximately how many frames does the monitor refresh per volume?
 tr_to_frame_ratio = exp_tr/frameDur
 
@@ -167,6 +201,13 @@ baselineClock = core.Clock()
 text_2 = visual.TextStim(win=win, ori=0, name='text_2',
     text=u'+',    font=u'Arial',
     pos=[0, 0], height=0.3, wrapWidth=None,
+    color=u'white', colorSpace='rgb', opacity=1,
+    depth=0.0)
+
+
+text_relax = visual.TextStim(win=win, ori=0, name='text_relax',
+    text=u'Relax',    font=u'Arial',
+    pos=[0, -.2], height=0.3, wrapWidth=None,
     color=u'white', colorSpace='rgb', opacity=1,
     depth=0.0)
 
@@ -465,7 +506,7 @@ while continueRoutine and routineTimer.getTime() > 0:
         with open(filename+'_roi_outputs.csv', 'a') as csvfile:
             stim_writer = csv.writer(csvfile, delimiter=',', quotechar='|', quoting=csv.QUOTE_MINIMAL)
             print(([frame, triggerClock.getTime(), roi_raw_activations[0], roi_raw_activations[1]]))
-            stim_writer.writerow([frame, triggerClock.getTime(), roi_raw_activations[0], roi_raw_activations[1], 'baseline', 0, 0,  np.nan, np.nan, np.nan])      
+            stim_writer.writerow([frame, expInfo['scale_factor'], triggerClock.getTime(), roi_raw_activations[0], roi_raw_activations[1], 'baseline', 0, 0,  np.nan, np.nan, np.nan])      
         frame +=1       
 
 
@@ -634,7 +675,7 @@ while continueRoutine and routineTimer.getTime() > 0:
         with open(filename+'_roi_outputs.csv', 'a') as csvfile:
             stim_writer = csv.writer(csvfile, delimiter=',', quotechar='|', quoting=csv.QUOTE_MINIMAL)
             print(([frame, triggerClock.getTime(), roi_raw_activations[0], roi_raw_activations[1]]))
-            stim_writer.writerow([frame, triggerClock.getTime(), roi_raw_activations[0], roi_raw_activations[1], 'feedback', hit_counter[0], hit_counter[1], ball.pos[1], target_circles[0].pos[1], target_circles[1].pos[1]])   
+            stim_writer.writerow([frame, expInfo['scale_factor'], triggerClock.getTime(), roi_raw_activations[0], roi_raw_activations[1], 'feedback', hit_counter[0], hit_counter[1], ball.pos[1], target_circles[0].pos[1], target_circles[1].pos[1]])   
 
         # Increment the frame
         frame += 1
