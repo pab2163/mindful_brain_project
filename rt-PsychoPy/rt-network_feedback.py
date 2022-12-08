@@ -125,9 +125,15 @@ win = visual.Window(size=(1080,1080), fullscr=False, screen=1, allowGUI=False, a
 # store frame rate of monitor if we can measure it successfully
 expInfo['frameRate']=win.getActualFrameRate()
 if expInfo['frameRate']!=None:
-    frameDur = 1.0/round(expInfo['frameRate'])
+    frameDur = 1.0/expInfo['frameRate']
 else:
+    print('FRAME RATE GUESSING')
     frameDur = 1.0/60.0 # couldn't get a reliable measure so guess
+
+
+# Approximately how many frames does the monitor refresh per volume?
+tr_to_frame_ratio = exp_tr/frameDur
+
 
 # Initialize components for Routine "instructions"
 instructionsClock = core.Clock()
@@ -187,12 +193,17 @@ for i in range(n_roi):
 
 positions = np.exp((0-1j) * theta)
 positions=positions*position_distance
+positions = [1, -1]
+
 # target_positions:
 roi_pos = np.zeros((n_roi, 2))
 for i in range(n_roi):
     #roi_pos[i, :] = [(np.imag(positions[i]))/3, (np.real(positions[i]))/3] #changes x y axis of circles
     roi_pos[i, :] = [(np.real(positions[i]))/3, (np.imag(positions[i]))/3]
     #print roi_pos
+
+
+
 target_circles=[]
 target_circles_id=[]
 in_target_counter=[]
@@ -618,7 +629,7 @@ while continueRoutine and routineTimer.getTime() > 0:
     # loop through ROIs
     for i in range(n_roi):
         # for each ROI, look for the index -- see whether that ROI has the highest activity
-        if roi_activities.index(np.nanmax(roi_activities))==i and np.nanmean(roi_activities)!=0:
+        if roi_activities.index(np.nanmax(roi_activities))==i and np.nanmean(roi_activities)!=0
             # Activity=absolute difference between ROI activations (always positive)
             activity=abs(np.nanmax(roi_activities)-(np.nanmin(roi_activities)))/10
             print ("activity",activity, " roi_activities",roi_activities)
@@ -646,17 +657,17 @@ while continueRoutine and routineTimer.getTime() > 0:
                 ball_y_position=ball.pos[1])
 
             # the frame after a hit, move the hit target (smaller radius, center further from middle)
-            if adjust_targets_after_hit:
-                # for each hit, radius of target circle gets smaller (up to a point)
-                #target_circles[i].radius = max(target_circles[i].radius * 0.8, 0.033)
+            # if adjust_targets_after_hit:
+            #     # for each hit, radius of target circle gets smaller (up to a point)
+            #     #target_circles[i].radius = max(target_circles[i].radius * 0.8, 0.033)
 
-                # for each hit, position of target circle moves away from the middle (up to a point)
-                target_circles[i].pos=((target_circles[i].pos[0]*1.1), (target_circles[i].pos[1]*1.1))
+            #     # for each hit, position of target circle moves away from the middle (up to a point)
+            #     target_circles[i].pos=((target_circles[i].pos[0]*1.1), (target_circles[i].pos[1]*1.1))
 
-                out_of_bounds_circle.radius = out_of_bounds_circle.radius *1.1
-                out_of_bounds = out_of_bounds*1.1
+            #     out_of_bounds_circle.radius = out_of_bounds_circle.radius *1.1
+            #     out_of_bounds = out_of_bounds*1.1
 
-                adjust_targets_after_hit=False
+            #     adjust_targets_after_hit=False
             
             # if the ball has hit the target circle for the current ROI, update target counter for that ROI by 1
             # Then, put ball back in the middle
@@ -669,7 +680,19 @@ while continueRoutine and routineTimer.getTime() > 0:
                 in_target_counter[i]=in_target_counter[i]+1
                 print('HIT', roi_names_list[i])
                 ball.pos = (0,0)
-                adjust_targets_after_hit=True
+                #adjust_targets_after_hit=True
+
+                # for each hit, radius of target circle gets smaller (up to a point)
+                #target_circles[i].radius = max(target_circles[i].radius * 0.8, 0.033)
+
+                # for each hit, position of target circle moves away from the middle (up to a point)
+                target_circles[i].pos=((target_circles[i].pos[0]*1.1), (target_circles[i].pos[1]*1.1))
+
+                out_of_bounds_circle.radius = out_of_bounds_circle.radius *1.1
+                out_of_bounds = out_of_bounds*1.1
+
+                #adjust_targets_after_hit=False
+            
 
     # Draw stimuli
     for i in range(n_roi):
