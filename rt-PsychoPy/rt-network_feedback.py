@@ -519,6 +519,7 @@ out_of_bounds_circle = visual.Circle(win,
                     lineWidth=3)
 TargetColor_red_yellow_blue= str('white') 
 activity = 0
+direction=0
 
 def calculate_ball_position(circle_reference_position, activation, ball_x_position, ball_y_position):
     # New cursor position (of ball) will be dot product of position (negative if DMN, positive if CEN) and activity (always positive)
@@ -625,6 +626,12 @@ while continueRoutine and routineTimer.getTime() > 0:
                 activation=activity, 
                 ball_x_position=ball.pos[0], 
                 ball_y_position=ball.pos[1])
+
+
+        for i in range(n_roi):
+            target_circles[i].draw()
+        ball.draw()
+        win.flip()
         continue
     
     # a list of [CEN, DMN] for the current frame
@@ -645,7 +652,7 @@ while continueRoutine and routineTimer.getTime() > 0:
     # loop through ROIs
     for i in range(n_roi):
         # for each ROI, look for the index -- see whether that ROI has the highest activity
-        if roi_activities.index(np.nanmax(roi_activities))==i and np.nanmean(roi_activities)!=0
+        if roi_activities.index(np.nanmax(roi_activities))==i and np.nanmean(roi_activities)!=0:
             # Activity=absolute difference between ROI activations (always positive)
             activity=abs(np.nanmax(roi_activities)-(np.nanmin(roi_activities)))/10
             print ("activity",activity, " roi_activities",roi_activities)
