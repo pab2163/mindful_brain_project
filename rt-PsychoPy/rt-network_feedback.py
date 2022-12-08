@@ -639,7 +639,7 @@ while continueRoutine and routineTimer.getTime() > 0:
                 print("Ball position:", ball_position)
                 return(ball_position)
 
-            ball.pos, roi_write = calculate_ball_position(
+            ball.pos = calculate_ball_position(
                 circle_reference_position=positions[i], 
                 activation=activity, 
                 ball_x_position=ball.pos[0], 
@@ -668,8 +668,7 @@ while continueRoutine and routineTimer.getTime() > 0:
             if further_than_circles(i, target_circles[i].pos[1], target_circles[i].radius, ball.pos[1]):
                 in_target_counter[i]=in_target_counter[i]+1
                 print('HIT', roi_names_list[i])
-                ball_X=0
-                ball_Y=0
+                ball.pos = (0,0)
                 adjust_targets_after_hit=True
 
     # Draw stimuli
