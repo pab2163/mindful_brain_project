@@ -29,15 +29,26 @@ os.chdir(_thisDir)
 
 # Store info about the experiment 
 expName = 'DMN_BallTask'  # from the Builder filename that created this script
-expInfo = {'participant':'','session':'','No_of_ROIs':'2','Level_1_2_3':'1','No_repetitions':'1','Run_Time':'120', 'debug': False}#Run_Time in seconds and direction  
-BaseLineTime=30 #30 
+expInfo = {'participant':'','session':''}  
+
+# Baseline time before feedback (seconds)
+BaseLineTime=30 
+
+# TR (seconds)
 exp_tr=1.2
 murfi_FAKE=False
 dlg = gui.DlgFromDict(dictionary=expInfo, title=expName)
 if dlg.OK == False: core.quit()  # user pressed cancel
-expInfo['date'] = data.getDateStr()  # add a simple timestamp
+
+# Hard code other experiment info 
+## Timestamp
+expInfo['date'] = data.getDateStr()  
 expInfo['expName'] = expName
 expInfo['Scale_Factor'] = 20
+expInfo['No_of_ROIs'] = 2
+expInfo['Level_1_2_3'] = 1
+expInfo['Run_Time'] = 120
+
 roi_number= str('%s') %(expInfo['No_of_ROIs'])
 roi_number=int(roi_number)
 internal_scaler=10
@@ -82,12 +93,9 @@ RUN_TIME= str('%s') %(expInfo['Run_Time'])
 RUN_TIME=int(RUN_TIME)
 RUN_TIME=RUN_TIME
 
-nReps=str('%s') %(expInfo['No_repetitions'])
-nReps=int(nReps)
 
 position_distance=expInfo['Level_1_2_3']
 position_distance=int(position_distance)
-
 scale_factor_z2pixels=expInfo['Scale_Factor']
 scale_factor_z2pixels=int(scale_factor_z2pixels)
 
@@ -181,7 +189,6 @@ text_4 = visual.TextStim(win=win, ori=0, name='text_4',
 
 #prepare the targets
 colors=['yellow','blue','red','green','cyan','magenta','black','honeydew','indigo','maroon']
-#drift_roi=['wm']
 roi_names_list=['cen','dmn']
 print (roi_names_list)
 n_roi = roi_number
@@ -202,13 +209,13 @@ for i in range(n_roi):
 
 target_circles=[]
 target_circles_id=[]
-in_target_counter=[]
+hit_counter=[]
 home=[]
 for i in range(n_roi):
-    roi_circle_i = visual.Circle(win, pos=(roi_pos[i, 1],roi_pos[i, 0]), radius=0.15,fillColor=None, lineColor=colors[i])
+    roi_circle_i = visual.Circle(win, pos=(roi_pos[i, 1],roi_pos[i, 0]), radius=0.15,fillColor=None, lineColor=colors[i], lineWidth=1)
     target_circles.append(roi_circle_i)
-    in_target_counter.append(0)
-    print (in_target_counter)
+    hit_counter.append(0)
+    print (hit_counter)
 
 starting_point = visual.Circle(win, pos=(0,0), radius=0.005,fillColor='white', lineColor='white')
 home.append(starting_point)
@@ -498,22 +505,13 @@ for thisComponent in baselineComponents:
     if hasattr(thisComponent, "setAutoDraw"):
         thisComponent.setAutoDraw(False)
 
- 
-ball_X=0   
-ball_Y=0
 ball = visual.Circle(win, 
-                    pos=(ball_X,ball_Y), 
+                    pos=(0,0), 
                     radius=0.03,
                     fillColor='white',
-                    lineColor='white',#str(TargetColor_red_yellow_blue),
-                    lineWidth=3)
-out_of_bounds_circle = visual.Circle(win, 
-                    pos=(0,0), 
-                    radius=position_distance*0.4,
-                    fillColor='none',
                     lineColor='white',
                     lineWidth=3)
-TargetColor_red_yellow_blue= str('white') 
+
 activity = 0
 direction=0
 
@@ -539,18 +537,8 @@ subject_key_reset = event.BuilderKeyResponse()  # create an object of type KeyRe
 subject_key_reset.status = NOT_STARTED
 routineTimer.add(RUN_TIME)
 
-# Should we start delivering feedback based on frame 26 (25 when zero-indexing), since there is 30s of basline? (25volumes * 1.2s TR = 30s, then we want the one after that?)
-#frame = 25
-
 #-------Start Routine "feedback"-------
-activity=0
-out_of_bounds=position_distance*0.4
-for i in range(n_roi):
-    activity_i=0
 continueRoutine = True
-
-adjust_targets_after_hit=False
-
 # Loop keeps going until RUN_TIME is up
 while continueRoutine and routineTimer.getTime() > 0:
     # get current time
@@ -568,26 +556,9 @@ while continueRoutine and routineTimer.getTime() > 0:
         subject_key_target.clock.reset()  # now t=0
         event.clearEvents(eventType='keyboard')
     if subject_key_target.status == STARTED:
-        theseKeys = event.getKeys(keyList=['1', '2', '3', '4', 'escape'])
+        theseKeys = event.getKeys(keyList=['escape'])
         theseKeys_num=theseKeys
-                
-        if '4' in theseKeys:
-            ball_X=0
-            ball_Y=0 
-        elif '1' in theseKeys:
-            TargetColor_red_yellow_blue= str('blue') 
-            ball.lineColor=str(TargetColor_red_yellow_blue)
-            print ("The color is still: ",TargetColor_red_yellow_blue)
-        
-        elif '2' in theseKeys:
-            TargetColor_red_yellow_blue= str('yellow') 
-            ball.lineColor=str(TargetColor_red_yellow_blue)
-            print ("The color is now: ",TargetColor_red_yellow_blue)
-      
-        elif '3' in theseKeys:
-            TargetColor_red_yellow_blue= str('red') 
-            ball.lineColor=str(TargetColor_red_yellow_blue)
-            print ("The color is now: ",TargetColor_red_yellow_blue)
+
         # check for quit:
         if "escape" in theseKeys:
             endExpNow = True
@@ -610,8 +581,6 @@ while continueRoutine and routineTimer.getTime() > 0:
     #     #win.close()
     #     print ("let's begin feedback")
        
-    
-
     '''
     Check for any missing values (nan) from MURFI on the current frame. If there is a nan value, this most likely
     indicates that data hasn't been acquired yet for the current volume. In this case, continue, and keep trying to acquire
@@ -620,19 +589,6 @@ while continueRoutine and routineTimer.getTime() > 0:
     '''
     if np.isnan(roi_raw_activations[0]) or np.isnan(roi_raw_activations[1]):
         pass
-        #print('Still waiting for next frame')
-        # ball.pos = calculate_ball_position(
-        #         circle_reference_position=direction, 
-        #         activation=activity, 
-        #         ball_x_position=ball.pos[0], 
-        #         ball_y_position=ball.pos[1])
-
-
-        # for i in range(n_roi):
-        #     target_circles[i].draw()
-        # ball.draw()
-        # win.flip()
-        # continue
     
     # a list of [CEN, DMN] for the current frame
     else:
@@ -641,7 +597,11 @@ while continueRoutine and routineTimer.getTime() > 0:
         print('time: ', routineTimer.getTime())
         print ("got feedback at frame : ",  frame, roi_raw_activations, roi_names_list)
         
-        # loop through ROIs
+        '''
+        Loop through ROIs. Depending on which one has higher activity, change direction parameter 
+        1 - upwards (when CEN higher)
+        -1 = downwards (when DMN higher)
+        '''
         for i in range(n_roi):
             # for each ROI, look for the index -- see whether that ROI has the highest activity
             if roi_activities.index(np.nanmax(roi_activities))==i and np.nanmean(roi_activities)!=0:
@@ -653,13 +613,17 @@ while continueRoutine and routineTimer.getTime() > 0:
                 # positions refers to either CEN position positions[0] or DMN position positions[1]
                 print('Circle positions:', target_circles[0].pos[1], target_circles[1].pos[1])
                 print ("direction -->", roi_names_list[i])
-                print (roi_names_list[i],"hits:",in_target_counter[i])
-
-                roi_write=roi_names_list[i]
+                print (roi_names_list[0],"hits: ",hit_counter[0], '   ', roi_names_list[1],"hits: ",hit_counter[1])
                 direction = positions[i]
 
-            if further_than_circles(i, target_circles[i].pos[1], target_circles[i].radius, ball.pos[1]):
-                in_target_counter[i]=in_target_counter[i]+1
+            # if the ball has gone futher from 0 compared to the outside of either circle, assign a hit and reset to 0
+            if further_than_circles(position=i, 
+                circle_center=target_circles[i].pos[1], 
+                circle_radius=target_circles[i].radius, 
+                ball_center=ball.pos[1]):
+
+                # increment hig count
+                hit_counter[i]=hit_counter[i]+1
                 print('HIT', roi_names_list[i])
                 ball.pos = (0,0)
 
@@ -670,7 +634,7 @@ while continueRoutine and routineTimer.getTime() > 0:
         with open(filename+'_roi_outputs.csv', 'a') as csvfile:
             stim_writer = csv.writer(csvfile, delimiter=',', quotechar='|', quoting=csv.QUOTE_MINIMAL)
             print(([frame, triggerClock.getTime(), roi_raw_activations[0], roi_raw_activations[1]]))
-            stim_writer.writerow([frame, triggerClock.getTime(), roi_raw_activations[0], roi_raw_activations[1], 'feedback', in_target_counter[0], in_target_counter[1], ball.pos[1], target_circles[0].pos[1], target_circles[1].pos[1]])   
+            stim_writer.writerow([frame, triggerClock.getTime(), roi_raw_activations[0], roi_raw_activations[1], 'feedback', hit_counter[0], hit_counter[1], ball.pos[1], target_circles[0].pos[1], target_circles[1].pos[1]])   
 
         # Increment the frame
         frame += 1
