@@ -518,6 +518,17 @@ out_of_bounds_circle = visual.Circle(win,
                     lineColor='white',
                     lineWidth=3)
 TargetColor_red_yellow_blue= str('white') 
+activity = 0
+
+def calculate_ball_position(circle_reference_position, activation, ball_x_position, ball_y_position):
+    # New cursor position (of ball) will be dot product of position (negative if DMN, positive if CEN) and activity (always positive)
+    cursor_position = np.dot(circle_reference_position, activation)
+    # The position of the target circle cumulatively adds the scaled cursor position on each frame
+    ball_y_position =ball_y_position+ (np.real(cursor_position) * (scale_factor_z2pixels/20) / tr_to_frame_ratio) 
+    ball_x_position=ball_x_position+ (np.imag(cursor_position) * scale_factor_z2pixels/20 / tr_to_frame_ratio )
+    ball_position=(ball_x_position,ball_y_position)
+    print("Ball position:", ball_position)
+    return(ball_position)
 
 
 #------Prepare to start Routine "feedback"-------
@@ -609,6 +620,11 @@ while continueRoutine and routineTimer.getTime() > 0:
     # In this case, continue, and keep trying to acquire roi_raw_activations from MURFI (without advancing the frame)
     # This will happen several times for each volume before the data for the next volume are available
     if np.isnan(roi_raw_activations[0]) or np.isnan(roi_raw_activations[1]):
+        ball.pos = calculate_ball_position(
+                circle_reference_position=direction, 
+                activation=activity, 
+                ball_x_position=ball.pos[0], 
+                ball_y_position=ball.pos[1])
         continue
     
     # a list of [CEN, DMN] for the current frame
@@ -636,22 +652,13 @@ while continueRoutine and routineTimer.getTime() > 0:
 
             # activity will always be positive (PDA)
             # positions refers to either CEN position positions[0] or DMN position positions[1]
-            print('positions:', positions)
+            print('Circle positions:', target_circles[0].pos[1], target_circles[1].pos[1])
             print ("direction -->", roi_names_list[i])
             roi_write=roi_names_list[i]
-
-            def calculate_ball_position(circle_reference_position, activation, ball_x_position, ball_y_position):
-                # New cursor position (of ball) will be dot product of position (negative if DMN, positive if CEN) and activity (always positive)
-                cursor_position = np.dot(circle_reference_position, activation)
-                # The position of the target circle cumulatively adds the scaled cursor position on each frame
-                ball_y_position =ball_y_position+ (np.real(cursor_position) * scale_factor_z2pixels/20) 
-                ball_x_position=ball_x_position+ (np.imag(cursor_position) * scale_factor_z2pixels/20)
-                ball_position=(ball_x_position,ball_y_position)
-                print("Ball position:", ball_position)
-                return(ball_position)
+            direction = positions[i]
 
             ball.pos = calculate_ball_position(
-                circle_reference_position=positions[i], 
+                circle_reference_position=direction, 
                 activation=activity, 
                 ball_x_position=ball.pos[0], 
                 ball_y_position=ball.pos[1])
