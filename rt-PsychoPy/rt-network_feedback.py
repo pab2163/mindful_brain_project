@@ -528,7 +528,7 @@ def calculate_ball_position(circle_reference_position, activation, ball_x_positi
     ball_y_position =ball_y_position+ (np.real(cursor_position) * (scale_factor_z2pixels/20) / tr_to_frame_ratio) 
     ball_x_position=ball_x_position+ (np.imag(cursor_position) * scale_factor_z2pixels/20 / tr_to_frame_ratio )
     ball_position=(ball_x_position,ball_y_position)
-    print("Ball position:", ball_position)
+    #print("Ball position:", ball_position)
     return(ball_position)
 
 
@@ -621,7 +621,8 @@ while continueRoutine and routineTimer.getTime() > 0:
     # In this case, continue, and keep trying to acquire roi_raw_activations from MURFI (without advancing the frame)
     # This will happen several times for each volume before the data for the next volume are available
     if np.isnan(roi_raw_activations[0]) or np.isnan(roi_raw_activations[1]):
-        print('Still waiting for next frame')
+        pass
+        #print('Still waiting for next frame')
         # ball.pos = calculate_ball_position(
         #         circle_reference_position=direction, 
         #         activation=activity, 
@@ -642,15 +643,6 @@ while continueRoutine and routineTimer.getTime() > 0:
         print('time: ', routineTimer.getTime())
         print ("got feedback at frame : ",  frame, roi_raw_activations, roi_names_list)
         
-        # # if the ball goes out of bounds, bring back
-        # if in_circle(0,0,(out_of_bounds),ball.pos[1],ball.pos[0])==True:
-        #     pass
-        # else:
-        #     print('out of bounds!')
-        #     ball_X=0
-        #     ball_Y=0
-        #     ball.pos=(ball_X,ball_Y)
-
         # loop through ROIs
         for i in range(n_roi):
             # for each ROI, look for the index -- see whether that ROI has the highest activity
@@ -663,6 +655,8 @@ while continueRoutine and routineTimer.getTime() > 0:
                 # positions refers to either CEN position positions[0] or DMN position positions[1]
                 print('Circle positions:', target_circles[0].pos[1], target_circles[1].pos[1])
                 print ("direction -->", roi_names_list[i])
+                print (roi_names_list[i],"hits:",in_target_counter[i])
+
                 roi_write=roi_names_list[i]
                 direction = positions[i]
 
@@ -670,19 +664,11 @@ while continueRoutine and routineTimer.getTime() > 0:
                 in_target_counter[i]=in_target_counter[i]+1
                 print('HIT', roi_names_list[i])
                 ball.pos = (0,0)
-                #adjust_targets_after_hit=True
-
-                # for each hit, radius of target circle gets smaller (up to a point)
-                #target_circles[i].radius = max(target_circles[i].radius * 0.8, 0.033)
 
                 # for each hit, position of target circle moves away from the middle (up to a point)
                 target_circles[i].pos=((target_circles[i].pos[0]*1.1), (target_circles[i].pos[1]*1.1))
 
-                out_of_bounds_circle.radius = out_of_bounds_circle.radius *1.1
-                out_of_bounds = out_of_bounds*1.1
-
-                    #adjust_targets_after_hit=False
-         # Save info to outfile for each volume       
+        # Save info to outfile for each volume       
         with open(filename+'_roi_outputs.csv', 'a') as csvfile:
             stim_writer = csv.writer(csvfile, delimiter=',', quotechar='|', quoting=csv.QUOTE_MINIMAL)
             print(([frame, triggerClock.getTime(), roi_raw_activations[0], roi_raw_activations[1]]))
@@ -697,12 +683,7 @@ while continueRoutine and routineTimer.getTime() > 0:
     # Draw stimuli
     for i in range(n_roi):
         target_circles[i].draw()
-        print (roi_names_list[i],"hits:",in_target_counter[i])
     ball.draw()
-
-    # If on debug mode, draw OOB circle
-    if expInfo['debug'] == True:
-        out_of_bounds_circle.draw()
         
     # This should be the TR?
     win.flip()
