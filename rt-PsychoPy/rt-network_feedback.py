@@ -418,6 +418,11 @@ if key_resp_3.keys != None:  # we had a response
 thisExp.nextEntry()
 
 
+
+
+# instruct_text.setText('Relax')
+# instruct_text.pos = (0, -1)
+
 # BASELINE: wait for 30s before delivering feedback
 #------Prepare to start Routine "baseline"-------
 t = 0
@@ -476,8 +481,10 @@ while continueRoutine and routineTimer.getTime() > 0:
         text_2.tStart = t  # underestimates by a little under one frame
         text_2.frameNStart = frameN  # exact frame index
         text_2.setAutoDraw(True)
+        text_relax.setAutoDraw(True)
     if text_2.status == STARTED and t >= (0.0 + (BaseLineTime-win.monitorFramePeriod*0.75)): #most of one frame period left
         text_2.setAutoDraw(False)
+        text_relax.setAutoDraw(False)
     
     # check if all components have finished
     if not continueRoutine:  # a component has requested a forced-end of Routine
