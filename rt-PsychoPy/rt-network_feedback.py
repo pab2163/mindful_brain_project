@@ -29,8 +29,8 @@ _thisDir = os.path.dirname(os.path.abspath(__file__))
 os.chdir(_thisDir)
 
 # Store info about the experiment 
-expName = 'DMN_BallTask'  # from the Builder filename that created this script
-expInfo = {'participant':'','run':''}  
+expName = 'DMN_BallTask'  # from the Builder filename that created thi s script
+expInfo = {'participant':'','run':'', 'feedback_on': ['', 'Feedback', 'No Feedback']} 
 
 # Baseline time before feedback (seconds)
 BaseLineTime=30 
@@ -38,8 +38,16 @@ BaseLineTime=30
 # TR (seconds)
 exp_tr=1.2
 murfi_FAKE=False
-dlg = gui.DlgFromDict(dictionary=expInfo, title=expName)
-if dlg.OK == False: core.quit()  # user pressed cancel
+
+# Show dialogue box until all participant info has been entered
+while expInfo['feedback_on'] not in ['Feedback', 'No Feedback']:
+    expInfo['feedback_on'] =  ['', 'Feedback', 'No Feedback']
+    print('not done yet')
+    dlg = gui.DlgFromDict(dictionary=expInfo, title=expName, labels = {'participant': 'Participant ID', 'run': 'Run', 'feedback_on': 'Display Feedback?'})
+    if dlg.OK == False: 
+        core.quit()  # user pressed cancel
+
+
 
 # Hard code other experiment info 
 ## Timestamp
@@ -239,7 +247,7 @@ target_circles_id=[]
 hit_counter=[]
 home=[]
 for i in range(n_roi):
-    roi_circle_i = visual.Circle(win, pos=(roi_pos[i, 1],roi_pos[i, 0]), radius=0.15,fillColor=None, lineColor=colors[i], lineWidth=1)
+    roi_circle_i = visual.Circle(win, pos=(roi_pos[i, 1],roi_pos[i, 0]), radius=0.15,fillColor=None, lineColor=colors[i], lineWidth=2)
     target_circles.append(roi_circle_i)
     hit_counter.append(0)
     print (hit_counter)
@@ -264,6 +272,45 @@ def further_than_circles(position, circle_center, ball_center):
     print(f'further {further}')
     return(further)
 
+
+def wait_for_keypress(key_list:list):
+    continueRoutine = True
+    while continueRoutine:
+        theseKeys = event.getKeys(keyList=key_list)
+        if len(theseKeys) > 0:  # at least one key was pressed
+                # a response ends the routine
+                continueRoutine = False
+
+
+def run_instructions(instruct_text):
+    instruct_text.draw()
+    win.flip()
+    wait_for_keypress(['space'])
+
+ball = visual.Circle(win, 
+                    pos=(0,0), 
+                    radius=0.03,
+                    fillColor='white',
+                    lineColor='white',
+                    lineWidth=3)
+
+def calculate_ball_position(circle_reference_position, activation, ball_x_position, ball_y_position):
+    # New cursor position (of ball) will be dot product of position (negative if DMN, positive if CEN) and activity (always positive)
+    cursor_position = np.dot(circle_reference_position, activation)
+    # The position of the target circle cumulatively adds the scaled cursor position on each frame
+    ball_y_position =ball_y_position+ (np.real(cursor_position) * (scale_factor_z2pixels/internal_scaler) / tr_to_frame_ratio) 
+    ball_x_position=ball_x_position+ (np.imag(cursor_position) * scale_factor_z2pixels/internal_scaler / tr_to_frame_ratio )
+    ball_position=(ball_x_position,ball_y_position)
+    #print("Ball position:", ball_position)
+    return(ball_position)    
+
+
+instruct_text = visual.TextStim(win=win, ori=0, name='instruct_text',
+    text=u'replace me', font=u'Arial',
+    pos=[0, 0], height=0.06, wrapWidth=1.2,
+    color=u'white', colorSpace='rgb', opacity=1,
+    depth=0.0)
+
 # Initialize components for Routine "finish"
 finishClock = core.Clock()
 text_5 = visual.TextStim(win=win, ori=0, name='text_5',
@@ -276,89 +323,12 @@ text_5 = visual.TextStim(win=win, ori=0, name='text_5',
 globalClock = core.Clock()  # to track the time since experiment started
 routineTimer = core.CountdownTimer()  # to track time remaining of each (non-slip) routine 
 
-#------Prepare to start Routine "instructions"-------
-t = 0
-instructionsClock.reset()  # clock 
-frameN = -1
-# update component parameters for each repeat
-key_resp_2 = event.BuilderKeyResponse()  # create an object of type KeyResponse
-key_resp_2.status = NOT_STARTED
-# keep track of which components have finished
-instructionsComponents = []
-instructionsComponents.append(text)
-instructionsComponents.append(key_resp_2)
-for thisComponent in instructionsComponents:
-    if hasattr(thisComponent, 'status'):
-        thisComponent.status = NOT_STARTED
 
-#-------Start Routine "instructions"-------
-continueRoutine = True
-while continueRoutine:
-    # get current time
-    t = instructionsClock.getTime()
-    frameN = frameN + 1  # number of completed frames (so 0 is the first frame)
-    # update/draw components on each frame
-    
-    # *text* updates
-    if t >= 0.0 and text.status == NOT_STARTED:
-        # keep track of start time/frame for later
-        text.tStart = t  # underestimates by a little under one frame
-        text.frameNStart = frameN  # exact frame index
-        text.setAutoDraw(True)
-    
-    # *key_resp_2* updates
-    if t >= 0.0 and key_resp_2.status == NOT_STARTED:
-        # keep track of start time/frame for later
-        key_resp_2.tStart = t  # underestimates by a little under one frame
-        key_resp_2.frameNStart = frameN  # exact frame index
-        key_resp_2.status = STARTED
-        # keyboard checking is just starting
-        key_resp_2.clock.reset()  # now t=0
-        event.clearEvents(eventType='keyboard')
-    if key_resp_2.status == STARTED:
-        theseKeys = event.getKeys(keyList=['space','1','2'])
-        
-        # check for quit:
-        if "escape" in theseKeys:
-            endExpNow = True
-        if len(theseKeys) > 0:  # at least one key was pressed
-            key_resp_2.keys = theseKeys[-1]  # just the last key pressed
-            key_resp_2.rt = key_resp_2.clock.getTime()
-            # a response ends the routine
-            continueRoutine = False
-    
-    # check if all components have finished
-    if not continueRoutine:  # a component has requested a forced-end of Routine
-        routineTimer.reset()  # if we abort early the non-slip timer needs reset
-        break
-    continueRoutine = False  # will revert to True if at least one component still running
-    for thisComponent in instructionsComponents:
-        if hasattr(thisComponent, "status") and thisComponent.status != FINISHED:
-            continueRoutine = True
-            break  # at least one component has not yet finished
-    
-    # check for quit (the Esc key)
-    if endExpNow or event.getKeys(keyList=["escape"]):
-        core.quit()
-    
-    # refresh the screen
-    if continueRoutine:  # don't flip if this routine is over or we'll get a blank screen
-        win.flip()
-    else:  # this Routine was not non-slip safe so reset non-slip timer
-        routineTimer.reset()
+for instructions_slide in ['instructions1', 'instructions2']:
+    instruct_text.setText(instructions_slide)
+    run_instructions(instruct_text)
+thisExp.addData('tr', exp_tr)
 
-#-------Ending Routine "instructions"-------
-for thisComponent in instructionsComponents:
-    if hasattr(thisComponent, "setAutoDraw"):
-        thisComponent.setAutoDraw(False)
-# check responses
-if key_resp_2.keys in ['', [], None]:  # No response was made
-   key_resp_2.keys=None
-# store data for thisExp (ExperimentHandler)
-thisExp.addData('key_resp_2.keys',key_resp_2.keys)
-if key_resp_2.keys != None:  # we had a response
-    thisExp.addData('key_resp_2.rt', key_resp_2.rt)
-thisExp.nextEntry()
 
 #------Prepare to start Routine "trigger"-------
 t = 0
@@ -532,27 +502,6 @@ for thisComponent in baselineComponents:
     if hasattr(thisComponent, "setAutoDraw"):
         thisComponent.setAutoDraw(False)
 
-ball = visual.Circle(win, 
-                    pos=(0,0), 
-                    radius=0.03,
-                    fillColor='white',
-                    lineColor='white',
-                    lineWidth=3)
-
-activity = 0
-direction=0
-
-def calculate_ball_position(circle_reference_position, activation, ball_x_position, ball_y_position):
-    # New cursor position (of ball) will be dot product of position (negative if DMN, positive if CEN) and activity (always positive)
-    cursor_position = np.dot(circle_reference_position, activation)
-    # The position of the target circle cumulatively adds the scaled cursor position on each frame
-    ball_y_position =ball_y_position+ (np.real(cursor_position) * (scale_factor_z2pixels/internal_scaler) / tr_to_frame_ratio) 
-    ball_x_position=ball_x_position+ (np.imag(cursor_position) * scale_factor_z2pixels/internal_scaler / tr_to_frame_ratio )
-    ball_position=(ball_x_position,ball_y_position)
-    #print("Ball position:", ball_position)
-    return(ball_position)
-
-
 #------Prepare to start Routine "feedback"-------
 t = 0
 feedbackClock.reset()  # clock 
@@ -563,6 +512,18 @@ subject_key_target.status = NOT_STARTED
 subject_key_reset = event.BuilderKeyResponse()  # create an object of type KeyResponse
 subject_key_reset.status = NOT_STARTED
 routineTimer.add(RUN_TIME)
+
+
+# Initialize parameters before feedback
+activity = 0
+direction=0
+
+# Draw initial stim positions
+for i in range(n_roi):
+    target_circles[i].draw()
+ball.draw()
+win.flip()
+
 
 #-------Start Routine "feedback"-------
 continueRoutine = True
@@ -668,17 +629,20 @@ while continueRoutine and routineTimer.getTime() > 0:
     # calculate next ball position
     ball.pos = calculate_ball_position(circle_reference_position=direction, activation=activity, ball_x_position=ball.pos[0], ball_y_position=ball.pos[1])             
 
-    # Draw stimuli
-    for i in range(n_roi):
-        target_circles[i].draw()
-    ball.draw()
-    
+    # Draw stimuli (if on feedback mode)
+    if expInfo['feedback_on'] == 'Feedback':
+        for i in range(n_roi):
+            target_circles[i].draw()
+        ball.draw()
+
+        # flip window
+        win.flip()
+
     # quit if escape pressed
     if endExpNow or event.getKeys(keyList=["escape"]):
         core.quit()
     
-    # flip window
-    win.flip()
+
 # END OF FEEDBACK LOOP
       
 #------Prepare to start Routine "baseline"-------
