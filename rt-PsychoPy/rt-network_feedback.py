@@ -77,12 +77,16 @@ if not os.path.isdir('data'):
 filename = 'data' + os.path.sep + '%s_DMN_Feedback_%s' %(expInfo['participant'],expInfo['run'])
 
 # if filepath already exists, stop run and check with user
-if os.path.exists(filename + '_roi_outputs.csv'):
+while os.path.exists(filename + '_roi_outputs.csv'):
     warning_box = gui.Dlg(title = 'WARNING')
-    warning_box.addText(f'Already have data for {expInfo["participant"]} run {expInfo["run"]}!\nClick OK to overwrite the file, or Cancel to exit without overwriting')
+    warning_box.addText(f'Already have data for {expInfo["participant"]} run {expInfo["run"]}!\nClick OK to write to run  {int(expInfo["run"]) + 1} instead \
+        Or, click Cancel to exit')
     warning_box.show()
     if not warning_box.OK:
         core.quit()
+    else:
+        expInfo['run'] = int(expInfo['run']) +1 
+        filename = 'data' + os.path.sep + '%s_DMN_Feedback_%s' %(expInfo['participant'],expInfo['run'])
 
 # If first run, use default scale factor
 # Otherwise, adjust scale factor up/down if needed
@@ -483,8 +487,8 @@ while continueRoutine and routineTimer.getTime() > 0:
         text_2.setAutoDraw(True)
         text_relax.setAutoDraw(True)
     if text_2.status == STARTED and t >= (0.0 + (BaseLineTime-win.monitorFramePeriod*0.75)): #most of one frame period left
-        text_2.setAutoDraw(False)
-        text_relax.setAutoDraw(False)
+        pass
+        
     
     # check if all components have finished
     if not continueRoutine:  # a component has requested a forced-end of Routine
@@ -505,6 +509,8 @@ while continueRoutine and routineTimer.getTime() > 0:
         win.flip()
 
 #-------Ending Routine "baseline"-------
+text_2.setAutoDraw(False)
+text_relax.setAutoDraw(False)
 for thisComponent in baselineComponents:
     if hasattr(thisComponent, "setAutoDraw"):
         thisComponent.setAutoDraw(False)
