@@ -139,7 +139,7 @@ logging.console.setLevel(logging.WARNING)  # this outputs to the screen, not a f
 # Column headers for outfile
 with open(filename+'_roi_outputs.csv', 'a') as csvfile:
     stim_writer = csv.writer(csvfile, delimiter=',', quotechar='|', quoting=csv.QUOTE_MINIMAL)
-    stim_writer.writerow(['tr', 'scale_factor', 'time', 'cen', 'dmn', 'stage', 'cen_cumulative_hits', 'dmn_cumulative_hits', 'ball_y_position', 'top_circle_y_position', 'bottom_circle_y_position'])       
+    stim_writer.writerow(['tr', 'scale_factor', 'time', 'time_plus_1.2', 'cen', 'dmn', 'stage', 'cen_cumulative_hits', 'dmn_cumulative_hits', 'ball_y_position', 'top_circle_y_position', 'bottom_circle_y_position'])       
 
 # An ExperimentHandler isn't essential but helps with data saving
 thisExp = data.ExperimentHandler(name=expName, version='',
@@ -467,7 +467,7 @@ while continueRoutine and routineTimer.getTime() > 0:
         with open(filename+'_roi_outputs.csv', 'a') as csvfile:
             stim_writer = csv.writer(csvfile, delimiter=',', quotechar='|', quoting=csv.QUOTE_MINIMAL)
             print(([frame, triggerClock.getTime(), roi_raw_activations[0], roi_raw_activations[1]]))
-            stim_writer.writerow([frame, expInfo['scale_factor'], triggerClock.getTime(), roi_raw_activations[0], roi_raw_activations[1], 'baseline', 0, 0,  np.nan, np.nan, np.nan])      
+            stim_writer.writerow([frame, expInfo['scale_factor'], triggerClock.getTime(), triggerClock.getTime() + 1.2, roi_raw_activations[0], roi_raw_activations[1], 'baseline', 0, 0,  np.nan, np.nan, np.nan])      
         frame +=1       
 
 
@@ -628,7 +628,7 @@ while continueRoutine and routineTimer.getTime() > 0:
         with open(filename+'_roi_outputs.csv', 'a') as csvfile:
             stim_writer = csv.writer(csvfile, delimiter=',', quotechar='|', quoting=csv.QUOTE_MINIMAL)
             print(([frame, triggerClock.getTime(), roi_raw_activations[0], roi_raw_activations[1]]))
-            stim_writer.writerow([frame, expInfo['scale_factor'], triggerClock.getTime(), roi_raw_activations[0], roi_raw_activations[1], 'feedback', hit_counter[0], hit_counter[1], ball.pos[1], target_circles[0].pos[1], target_circles[1].pos[1]])   
+            stim_writer.writerow([frame, expInfo['scale_factor'], triggerClock.getTime(), triggerClock.getTime() + 1.2, roi_raw_activations[0], roi_raw_activations[1], 'feedback', hit_counter[0], hit_counter[1], ball.pos[1], target_circles[0].pos[1], target_circles[1].pos[1]])   
 
         # Increment the frame
         frame += 1
