@@ -17,7 +17,7 @@ r2_MRI=10;  % green button for response key 2 (cat1)     female\mountain
 
 scene_cats={'mountain' 'city'}; %city 2nd
 
-face_cats={'female' 'male'};
+face_cats={'female' 'male'}; 
 
 y_size=300; %columns/width % good for 1024 x 768 res
 x_size=300;  %rows/height
@@ -32,7 +32,7 @@ x_size=300;  %rows/height
 % def={'XXX','XXX','XX','.05','240','0','0','0','.9','.05','0','2','20'};
 % answer = inputdlg(prompt, 'Experimental setup information',1,def);
 % [subName, sesName, runNo, Rate, duration, fMRI, Prac, FHR, Prob, Hold,SR,Task,framesper] = deal(answer{:});
-%
+% 
 % %norm=str2num(norm);
 % norm=1;
 % Rate=str2num(Rate);
@@ -53,8 +53,8 @@ x_size=300;  %rows/height
 % framesper=str2num(framesper);
 
 % LIMITED DIALOGUE BOX FOR R33 USE
-prompt = {'Enter subject name','Session (localizer, nf1, nf2, nf3, nf4, nf5)','Run'};
-def={'XXX','XXX','XXX'};
+prompt = {'Enter subject name','Session (nf15, nf30)','Run (01)'};
+def={'XXX','nfXX','01'};
 answer = inputdlg(prompt, 'Experimental setup information',1,def);
 [subName, sesName, runNo] = deal(answer{:});
 
@@ -68,7 +68,7 @@ Prob = .9;
 HoldTime = .05;
 Scram = 0;
 Task = 2; % 1=go-nogo face gender %2=go-nogo scene type %3=2AFC face gender %4=2AFC scene type
-framesper = 20; % modified specifically for NUBIC
+framesper = 20; % modified specifically for NUBIC 
 
 norm=1;
 luminance=110;
@@ -104,11 +104,11 @@ faces_cat2=dir([picDir_F{2} '*.bmp']);
 scrambled_faces=dir([picDir_SF '*.jpg']);
 
 if Scram==1     %sramble scene
-    picture_names={scenes_scrambled scenes_scrambled faces_cat1 faces_cat2};
+    picture_names={scenes_scrambled scenes_scrambled faces_cat1 faces_cat2};   
     picDir_list={picDir_SR picDir_SR picDir_F{1} picDir_F{2}};
 
 elseif Scram==2  %sramble face
-    picture_names={scenes_cat1 scenes_cat2 scrambled_faces scrambled_faces};
+    picture_names={scenes_cat1 scenes_cat2 scrambled_faces scrambled_faces};   
     picDir_list={picDir_S{1} picDir_S{2} picDir_SF picDir_SF};
 
 else
@@ -250,16 +250,16 @@ Screen('TextSize',window, 20);
 Screen('TextStyle', window, 0);
 
 for n=1:numberoftrials
+    
 
-
-%
+%     
 %     CenterText2(window,['actual rate: ' num2str(Rate)],[0 0 0],0, 100);
 %     CenterText2(window,['actual duration: ' num2str(duration)],[0 0 0],0, 200);
-
+    
     CenterText2(window,['Loading: ' num2str(round((n/numberoftrials*100))) '% completed'],[0 0 0],0, 0);
-
+    
     Screen('Flip',window);
-
+    
     %list.jpeg{n,1}=jpeg_M1;
     % pick a random face and scene- T2 and don't let it be the same one as last
     % trial
@@ -273,7 +273,7 @@ for n=1:numberoftrials
     while scene_r==scene_r2 & scene_type==scene_type_r2
         scene_r2=randi(size(picture_names{scene_type_r2},1));
     end;
-
+    
     jpeg3 = imread([picDir_list{face_type_r2+2} picture_names{1,face_type_r2+2}(face_r2,1).name]);
     [x,y]=size(jpeg3);
     %to resize jpeg3%%%%
@@ -287,7 +287,7 @@ for n=1:numberoftrials
     if Flip==2 %flip face
         jpeg3=flipud(jpeg3);
     end;
-
+    
     jpeg4 = imread([picDir_list{scene_type_r2} picture_names{1,scene_type_r2}(scene_r2,1).name]);
 %     if n==numberoftrials
 %         jpeg4=jpeg_ends;
@@ -313,11 +313,11 @@ for n=1:numberoftrials
         jpeg4(find(jpeg_face==jpeg_face(1,1)))=255;
         jpeg4=jpeg4+(luminance-mean(jpeg4(find(jpeg4~=255))));
     end;
-
-
+    
+    
     data(n,1)=scene_type; data(n,2)=scene_r;  data(n,3)=scene_type_r2; data(n,4)=scene_r2;
     data(n,5)=face_type; data(n,6)=face_r; data(n,7)=face_type_r2; data(n,8)=face_r2;
-
+    
     % average face and scene
     jpeg_M2=double(jpeg3)*facey+double(jpeg4)*housey;
     jpeg_M2(find(jpeg_face==jpeg_face(1,1)))=255;
@@ -330,9 +330,9 @@ for n=1:numberoftrials
 %         jpeg_M2(find(jpeg_face==jpeg_face(1,1)))=255;
 %         jpeg_M2=jpeg_M2+(luminance-mean(jpeg_M2(find(jpeg_M2~=255))));
 %     end;
-
-    diff_M=double(jpeg_M2)-double(jpeg_M1);
-
+    
+    diff_M=double(jpeg_M2)-double(jpeg_M1); 
+    
 %     for j=1:25
 %         jpeg=(jpeg_M1+(diff_M/25)*(j-1));
 %         jpeg(find(jpeg_face==jpeg_face(1,1)))=255;
@@ -350,7 +350,7 @@ for n=1:numberoftrials
     face_r=face_r2;
     scene_r=scene_r2;
     scene_type=scene_type_r2;
-
+    
 end;
 
 list.pics=data(:,1:8);
@@ -358,11 +358,11 @@ list.pics=data(:,1:8);
 %diff_M=double(jpeg_M2)-double(jpeg_M1);  %diff_M between trial n and n+1
 
   data(numberoftrials,10)=0;
-% %
+% % 
  %jpeg=(jpeg_M1);
-%
+% 
  ttt=zeros(numberoftrials,framesper);
-%
+% 
 res_trial=0;
 
 keyIsDown=0;
@@ -374,37 +374,37 @@ StimulusOnsetTime=GetSecs;
 % Screen('TextFont',window, 'Geneva');
 % Screen('TextSize',window, 40);
 % Screen('TextStyle', window, 0);
-%
+% 
 % CenterText2(window,['actual rate: ' num2str(Rate)],[0 0 0],0, 100);7
 % CenterText2(window,['actual duration: ' num2str(duration)],[0 0 0],0, 0);
 
 % Screen('Flip',window);
-%
+% 
 % KbWait;
 
 % Screen('Flip',window);
-%
+% 
 % WaitSecs(.5);
 
 Screen('TextSize',window, 40);
 
-FlushEvents('KeyDown');
+FlushEvents('KeyDown'); 
 
 if fMRI==1
         CenterText2(window,['Get Ready'],[0 0 0 ],0,300);
         KeyPressed='';
-
+        
 elseif fMRI==0
         CenterText2(window,['Get Ready'],[0 0 0],0, 300);
 end;
 
 
 Screen(window,'PutImage',list.jpeg{1,1});
-
+    
 Screen('Flip',window);
-
+    
 if fMRI==0
-
+    
            while KbCheck; end % Wait until all keys released
                     gotTrig = 0;
                     %writeLog(lf, 'waiting for trigger...\n');
@@ -415,22 +415,22 @@ if fMRI==0
                             textStr = [textStr{:}];
                         end
                         %if (keyCode(trigKey) || keyCode(returnKey))
-                        if ~isempty(strfind(textStr, '5'))
+                        if ~isempty(strfind(textStr, '5')) 
 %                            ~isempty(strfind(textStr, 'space'))
                         %if (strcmp(textStr, '=+') || strcmp(textStr, 'return'))
                             gotTrig = 1;
                         end
                     end
-RestrictKeysForKbCheck([49]); % record presses of "1" only
-%RestrictKeysForKbCheck([30, 31, 32, 33, 39]); % added
+RestrictKeysForKbCheck([49]); % record presses of "1" only 
+%RestrictKeysForKbCheck([30, 31, 32, 33, 39]); % added    
 %     KbWait(KB_id);
 elseif fMRI==1
     KbWait2(trigger_id);
 end;
 
-Screen(window,'PutImage',list.jpeg{1,1});
+Screen(window,'PutImage',list.jpeg{1,1}); 
 
-Screen('Flip',window);
+Screen('Flip',window); 
 
 starttime=GetSecs;
 
@@ -450,9 +450,9 @@ end;
 
 
 for n=1:numberoftrials
-
+    
     res_count=0; last_resp_frame=0;
-
+    
     for j=1:framesper
         %t2=GetSecs;
         res_trial=0;
@@ -461,19 +461,19 @@ for n=1:numberoftrials
         Screen(window,'PutImage',jpeg);
 
         [VBLTimestamp StimulusOnsetTime]=Screen('Flip',window,StimulusOnsetTime+WaitTime-.010);
-
+        
         ttt(n,j)=StimulusOnsetTime;
-
-        if j==1 data(n,9)=StimulusOnsetTime; %WaitSecs(.800-Rate);
+        
+        if j==1 data(n,9)=StimulusOnsetTime; %WaitSecs(.800-Rate); 
         end;
-
+        
         if j==framesper WaitTime=HoldTime; else WaitTime=Rate; end;
-
+        
 %         if fMRI==0 %& j<25
             while GetSecs-StimulusOnsetTime<(WaitTime-.030),
                 keyIsDown=0;
                 FlushEvents('KeyDown');
-
+    
                 [keyIsDown, secs, keyCode] = KbCheck; %removed KbCheck(kb_id) for fMRI
                 if keyIsDown==1 & res_trial==0 & (j-last_resp_frame>5 | last_resp_frame==0);
                     data(n,10+res_count*3)=sum(find(keyCode));
@@ -522,8 +522,8 @@ for n=1:numberoftrials
 %         while GetSecs-t2<Rate
 %         end;
     end;
-
-
+    
+    
 end;
 
 if fMRI
@@ -547,7 +547,7 @@ C=clock;
 mkdir(strcat('data/',subName));
 cd(strcat('data/',subName))
 'saving data- wait!'
-save(['sub-R33rtsz' subName '_ses-' sesName '_task-cpt_run-' num2str(runNo) '_prac.mat'],'data', 'response','ttt','FHR','Rate','Prob','Task','Scram', 'framesper', 'numberoftrials', 'subName','starttime','endtime','x_size','y_size');
+save(['sub-R61MBNFD' subName '_ses-' sesName '_task-cpt_run-' num2str(runNo) '_prac.mat'],'data', 'response','ttt','FHR','Rate','Prob','Task','Scram', 'framesper', 'numberoftrials', 'subName','starttime','endtime','x_size','y_size');
 
 %%%%%%%%%% save bids-formatted tsv file (JZ) %%%%%%%%%%%%%%%%
 nTrials = size(data,1);
@@ -577,14 +577,14 @@ for i = 1:nTrials
             ResponseType(i) = 1; % hit
         end
     end
-end
+end      
 
 % StimFile = ;
 CoherenceAtResponse = response(:,4);
 % ZScore = zscore(
 
 tsv_table = table(Onset, Duration, TrialType, Response, ResponseTime, ResponseType, CoherenceAtResponse);
-tsv_name = strcat('sub-R33rtsz', subName, '_ses-', sesName,'_task-cpt_run-', num2str(runNo), '_prac.txt'); % check sesName and runNo
+tsv_name = strcat('sub-R61MBNFD', subName, '_ses-', sesName,'_task-cpt_run-', num2str(runNo), '_prac.txt'); % check sesName and runNo
 writetable(tsv_table,tsv_name,'Delimiter','\t')
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
