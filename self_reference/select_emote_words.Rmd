@@ -69,7 +69,12 @@ top_240 = top_200_selections %>%
     group_by(valence_condition) %>%
     slice_max(n = 120, order_by = freq_BNC, with_ties = FALSE)
 
+```
 
+
+# Stratify based on valence (condition - positive vs. negative), valence (within-condition), arousal, freq_BNC
+
+```{r}
 top_240 = top_240 %>%
     dplyr::select(word, valence_condition) %>%
     left_join(emote) %>%
@@ -83,23 +88,7 @@ top_240 = top_240 %>%
  
 set.seed(11291993)
 
-
-
-
-
-# t.test(strast$SAMP1$adim1, strast$SAMP2$adim1)
-# t.test(strast$SAMP1$adim2, strast$SAMP2$adim2)
-# t.test(strast$SAMP1$freq_BNC, strast$SAMP2$freq_BNC)
-# 
-# table(strast$SAMP1$valence)
-# table(strast$SAMP1$freq_BNC_strat)
-# 
-
-# top_240 %>%
-#     group_by(valence_condition, valence_strat, freq_BNC_strat, arousal_strat) %>%
-#     count()
-
-
+# stratify 20 times, pick the one with the smallest statistical differences between bins
 for (i in 1:20){
     strast = stratified(indt = top_240,
                     group = c('valence_condition', 'valence_strat', 'freq_BNC_strat', 'arousal_strat'), size = 5, bothSets = TRUE)
@@ -125,8 +114,7 @@ for (i in 1:20){
     }
 }
 
-
-
+# choose iteration with smallest differences
 best_iter = many_summaries %>%
     group_by(iter) %>%
     summarise(mean_pval = mean(p.value)) %>%
@@ -139,6 +127,7 @@ ggplot(many_summaries, aes(x = factor(iter), y = p.value)) +
 best_stratification = many_stratifications %>%
     dplyr::filter(iter == best_iter$iter[1])
 
+# wrute out the stratification to csv
 write.csv(best_stratification, file = 'emote_240_words_stratified.csv', row.names = FALSE)
 ```
 
