@@ -61,18 +61,6 @@ default_scale_factor = 25
 # another interal scale factor to make sure scaling of feedback is appropriate (higher means ball moves up/down more SLOWLY)
 internal_scaler=10
 
-'''
-Instructions updates -- more reinforcement of what they were already doing in mindfulness
-Selection of anchor (personalized) into the instructions
-reminders based on mindfulness skills!
-take out 5sec
-Do we need a 4min mindfulness session in the scanner before feedback?
-
-enhance smoothness of movement
-
-During fixation -- just relax.
-'''
-
 # Setup files for saving
 if not os.path.isdir('data'):
     os.makedirs('data')  # if this fails (e.g. permissions) we will get error
@@ -80,7 +68,7 @@ if not os.path.isdir('data'):
 # output file string
 filename = 'data' + os.path.sep + '%s_DMN_Feedback_%s' %(expInfo['participant'],expInfo['run'])
 
-# if filepath already exists, stop run
+# if filepath already exists, stop run and check with user
 if os.path.exists(filename + '_roi_outputs.csv'):
     warning_box = gui.Dlg(title = 'WARNING')
     warning_box.addText(f'Already have data for {expInfo["participant"]} run {expInfo["run"]}!\nClick OK to overwrite the file, or Cancel to exit without overwriting')
@@ -88,10 +76,8 @@ if os.path.exists(filename + '_roi_outputs.csv'):
     if not warning_box.OK:
         core.quit()
 
-
-
-
-
+# If first run, use default scale factor
+# Otherwise, adjust scale factor up/down if needed
 if int(expInfo['run']) == 1:
     print('Run 1: starting with default scale scale factor')
     expInfo['scale_factor'] = default_scale_factor
@@ -267,14 +253,14 @@ def in_circle(center_x, center_y, radius, x, y):
     return square_dist <= radius ** 2
 
 
-# checks if ball has gone out of bounds above/below bounds of the circles
-def further_than_circles(position, circle_center, circle_radius, ball_center):
+# checks if ball has gone out of bounds above/below the middle of a circle
+def further_than_circles(position, circle_center, ball_center):
     # if ball is above center of top circle
     if position == 0:
-        further = ball_center > circle_center + circle_radius
+        further = ball_center > circle_center
     # if ball is below center of bottom circle
     elif position == 1:
-        further = ball_center < circle_center - circle_radius
+        further = ball_center < circle_center
     print(f'further {further}')
     return(further)
 
@@ -657,10 +643,9 @@ while continueRoutine and routineTimer.getTime() > 0:
                 print (roi_names_list[0],"hits: ",hit_counter[0], '   ', roi_names_list[1],"hits: ",hit_counter[1])
                 direction = positions[i]
 
-            # if the ball has gone futher from 0 compared to the outside of either circle, assign a hit and reset to 0
+            # if the ball has passed the middle of either target circle, put position back to 0
             if further_than_circles(position=i, 
                 circle_center=target_circles[i].pos[1], 
-                circle_radius=target_circles[i].radius, 
                 ball_center=ball.pos[1]):
 
                 # increment hig count
@@ -687,8 +672,12 @@ while continueRoutine and routineTimer.getTime() > 0:
     for i in range(n_roi):
         target_circles[i].draw()
     ball.draw()
-        
-    # This should be the TR?
+    
+    # quit if escape pressed
+    if endExpNow or event.getKeys(keyList=["escape"]):
+        core.quit()
+    
+    # flip window
     win.flip()
 # END OF FEEDBACK LOOP
       
