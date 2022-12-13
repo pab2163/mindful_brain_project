@@ -139,7 +139,7 @@ logging.console.setLevel(logging.WARNING)  # this outputs to the screen, not a f
 # Column headers for outfile
 with open(filename+'_roi_outputs.csv', 'a') as csvfile:
     stim_writer = csv.writer(csvfile, delimiter=',', quotechar='|', quoting=csv.QUOTE_MINIMAL)
-    stim_writer.writerow(['tr', 'scale_factor', 'time', 'cen', 'dmn', 'stage', 'cen_cumulative_hits', 'dmn_cumulative_hits', 'ball_y_position', 'top_circle_y_position', 'bottom_circle_y_position'])       
+    stim_writer.writerow(['volume', 'scale_factor', 'time', 'cen', 'dmn', 'stage', 'cen_cumulative_hits', 'dmn_cumulative_hits', 'ball_y_position', 'top_circle_y_position', 'bottom_circle_y_position'])       
 
 # An ExperimentHandler isn't essential but helps with data saving
 thisExp = data.ExperimentHandler(name=expName, version='',
@@ -201,7 +201,7 @@ text_2 = visual.TextStim(win=win, ori=0, name='text_2',
 
 text_relax = visual.TextStim(win=win, ori=0, name='text_relax',
     text=u'Relax',    font=u'Arial',
-    pos=[0, -.2], height=0.3, wrapWidth=None,
+    pos=[0, -.2], height=0.07, wrapWidth=None,
     color=u'white', colorSpace='rgb', opacity=1,
     depth=0.0)
 
