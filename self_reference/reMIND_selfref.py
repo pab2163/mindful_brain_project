@@ -27,7 +27,7 @@ block_order = pd.DataFrame({'block': np.arange(10),
 
 # Store info about the experiment session
 expName = 'task-selfref_run-01'  # from the Builder filename that created this script
-expInfo = {'participant':'', 'session':1, 'run':1}
+expInfo = {'participant':'', 'session':1, 'run':1, 'friend_name':''}
 dlg = gui.DlgFromDict(dictionary=expInfo, title=expName)
 if dlg.OK == False: core.quit()  # user pressed cancel
 expInfo['date'] = data.getDateStr()  # add a simple timestamp
@@ -40,11 +40,10 @@ if not os.path.exists(f"{_thisDir}/reMIND/{expInfo['participant']}"):
     os.mkdir(f"{_thisDir}/reMIND/{expInfo['participant']}")
 
 # pull word order for the participant
-participant_number = int(expInfo['participant'].replace('remind-', ''))
+participant_number = int(expInfo['participant'].replace('REMIND-', ''))
 word_order_file = f"word_list_splits/word_order_{participant_number}.csv"
 word_order = pd.read_csv(word_order_file)
 word_list = word_order[word_order.run == expInfo['run']]
-#print(word_list)
 
 negative_words = list(word_list.word[word_list.valence_condition == 'negative'])
 positive_words = list(word_list.word[word_list.valence_condition == 'positive']) 
@@ -80,7 +79,8 @@ win = visual.Window(size=(1920, 1080), fullscr=True, screen=1, allowGUI=False, a
 # Initialize components for Routine "instruct"
 instructClock = core.Clock()
 instruct_text = visual.TextStim(win=win, ori=0, name='instruct_text',
-    text=u'Welcome!\n\n Next, you will see a set of adjectives.\n\n Then please make a yes / no decision about each word', font='Arial',
+    text=u"Welcome!\n\nDuring this task you'll answer a series of YES or NO questions.\
+\n\nYou'll have a chance to answer 3 different types of questions.", font='Arial',
     pos=[0.0, 0], height=0.08, wrapWidth=1.5,
     color='white', colorSpace='rgb', opacity=1,
     depth=0.0)
@@ -199,17 +199,22 @@ def run_block(n_trials, block_type, block_number, practice=False):
     elif block_type == 'self':
         block_type_text.setText(f'Does this word describe you?')
     elif block_type == 'other':
-        block_type_text.setText(f'Does this word describe your friend?')
+        block_type_text.setText(f'Does this word describe {expInfo["friend_name"]}?')
     block_type_text.height = 0.2    
     block_type_text.draw()
     win.flip()
-    core.wait(block_intro_time)
+    
+    # Show questions for longer during practice
+    if not practice:
+        core.wait(block_intro_time)
+    elif practice:
+        core.wait(4)
     if block_type == 'positive':
         block_type_text.setText(f'Is this word positive?')
     elif block_type == 'self':
         block_type_text.setText(f'Are you?')
     elif block_type == 'other':
-        block_type_text.setText(f'Is your friend?')
+        block_type_text.setText(f'Is {expInfo["friend_name"]}?')
     block_type_text.height = 0.08
     if not practice:
         # get timings just for the current block
@@ -303,14 +308,14 @@ def run_trial(trial_type, fixation_duration, practice=False):
 
 
 def run_practice():
-    instruct_text.setText('Each time you see a word, you will be asked to make one of the following decisions:\
-        \n\n\n1) Does the word describe you? \
-        \n\n 2) Does the word describe your friend? \
-        \n\n 3) Is the word positive?')
+    instruct_text.setText(f'The 3 types YES or NO questions you will see will be:\
+\n\n1) Does a word describe you?\
+\n\n2) Does a word describe {expInfo["friend_name"]} (who you mentioned earlier)?\
+\n\n3) Is a word positive?')
     instruct_text.draw()
     win.flip()
     wait_for_keypress(key_list=['space'])
-    instruct_text.setText('Each time you see a word:\
+    instruct_text.setText('Each time you answer a question:\
         \n\n\npress with your index finger to answer NO\n\npress with your middle finger to answer YES')
     instruct_text.draw()
     win.flip()
@@ -330,6 +335,8 @@ def run_practice():
     instruct_text.draw()
     win.flip()
     wait_for_keypress(key_list=['space'])
+
+    # Run actual practice trials
     run_block(n_trials = 0, block_type = 'self', block_number = 0, practice = True)
     run_trial(trial_type = 'self', fixation_duration=1, practice = True)
     run_trial(trial_type = 'self', fixation_duration=1, practice = True)
