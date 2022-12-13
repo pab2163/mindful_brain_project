@@ -73,8 +73,12 @@ internal_scaler=10
 if not os.path.isdir('data'):
     os.makedirs('data')  # if this fails (e.g. permissions) we will get error
 
-# output file string
-filename = 'data' + os.path.sep + '%s_DMN_Feedback_%s' %(expInfo['participant'],expInfo['run'])
+# output file string (different depending on if feedback is being offered)
+if expInfo['feedback_on'] = 'Feedback':
+    filename = 'data' + os.path.sep + '%s_DMN_Feedback_%s' %(expInfo['participant'],expInfo['run'])
+elif expInfo['feedback_on'] = 'No Feedback':
+    filename = 'data' + os.path.sep + '%s_DMN_No_Feedback_%s' %(expInfo['participant'],expInfo['run'])
+
 
 # if filepath already exists, stop run and check with user
 while os.path.exists(filename + '_roi_outputs.csv'):
