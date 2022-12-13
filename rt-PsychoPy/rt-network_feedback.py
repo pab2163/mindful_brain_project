@@ -32,11 +32,7 @@ os.chdir(_thisDir)
 expName = 'DMN_BallTask'  # from the Builder filename that created thi s script
 expInfo = {'participant':'','run':'', 'feedback_on': ['', 'Feedback', 'No Feedback']} 
 
-# Baseline time before feedback (seconds)
-BaseLineTime=30 
 
-# TR (seconds)
-exp_tr=1.2
 murfi_FAKE=False
 
 # Show dialogue box until all participant info has been entered
@@ -56,6 +52,11 @@ expInfo['expName'] = expName
 expInfo['No_of_ROIs'] = 2
 expInfo['Level_1_2_3'] = 1
 expInfo['Run_Time'] = 120
+# Baseline time before feedback (seconds)
+BaseLineTime=30 
+
+# TR (seconds)
+expInfo['tr']=1.2
 
 
 roi_number= str('%s') %(expInfo['No_of_ROIs'])
@@ -63,7 +64,6 @@ roi_number=int(roi_number)
 
 
 # default scale factor (higher means ball moves up/down faster)
-
 default_scale_factor = 25
 
 # another interal scale factor to make sure scaling of feedback is appropriate (higher means ball moves up/down more SLOWLY)
@@ -109,7 +109,7 @@ else:
         
         # if 0 hits at all, increase scale factor
         elif last_run_cen_hits + last_run_dmn_hits == 0:
-            expInfo['scale_factor'] = last_run_scale_factor * 1.5
+            expInfo['scale_factor'] = last_run_scale_factor * 1.25
 
         # otherwise, keep scale factor the same
         else:
@@ -169,7 +169,7 @@ else:
     frameDur = 1.0/60.0 # couldn't get a reliable measure so guess
 
 # Approximately how many frames does the monitor refresh per volume?
-tr_to_frame_ratio = exp_tr/frameDur
+tr_to_frame_ratio = expInfo['tr']/frameDur
 
 
 # Initialize components for Routine "instructions"
@@ -213,7 +213,7 @@ roi_names = ['cen', 'dmn']#, 'mpfc','wm']
 # REPLACE THIS IP WITH THE MURFI COMPUTER'S IP 192.168.2.5
 communicator = MurfiActivationCommunicator('192.168.2.5',
                                            15001, 210,
-                                           roi_names,exp_tr,murfi_FAKE)
+                                           roi_names,expInfo['tr'],murfi_FAKE)
 print ("murfi communicator ok")
 
 text_4 = visual.TextStim(win=win, ori=0, name='text_4',
@@ -323,11 +323,51 @@ text_5 = visual.TextStim(win=win, ori=0, name='text_5',
 globalClock = core.Clock()  # to track the time since experiment started
 routineTimer = core.CountdownTimer()  # to track time remaining of each (non-slip) routine 
 
+no_feedback_run1_text = "Next, you will get to continue the Mental Noting practice you just learned about.\
+    \nBefore, you mentioned using [participant-specific anchor] as an anchor for your Noting Practice. \
+    Try to continue using this as your anchor but it is also okay to switch to a different part of your body.\
+    \nYou’ll see 2 circles and a white ball in the middle on the screen, but they won’t move around for now."
 
-for instructions_slide in ['instructions1', 'instructions2']:
+ready_text="You’ll see the cross (+) on the screen for 30 seconds at the start. \
+    Whenever you see the cross, please don’t practice Noting – just relax.\
+    \nOnce you see the circles appear, please start the Noting practice. \
+    This practice will last 2 min. Press any button to start." 
+
+feedback_run1_text1 = "Great job! Now, you’ll get to continue your Mental Noting with some feedback based on your brain to help your practice. \
+    In this run, you’ll see 2 circles and a white ball in the middle. \
+    When the white ball moves up towards the top circle, this corresponds to the Noting practice.\
+    \nIf the ball gets into either of the circles, it will move back to the center. \
+    Try to keep the ball moving up towards the top circle! How many times can you get to the top?"
+
+feedback_run1_text2 = "Try not focusing or paying too much attention on the ball movement since this can be distracting from the actual Noting Practice, \
+    but rather really try focusing on your sensations from moment to moment, noting them silently in your mind \
+    and just check in on the screen from time to time to see where the ball is going." 
+
+feedback_later_runs_text = "Great job! Next, you’ll get to practice Noting for another two minutes with more feedback from the ball. \
+    Remember to relax when the cross (+) is on the screen and once the circles appear try to keep the ball moving up towards the top circle! \
+    \nThis practice will last 2 min. Press any button to start."
+
+no_feedback_later_runs_text = "Great job! Next, you’ll get to practice Noting for another two minutes. \
+    \nThis time the ball and circles will not move, so you don’t need to check them."
+
+# Depending on whether feedback is offered/which run it is -- show different instruction slides
+if expInfo['feedback_on'] == "No Feedback":
+    if int(expInfo['run']) == 1: 
+        instruction_slide_list = [no_feedback_run1_text, ready_text]
+    else:
+        instruction_slide_list = [no_feedback_later_runs_text, ready_text]
+elif expInfo['feedback_on'] == 'Feedback':
+    if int(expInfo['run']) == 1: 
+        instruction_slide_list = [feedback_run1_text1, feedback_run1_text2, ready_text]
+    else:
+        instruction_slide_list = [feedback_later_runs_text, ready_text]
+
+
+for instructions_slide in instruction_slide_list:
     instruct_text.setText(instructions_slide)
     run_instructions(instruct_text)
-thisExp.addData('tr', exp_tr)
+
+thisExp.addData('temporal_resolution', expInfo['tr'])
 
 
 #------Prepare to start Routine "trigger"-------
