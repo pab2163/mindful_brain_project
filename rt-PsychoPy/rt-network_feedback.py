@@ -30,7 +30,7 @@ os.chdir(_thisDir)
 
 # Store info about the experiment 
 expName = 'DMN_BallTask'  # from the Builder filename that created thi s script
-expInfo = {'participant':'','run':'', 'feedback_on': ['', 'Feedback', 'No Feedback']} 
+expInfo = {'participant':'','run':'', 'anchor': '', 'feedback_on': ['', 'Feedback', 'No Feedback']} 
 
 
 murfi_FAKE=False
@@ -39,7 +39,12 @@ murfi_FAKE=False
 while expInfo['feedback_on'] not in ['Feedback', 'No Feedback']:
     expInfo['feedback_on'] =  ['', 'Feedback', 'No Feedback']
     print('not done yet')
-    dlg = gui.DlgFromDict(dictionary=expInfo, title=expName, labels = {'participant': 'Participant ID', 'run': 'Run', 'feedback_on': 'Display Feedback?'})
+    dlg = gui.DlgFromDict(dictionary=expInfo, title=expName, 
+        labels = {'participant': 'Participant ID', 
+                  'run': 'Run', 
+                  'feedback_on': 'Display Feedback?',
+                  'anchor': 'Participant Anchor'},
+        order = ['participant', 'run', 'feedback_on', 'anchor'])
     if dlg.OK == False: 
         core.quit()  # user pressed cancel
 
@@ -74,9 +79,9 @@ if not os.path.isdir('data'):
     os.makedirs('data')  # if this fails (e.g. permissions) we will get error
 
 # output file string (different depending on if feedback is being offered)
-if expInfo['feedback_on'] = 'Feedback':
+if expInfo['feedback_on']=='Feedback':
     filename = 'data' + os.path.sep + '%s_DMN_Feedback_%s' %(expInfo['participant'],expInfo['run'])
-elif expInfo['feedback_on'] = 'No Feedback':
+elif expInfo['feedback_on']=='No Feedback':
     filename = 'data' + os.path.sep + '%s_DMN_No_Feedback_%s' %(expInfo['participant'],expInfo['run'])
 
 
@@ -331,32 +336,32 @@ text_5 = visual.TextStim(win=win, ori=0, name='text_5',
 globalClock = core.Clock()  # to track the time since experiment started
 routineTimer = core.CountdownTimer()  # to track time remaining of each (non-slip) routine 
 
-no_feedback_run1_text = "Next, you will get to continue the Mental Noting practice you just learned about.\
-    \nBefore, you mentioned using [participant-specific anchor] as an anchor for your Noting Practice. \
-    Try to continue using this as your anchor but it is also okay to switch to a different part of your body.\
-    \nYou’ll see 2 circles and a white ball in the middle on the screen, but they won’t move around for now."
+no_feedback_run1_text = f"Next, you will get to continue the Mental Noting practice you just learned about.\
+    \n\nBefore, you mentioned using your {expInfo['anchor']} as an anchor for your Noting Practice. \
+Try to continue using this as your anchor but it is also okay to switch to a different part of your body.\
+\n\nYou’ll see 2 circles and a white ball in the middle on the screen, but they won’t move around for now."
 
 ready_text="You’ll see the cross (+) on the screen for 30 seconds at the start. \
-    Whenever you see the cross, please don’t practice Noting – just relax.\
-    \nOnce you see the circles appear, please start the Noting practice. \
-    This practice will last 2 min. Press any button to start." 
+Whenever you see the cross, please don’t practice Noting – just relax.\
+\n\nOnce you see the circles appear, please start the Noting practice. \
+This practice will last 2 min. Press any button to start." 
 
 feedback_run1_text1 = "Great job! Now, you’ll get to continue your Mental Noting with some feedback based on your brain to help your practice. \
-    In this run, you’ll see 2 circles and a white ball in the middle. \
-    When the white ball moves up towards the top circle, this corresponds to the Noting practice.\
-    \nIf the ball gets into either of the circles, it will move back to the center. \
-    Try to keep the ball moving up towards the top circle! How many times can you get to the top?"
+\n\nIn this run, you’ll see 2 circles and a white ball in the middle. \
+When the white ball moves up towards the top circle, this corresponds to the Noting practice.\
+\nIf the ball gets into either of the circles, it will move back to the center. \
+\n\nTry to keep the ball moving up towards the top circle! How many times can you get to the top?"
 
-feedback_run1_text2 = "Try not focusing or paying too much attention on the ball movement since this can be distracting from the actual Noting Practice, \
-    but rather really try focusing on your sensations from moment to moment, noting them silently in your mind \
-    and just check in on the screen from time to time to see where the ball is going." 
+feedback_run1_text2 = "Try not focusing or paying too much attention on the ball movement since this can be distracting from the actual Noting Practice.\
+\n\nRather, really try focusing on your sensations from moment to moment, noting them silently in your mind \
+and just check in on the screen from time to time to see where the ball is going." 
 
 feedback_later_runs_text = "Great job! Next, you’ll get to practice Noting for another two minutes with more feedback from the ball. \
-    Remember to relax when the cross (+) is on the screen and once the circles appear try to keep the ball moving up towards the top circle! \
-    \nThis practice will last 2 min. Press any button to start."
+\n\nRemember to relax when the cross (+) is on the screen and once the circles appear try to keep the ball moving up towards the top circle! \
+\n\nThis practice will last 2 min. Press any button to start."
 
 no_feedback_later_runs_text = "Great job! Next, you’ll get to practice Noting for another two minutes. \
-    \nThis time the ball and circles will not move, so you don’t need to check them."
+\nThis time the ball and circles will not move, so you don’t need to check them."
 
 # Depending on whether feedback is offered/which run it is -- show different instruction slides
 if expInfo['feedback_on'] == "No Feedback":
