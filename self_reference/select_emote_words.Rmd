@@ -291,59 +291,38 @@ summary(valence_strat_check)
 write.csv(best_stratification, file = 'emote_240_words_stratified.csv', row.names = FALSE)
 ```
 
-<!-- # Make many orders across the 4 runs -->
+# Make many orders across the 4 runs
 
-<!-- * Participants with even ID #s will see set1 pre (runs 1-2), set2 post (runs 3-4). Vice versa for participants with odd ID #s -->
-<!-- ```{r} -->
-<!-- run_groups = c(rep(1, 30), rep(2, 30)) -->
+* Participants with even ID #s will see set1 pre (runs 1-2), set2 post (runs 3-4). Vice versa for participants with odd ID #s
+```{r}
+run_groups = c(rep(1, 30), rep(2, 30))
 
-<!-- for (seed in 1:100){ -->
-<!--     set.seed(seed) -->
-<!--     word_shuffle = best_stratification %>% -->
-<!--         dplyr::select(word, valence_condition, set) %>% -->
-<!--         group_by(valence_condition, set) %>% -->
-<!--         mutate(run = sample(run_groups, size = n(), replace = FALSE),  -->
-<!--                seed = seed) %>% -->
-<!--         dplyr::mutate(run = case_when( -->
-<!--             seed %% 2 == 0 & run == 1 & set == 1 ~ 1, -->
-<!--             seed %% 2 == 0 & run == 2 & set == 1 ~ 2, -->
-<!--             seed %% 2 == 0 & run == 1 & set == 2 ~ 3, -->
-<!--             seed %% 2 == 0 & run == 2 & set == 2 ~ 4, -->
-<!--             seed %% 2 != 0 & run == 1 & set == 2 ~ 1, -->
-<!--             seed %% 2 != 0 & run == 2 & set == 2 ~  2, -->
-<!--             seed %% 2 != 0 & run == 1 & set == 1 ~ 3, -->
-<!--             seed %% 2 != 0 & run == 2 & set == 1 ~ 4, -->
-<!--         )) %>% -->
-<!--         ungroup() %>% -->
-<!--         dplyr::arrange(run) -->
+for (seed in 1:200){
+    set.seed(seed)
+    word_shuffle = best_stratification %>%
+        dplyr::select(word, valence_condition, set) %>%
+        group_by(valence_condition, set) %>%
+        mutate(run = sample(run_groups, size = n(), replace = FALSE),
+               seed = seed) %>%
+        dplyr::mutate(run = case_when(
+            seed %% 2 == 0 & run == 1 & set == 1 ~ 1,
+            seed %% 2 == 0 & run == 2 & set == 1 ~ 2,
+            seed %% 2 == 0 & run == 1 & set == 2 ~ 3,
+            seed %% 2 == 0 & run == 2 & set == 2 ~ 4,
+            seed %% 2 != 0 & run == 1 & set == 2 ~ 1,
+            seed %% 2 != 0 & run == 2 & set == 2 ~  2,
+            seed %% 2 != 0 & run == 1 & set == 1 ~ 3,
+            seed %% 2 != 0 & run == 2 & set == 1 ~ 4,
+        )) %>%
+        ungroup() %>%
+        dplyr::arrange(run)
 
-<!--     # check that there are 30 words of each valence in each run -->
-<!--     b = table(shuffle$run, shuffle$valence_condition)  -->
-<!--     sum(b == 30) -->
-<!--     assertthat::assert_that(sum(b == 30) == 8, msg = 'Word valence not split evenly across all runs!') -->
+    # check that there are 30 words of each valence in each run
+    b = table(word_shuffle$run, word_shuffle$valence_condition)
+    sum(b == 30)
+    assertthat::assert_that(sum(b == 30) == 8, msg = 'Word valence not split evenly across all runs!')
 
-<!--     write.csv(word_shuffle, paste0('word_list_splits/word_order_', seed, '.csv'), row.names = FALSE) -->
-<!-- } -->
+    write.csv(word_shuffle, paste0('word_list_splits/word_order_', seed, '.csv'), row.names = FALSE)
+}
+```
 
-
-
-
-
-<!-- ``` -->
-
-
-<!-- ```{r} -->
-<!-- emote %>% -->
-<!--     dplyr::filter(adjective == 1) %>% -->
-<!--     dplyr::select(contains('adim')) %>% -->
-<!--     cor() %>% -->
-<!--     corrplot(addCoef.col = 'black', method = 'color') -->
-<!-- ``` -->
-
-
-
-<!-- ```{r} -->
-<!-- # balance on arousal and valence -->
-<!-- # make 100 random orders in files, pull one for each participant at random -->
-<!-- # write in checks -->
-<!-- ``` -->
