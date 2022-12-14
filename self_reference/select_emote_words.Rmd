@@ -29,6 +29,27 @@ freq_data %>%
 
 freq_data %>%
     cor(use = 'pairwise.complete.obs')
+
+emote %>%
+    dplyr::filter(adim1!=-99, adim7!=-99) %>%
+    ggplot(data = ., aes(x = adim1, y = adim7)) +
+    geom_point() +
+    labs(x = 'Valence', y = 'Emotionality') +
+    geom_smooth(method = 'lm')
+
+
+emote %>%
+    dplyr::filter(adim1!=-99, adim7!=-99) %>%
+    ggplot(data = ., aes(x = adim1, y = adim2)) +
+    geom_point() +
+    labs(x = 'Valence', y = 'Arousal') +
+    geom_smooth(method = 'lm')
+
+
+emote %>%
+    dplyr::filter(adim1!=-99, adim7!=-99) %>%
+    dplyr::select(contains('adim')) %>%
+    cor()
 ```
 
 
@@ -115,9 +136,10 @@ selections = readxl::read_excel('emote_top_200_positive_negative_marked_RPA_DP.x
 
 table(selections$...1)
 
-round2 = readxl::read_excel('emote_second_wordset_positive_negative.xls') %>%
-    dplyr::filter(is.na(researcher_remove)) %>%
-    mutate(round = '2') 
+round2 = readxl::read_excel('emote_second_pass_paul_mia_selections.xls') %>%
+    dplyr::filter(researcher_remove=='NA') %>%
+    mutate(round = '2') %>%
+    dplyr::select(-...1, -...7)
 
 round2 = selections %>%
     dplyr:::select(condition = ...1, word, freq_BNC, valence, researcher_remove, round) %>%
@@ -127,7 +149,8 @@ round2 = selections %>%
     dplyr::filter(!is.na(word)) %>%
     dplyr::filter(!valence_abs < 1)
 
-round2 = dplyr::left_join(round2, dplyr::select(emote, word, arousal =adim2), by= 'word')
+round2 = dplyr::left_join(round2, dplyr::select(emote, word, arousal =adim2, emotionality=adim7, meaning=adim5), by= 'word') %>%
+    mutate(arousal_abs = abs(arousal-4))
 
 table(round2$condition)
 
@@ -135,12 +158,22 @@ ggplot(round2, aes(x = condition, y = valence_abs)) +
     geom_boxplot(width = 0.1) +
     geom_jitter(width = 0.2) 
 
+ggplot(round2, aes(x = condition, y = arousal_abs)) +
+    geom_boxplot(width = 0.1) +
+    geom_jitter(width = 0.2) 
+
 ggplot(round2, aes(x = condition, y = freq_BNC)) +
     geom_boxplot(width = 0.1) +
     geom_jitter(width = 0.2) 
 
+cor.test(round2$arousal_abs, round2$valence)
+
+
+ggplot(round2, aes(x = valence, y = arousal)) +
+    geom_point()
+
 # try anticlustering
-covariates = dplyr::select(round2,valence, log_freq, arousal) %>% mutate_all(scale)
+covariates = dplyr::select(round2,valence_abs, log_freq) %>% mutate_all(scale)
 
 #c = scale(round2[, c("valence", "freq_BNC")])
 
@@ -156,6 +189,9 @@ final_selection = dplyr::filter(round2, matches <= 120)
 
 summary(lm(data = final_selection, valence_abs ~ condition))
 summary(lm(data = final_selection, freq_BNC ~ condition))
+summary(lm(data = final_selection, emotionality ~ condition))
+summary(lm(data = final_selection, meaning ~ condition))
+
 
 ggplot(final_selection, aes(x = condition, y = valence_abs)) +
     geom_boxplot(width = 0.1) +
@@ -166,67 +202,94 @@ ggplot(final_selection, aes(x = condition, y = log_freq)) +
     geom_boxplot(width = 0.1) +
     geom_jitter(width = 0.2) +
     labs(y = 'Word frequency (per million)') 
+
+ggplot(final_selection, aes(x = condition, y = emotionality)) +
+    geom_boxplot(width = 0.1) +
+    geom_jitter(width = 0.2) +
+    labs(y = 'Word frequency (per million)') 
+
+ggplot(final_selection, aes(x = condition, y = meaning)) +
+    geom_boxplot(width = 0.1) +
+    geom_jitter(width = 0.2) +
+    labs(y = 'Understanding of word meaning')
 ```
 
 
-<!-- # Stratify based on valence (condition - positive vs. negative), valence (within-condition), arousal, freq_BNC -->
+# Stratify based on valence (condition - positive vs. negative), valence (within-condition), arousal, freq_BNC
 
-<!-- ```{r} -->
-<!-- top_240 = top_240 %>% -->
-<!--     dplyr::select(word, valence_condition) %>% -->
-<!--     left_join(emote) %>% -->
-<!--     group_by(valence_condition) %>% -->
-<!--     mutate(freq_BNC_strat = ntile(freq_BNC, n = 3)) %>% -->
-<!--     group_by(valence_condition, freq_BNC_strat) %>% -->
-<!--     mutate(valence_strat = ntile(adim1, n = 2)) %>% -->
-<!--     group_by(valence_condition, freq_BNC_strat, valence_strat) %>% -->
-<!--     mutate(arousal_strat = ntile(adim2, n = 2)) -->
-
-
-<!-- set.seed(11291993) -->
-
-<!-- # stratify 20 times, pick the one with the smallest statistical differences between bins -->
-<!-- for (i in 1:20){ -->
-<!--     strast = stratified(indt = top_240, -->
-<!--                     group = c('valence_condition', 'valence_strat', 'freq_BNC_strat', 'arousal_strat'), size = 5, bothSets = TRUE) -->
-
-<!--     stratified_sets = rbind(dplyr::mutate(strast$SAMP1, set = 1), dplyr::mutate(strast$SAMP2, set = 2)) %>% -->
-<!--         mutate(iter = i) -->
-
-<!--     difference_summary = stratified_sets %>% -->
-<!--         pivot_longer(cols = c(freq_BNC, adim1, adim2)) %>% -->
-<!--         group_by(valence_condition, name) %>% -->
-<!--         nest() %>% -->
-<!--         mutate(diff_model = purrr::map(data, ~lm(data = ., value ~ set) %>% broom::tidy())) %>% -->
-<!--         unnest(diff_model) %>% -->
-<!--         dplyr::filter(term == 'set') %>% -->
-<!--         mutate(iter = i) -->
-
-<!--     if (i == 1){ -->
-<!--         many_stratifications = stratified_sets -->
-<!--         many_summaries = difference_summary -->
-<!--     }else{ -->
-<!--         many_stratifications = rbind(many_stratifications, stratified_sets) -->
-<!--         many_summaries = rbind(many_summaries, difference_summary) -->
-<!--     } -->
-<!-- } -->
-
-<!-- # choose iteration with smallest differences -->
-<!-- best_iter = many_summaries %>% -->
-<!--     group_by(iter) %>% -->
-<!--     summarise(mean_pval = mean(p.value)) %>% -->
-<!--     top_n(n = 1, wt = mean_pval) -->
+```{r}
+top_240 = final_selection %>%
+    dplyr::select(word, valence_condition=condition) %>%
+    left_join(emote) %>%
+    group_by(valence_condition) %>%
+    mutate(freq_BNC_strat = ntile(freq_BNC, n = 3)) %>%
+    group_by(valence_condition, freq_BNC_strat) %>%
+    mutate(valence_strat = ntile(adim1, n = 2)) %>%
+    group_by(valence_condition, freq_BNC_strat, valence_strat) %>%
+    mutate(arousal_strat = ntile(adim2, n = 2))
 
 
-<!-- ggplot(many_summaries, aes(x = factor(iter), y = p.value)) + -->
-<!--     stat_summary(fun.data = mean_cl_boot) -->
+set.seed(11291993)
 
-<!-- best_stratification = many_stratifications %>% -->
-<!--     dplyr::filter(iter == best_iter$iter[1]) -->
+# stratify 20 times, pick the one with the smallest statistical differences between bins
+for (i in 1:20){
+    strast = stratified(indt = top_240,
+                    group = c('valence_condition', 'valence_strat', 'freq_BNC_strat', 'arousal_strat'), size = 5, bothSets = TRUE)
 
-<!-- # wrute out the stratification to csv -->
-<!-- write.csv(best_stratification, file = 'emote_240_words_stratified.csv', row.names = FALSE) -->
-<!-- ``` -->
+    stratified_sets = rbind(dplyr::mutate(strast$SAMP1, set = 1), dplyr::mutate(strast$SAMP2, set = 2)) %>%
+        mutate(iter = i)
+
+    difference_summary = stratified_sets %>%
+        pivot_longer(cols = c(freq_BNC, adim1, adim2)) %>%
+        group_by(valence_condition, name) %>%
+        nest() %>%
+        mutate(diff_model = purrr::map(data, ~lm(data = ., value ~ set) %>% broom::tidy())) %>%
+        unnest(diff_model) %>%
+        dplyr::filter(term == 'set') %>%
+        mutate(iter = i)
+
+    if (i == 1){
+        many_stratifications = stratified_sets
+        many_summaries = difference_summary
+    }else{
+        many_stratifications = rbind(many_stratifications, stratified_sets)
+        many_summaries = rbind(many_summaries, difference_summary)
+    }
+}
+
+# choose iteration with smallest differences
+best_iter = many_summaries %>%
+    group_by(iter) %>%
+    summarise(mean_pval = mean(p.value)) %>%
+    top_n(n = 1, wt = mean_pval)
+
+
+ggplot(many_summaries, aes(x = factor(iter), y = p.value)) +
+    stat_summary(fun.data = mean_cl_boot)
+
+best_stratification = many_stratifications %>%
+    dplyr::filter(iter == best_iter$iter[1])
+
+
+best_stratification = mutate(best_stratification,
+                             valence_abs = abs(adim1-4))
+
+ggplot(best_stratification, aes(x = factor(set), y = valence_abs, color = valence_condition)) +
+    stat_summary(fun.data = mean_cl_boot)
+
+ggplot(best_stratification, aes(x = factor(set), y = adim1, color = valence_condition)) +
+    stat_summary(fun.data = mean_cl_boot)
+
+ggplot(best_stratification, aes(x = factor(set), y = freq_BNC, color = valence_condition)) +
+    stat_summary(fun.data = mean_cl_boot)
+
+
+valence_strat_check = lm(data = best_stratification, freq_BNC ~ valence_condition*set)
+summary(valence_strat_check)
+
+# wrute out the stratification to csv
+write.csv(best_stratification, file = 'emote_240_words_stratified.csv', row.names = FALSE)
+```
 
 <!-- # Make many orders across the 4 runs -->
 
