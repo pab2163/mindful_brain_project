@@ -22,8 +22,16 @@ import time
 _thisDir = os.path.dirname(os.path.abspath(__file__))
 os.chdir(_thisDir)
 
+
+b1=['semantic', 'self', 'other',  'other', 'self',  'other', 'self',  'self', 'other','semantic']
+b2=['self', 'other',  'other', 'semantic', 'self',  'other', 'semantic', 'self',  'self', 'other']
+b3=['other', 'self', 'semantic',  'self', 'other',  'self', 'other',  'semantic', 'other','self']
+
+block_versions = [b1, b2, b3]
+random.shuffle(block_versions)
+
 block_order = pd.DataFrame({'block': np.arange(10), 
-    'block_type': ['positive', 'self', 'other',  'other', 'self',  'other', 'self',  'self', 'other','positive']})
+    'block_type': block_versions[0]})
 
 # Store info about the experiment session
 expName = 'task-selfref_run-01'  # from the Builder filename that created this script
@@ -119,13 +127,13 @@ word = visual.TextStim(win=win, ori=0, name='word',
     depth=-1.0)
 
 yes = visual.TextStim(win=win, ori=0, name='word',
-    text='yes',    font=u'Arial',
+    text='YES',    font=u'Arial',
     pos=[0.7, -.8], height=0.2, wrapWidth=None,
     color=u'white', colorSpace='rgb', opacity=1,
     depth=-1.0)
 
 no = visual.TextStim(win=win, ori=0, name='word',
-    text='no',    font=u'Arial',
+    text='NO',    font=u'Arial',
     pos=[-0.7, -.8], height=0.2, wrapWidth=None,
     color=u'white', colorSpace='rgb', opacity=1,
     depth=-1.0)
@@ -194,7 +202,7 @@ def get_trigger():
 Run a block of trials
 '''
 def run_block(n_trials, block_type, block_number, practice=False):
-    if block_type == 'positive':
+    if block_type == 'semantic':
         block_type_text.setText(f'Is the word positive?')
     elif block_type == 'self':
         block_type_text.setText(f'Does this word describe you?')
@@ -209,7 +217,7 @@ def run_block(n_trials, block_type, block_number, practice=False):
         core.wait(block_intro_time)
     elif practice:
         core.wait(4)
-    if block_type == 'positive':
+    if block_type == 'semantic':
         block_type_text.setText(f'Is this word positive?')
     elif block_type == 'self':
         block_type_text.setText(f'Are you?')
@@ -308,7 +316,7 @@ def run_trial(trial_type, fixation_duration, practice=False, block_type=''):
 
 
 def run_practice():
-    instruct_text.setText(f'The 3 types YES or NO questions you will see will be:\
+    instruct_text.setText(f'The 3 types of YES or NO questions you will see will be:\
 \n\n1) Does a word describe you?\
 \n\n2) Does a word describe {expInfo["friend_name"]} (who you mentioned earlier)?\
 \n\n3) Is a word positive?')
@@ -343,9 +351,9 @@ def run_practice():
     run_block(n_trials = 0, block_type = 'other', block_number = 0, practice = True)
     run_trial(trial_type = 'other', fixation_duration=1, practice = True, block_type = 'other')
     run_trial(trial_type = 'other', fixation_duration=1, practice = True, block_type = 'other')
-    run_block(n_trials = 0, block_type = 'positive', block_number = 0, practice = True)
-    run_trial(trial_type = 'positive', fixation_duration=1, practice = True, block_type = 'positive')
-    run_trial(trial_type = 'positive', fixation_duration=1, practice = True, block_type = 'positive')
+    run_block(n_trials = 0, block_type = 'semantic', block_number = 0, practice = True)
+    run_trial(trial_type = 'positive', fixation_duration=1, practice = True, block_type = 'semantic')
+    run_trial(trial_type = 'positive', fixation_duration=1, practice = True, block_type = 'semantic')
     instruct_text.setText('Great job! Any questions on what to do?')
     instruct_text.draw()
     win.flip()
