@@ -32,7 +32,7 @@
   </module>
 
   <module name="mask-gen">
-    <option name="disabled"> false </option>
+    <option name="disabled"> true </option>
     <option name="makeavail">true</option>
 
     <!-- the roi name this mask can be referenced by in later modules
@@ -62,7 +62,7 @@
 
   <!-- pcc -->
   <module name="mask-load">
-    <option name="disabled"> false </option>
+    <option name="disabled"> true </option>
 
     <option name="makeavail">true</option>
 
@@ -86,7 +86,7 @@
 
   <!-- dlpfc -->
   <module name="mask-load">
-    <option name="disabled"> false </option>
+    <option name="disabled"> true </option>
 
     <option name="makeavail">true</option>
 
@@ -109,7 +109,7 @@
  
   <!-- deviation of voxel intensity from expected value  -->
   <module name="incremental-glm">
-    <option name="disabled"> false </option>
+    <option name="disabled"> true </option>
 
     <option name="makeavail">true</option>
     <output>display</output>
@@ -148,7 +148,7 @@
   <!-- compute moment to moment neural activation -->
   <module name="current-activation">
 
-    <option name="disabled"> false </option>
+    <option name="disabled"> true </option>
     <option name="makeavail">true</option>
     <option name="print"> true </option>
 
@@ -156,7 +156,7 @@
     <option name="modelFitRoiID"> brain </option>
     <option name="maskRoiID"> brain </option>
 
-    <option name="numDataPointsForErrEst"> 15 </option>
+    <option name="numDataPointsForErrEst"> 0 </option>
 
   </module>
 
@@ -165,7 +165,7 @@
     <output> infoserver </output>
     <output>display</output>
 
-    <option name="disabled"> false </option>
+    <option name="disabled"> true </option>
     <option name="print"> true </option>
 
     <option name="makeavail">true</option>
@@ -187,7 +187,7 @@
     <output> infoserver </output>
     <output>display</output>
 
-    <option name="disabled"> false </option>
+    <option name="disabled"> true </option>
     <option name="print"> true </option>
 
     <option name="makeavail">true</option>
