@@ -191,7 +191,7 @@ template_networks='template_networks.nii.gz'
 
 
 # Set template files
-template_dmn='DMNa_brainmaskero2.nii'
+template_dmn='DMNax_brainmaskero2.nii'
 template_cen='CENa_brainmaskero2.nii'
 
 # Merge template files to 1 image
