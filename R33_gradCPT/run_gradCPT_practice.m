@@ -547,7 +547,7 @@ C=clock;
 mkdir(strcat('data/',subName));
 cd(strcat('data/',subName))
 'saving data- wait!'
-save(['sub-R61MBNFD' subName '_ses-' sesName '_task-cpt_run-' num2str(runNo) '_prac.mat'],'data', 'response','ttt','FHR','Rate','Prob','Task','Scram', 'framesper', 'numberoftrials', 'subName','starttime','endtime','x_size','y_size');
+save(['sub-remind' subName '_ses-' sesName '_task-cpt_run-' num2str(runNo) '_prac.mat'],'data', 'response','ttt','FHR','Rate','Prob','Task','Scram', 'framesper', 'numberoftrials', 'subName','starttime','endtime','x_size','y_size');
 
 %%%%%%%%%% save bids-formatted tsv file (JZ) %%%%%%%%%%%%%%%%
 nTrials = size(data,1);
@@ -584,7 +584,7 @@ CoherenceAtResponse = response(:,4);
 % ZScore = zscore(
 
 tsv_table = table(Onset, Duration, TrialType, Response, ResponseTime, ResponseType, CoherenceAtResponse);
-tsv_name = strcat('sub-R61MBNFD', subName, '_ses-', sesName,'_task-cpt_run-', num2str(runNo), '_prac.txt'); % check sesName and runNo
+tsv_name = strcat('sub-remind', subName, '_ses-', sesName,'_task-cpt_run-', num2str(runNo), '_prac.txt'); % check sesName and runNo
 writetable(tsv_table,tsv_name,'Delimiter','\t')
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
