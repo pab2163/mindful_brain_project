@@ -8,7 +8,7 @@ input_string=$(zenity --forms --title="Launch Murfi" \
 
 # parse zenity output using space as delimiter
 read -a input_array <<< $input_string
-partcipant_id=${input_array[0]}
+partcipant_id=remind${input_array[0]}
 step=${input_array[1]}
 
 
@@ -23,6 +23,13 @@ else
 	#source feedback.sh ${partcipant_id} setup
 	source feedback.sh ${partcipant_id} ${step}
 fi
+
+
+# For ICA default to runs 0 and 1
+# If there's more than just 0 and 1 (or not both of them), require user choice
+
+# If step is register, have a default fractional intensity, but allow it to be changed
+
 
 # if [ ${step} == 'Resting' ]
 # then
