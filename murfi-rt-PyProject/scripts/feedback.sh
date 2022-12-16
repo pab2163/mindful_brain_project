@@ -11,9 +11,9 @@
 #Step 4: run murfi for realtime
 
 subj=$1
-ses=$2
-run=$3
-step=$4
+step=$2
+ses='ses-lo1'
+run='run-01'
 
 # Set initial paths
 subj_dir=../subjects/$subj
