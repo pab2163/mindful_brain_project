@@ -44,9 +44,9 @@ x_size=300;  %rows/height
 % Task=str2num(Task); %1=go-nogo face gender %2=go-nogo scene type %3=2AFC face gender %4=2AFC scene type
 % framesper=str2num(framesper);
 
-% LIMITED DIALOGUE BOX FOR R61MBNFD USE
-prompt = {'Enter subject name','Session (nf15, nf30)','Run (01. 02)'};
-def={'XXX','nfXX','XX'};
+% LIMITED DIALOGUE BOX FOR R61 REMIND USE
+prompt = {'Enter subject name','Session (nf2)','Run (01 02)'};
+def={'XXX','nf2','XX'};
 answer = inputdlg(prompt, 'Experimental setup information',1,def);
 [subName, sesName, runNo] = deal(answer{:});
 
@@ -81,7 +81,7 @@ housey=1-FHR;
 %framesper=25;
 
 %%%%%%%%%%%% JZ 01/2022 ADD: OVERWRITE WARNING %%%%%%%%%%%%%
-txt_name = strcat('sub-R61MBNFD', subName, '_ses-', sesName,'_task-cpt_run-',num2str(runNo),'.txt');
+txt_name = strcat('sub-remind', subName, '_ses-', sesName,'_task-cpt_run-',num2str(runNo),'.txt');
 output_path = strcat('data/',subName,'/',txt_name);
 if exist(output_path, 'file')
     promptMessage = sprintf('The output already exists:\n%s\nDo you want to overwrite it?',txt_name);
@@ -551,7 +551,7 @@ C=clock;
 mkdir(strcat('data/',subName));
 cd(strcat('data/',subName))
 'saving data- wait!'
-save(['sub-R61MBNFD' subName '_ses-' sesName '_task-cpt_run-' num2str(runNo) '_events.mat'],'data', 'response','ttt','FHR','Rate','Prob','Task','Scram', 'framesper', 'numberoftrials', 'subName','starttime','endtime','x_size','y_size');
+save(['sub-remind' subName '_ses-' sesName '_task-cpt_run-' num2str(runNo) '_events.mat'],'data', 'response','ttt','FHR','Rate','Prob','Task','Scram', 'framesper', 'numberoftrials', 'subName','starttime','endtime','x_size','y_size');
 
 %%%%%%%%%% save bids-formatted tsv file (JZ) %%%%%%%%%%%%%%%%
 nTrials = size(data,1);
@@ -588,7 +588,7 @@ CoherenceAtResponse = response(:,4);
 % ZScore = zscore(
 
 tsv_table = table(onset, duration, TrialType, Response, ResponseTime, ResponseType, CoherenceAtResponse);
-txt_name = strcat('sub-R61MBNFD', subName, '_ses-', sesName,'_task-cpt_run-',num2str(runNo),'_events.txt');
+txt_name = strcat('sub-remind', subName, '_ses-', sesName,'_task-cpt_run-',num2str(runNo),'_events.txt');
 % txt_name = strcat('sub-R33rtsz', subName, '_ses-', sesName,'_task-CPT_run-',num2str(runNo),'.tsv');
 writetable(tsv_table,txt_name,'Delimiter','\t')
 % movefile(txt_name,tsv_name);
