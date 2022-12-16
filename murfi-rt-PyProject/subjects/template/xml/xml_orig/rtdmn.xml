@@ -127,14 +127,12 @@
            only one cycle's worth needs to be specified, the program
            will repeat that pattern until the end of the scan. -->
       <option name="condition" conditionName="Regulation">
-        1 1 1 1 1 1 1 1 1 1 1 1 1 1 1
-        1 1 1 1 1 1 1 1 1 1 1 1 1 1 1
-        1 1 1 1 1 1 1 1 1 1 1 1 1 1 1
-        1 1 1 1 1 1 1 1 1 1 1 1 1 1 1
-        1 1 1 1 1 1 1 1 1 1 1 1 1 1 1
-        1 1 1 1 1 1 1 1 1 1 1 1 1 1 1
-        1 1 1 1 1 1 1 1 1 1 1 1 1 1 1
-        1 1 1 1 1 1 1 1 1 1 1 1 1 1 1
+        0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
+        1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1
+        1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1
+        1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1
+        1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1
+
       </option>
 
       <!-- 30-second baseline -->
