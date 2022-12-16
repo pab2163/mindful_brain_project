@@ -64,18 +64,22 @@ then
     latest_ref="${latest_ref::-4}"
     echo ${latest_ref}
     bet ${latest_ref} ${latest_ref}_brain -R -f 0.4 -g 0 -m # changed from -f 0.6
+    slices ${latest_ref}_brain ${latest_ref} -o $subj_dir/xfm/2vol_skullstrip_check.gif
 
     # CCCB version (direct flirt from subject functional to MNI structural: step 1)
     # because the images that we get from Prisma through Vsend are in LPS orientation we need to change both our MNI mean image and our mni masks accordingly: 
-    fslswapdim MNI152_T1_2mm.nii.gz x -y z MNI152_T1_2mm_LPS.nii.gz
-    fslorient -forceneurological MNI152_T1_2mm_LPS.nii.gz
+    #fslswapdim MNI152_T1_2mm.nii.gz x -y z MNI152_T1_2mm_LPS.nii.gz
+    #fslorient -forceneurological MNI152_T1_2mm_LPS.nii.gz
     # once the images are in the same orientation we can do registration
     rm -r $subj_dir/xfm/epi2reg
     mkdir $subj_dir/xfm/epi2reg
     mkdir $subj_dir/mask/lps
 
+    # warp MNI templates into native space
     flirt -in MNI152_T1_2mm_LPS.nii.gz -ref ${latest_ref} -out $subj_dir/xfm/epi2reg/mnilps2studyref -omat $subj_dir/xfm/epi2reg/mnilps2studyref.mat
     flirt -in MNI152_T1_2mm_LPS_brain.nii.gz -ref ${latest_ref}_brain -out $subj_dir/xfm/epi2reg/mnilps2studyref_brain -omat $subj_dir/xfm/epi2reg/mnilps2studyref.mat
+
+    slices $subj_dir/xfm/epi2reg/mnilps2studyref_brain ${latest_ref}_brain -o $subj_dir/xfm/MNI2_warp_to_2vol_native_check.gif
 
     # For each MNI mask in the participant's MNI mask directory, swap dimension & register to 2vol native space
     for mni_mask in {dmn,cen};
