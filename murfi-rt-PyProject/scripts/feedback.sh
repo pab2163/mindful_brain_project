@@ -63,7 +63,7 @@ then
     latest_ref=$(ls -t $subj_dir/xfm/*.nii | head -n1)
     latest_ref="${latest_ref::-4}"
     echo ${latest_ref}
-    bet ${latest_ref} ${latest_ref}_brain -R -f 0.6 -g 0 -m
+    bet ${latest_ref} ${latest_ref}_brain -R -f 0.4 -g 0 -m # changed from -f 0.6
 
     # CCCB version (direct flirt from subject functional to MNI structural: step 1)
     # because the images that we get from Prisma through Vsend are in LPS orientation we need to change both our MNI mean image and our mni masks accordingly: 
