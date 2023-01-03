@@ -12,8 +12,8 @@ partcipant_id=remind${input_array[0]}
 step=${input_array[1]}
 
 
-export MURFI_SUBJECTS_DIR=../subjects/
-export MURFI_SUBJECT_NAME=$participant_id
+# export MURFI_SUBJECTS_DIR=../subjects/
+# export MURFI_SUBJECT_NAME=$participant_id
 
 if [ ${step} == 'create' ]
 then
