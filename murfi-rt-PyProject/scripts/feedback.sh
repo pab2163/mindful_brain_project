@@ -22,8 +22,8 @@ absolute_path=$(dirname $cwd)
 subj_dir_absolute="${absolute_path}/subjects/$subj"
 fsl_scripts=../scripts/fsl_scripts
 
-export MURFI_SUBJECTS_DIR=../subjects/
-export MURFI_SUBJECT_NAME=$subj
+# export MURFI_SUBJECTS_DIR=../subjects/
+# export MURFI_SUBJECT_NAME=$subj
 
 # Set paths & check that computers are properly connected with scanner via Ethernet
 if [ ${step} = setup ]
@@ -138,7 +138,9 @@ clear
         rest_run0_num=0
         rest_run1_num=1
     else
-      exit 0  
+        echo "not 250 vols each"
+        rest_run0_num=0
+        rest_run1_num=1
     fi
     echo "Using run ${rest_run0_num} and run ${rest_run1_num}"
 
@@ -174,7 +176,8 @@ clear
     sed -i "s#OUTPUT#$OUTPUT_dir#g" $subj_dir/rest/$subj'_'$ses'_task-rest_'$run'_bold'.fsf
 
     # update fsf to match number of rest volumes
-    sed -i "s/set fmri(npts) 248/set fmri(npts) ${restvolumes1 + restvolumes2}/g" $subj_dir/rest/$subj'_'$ses'_task-rest_'$run'_bold'.fsf
+    total_volumes=$(($restvolumes1 + $restvolumes2))
+    sed -i "s/set fmri(npts) 248/set fmri(npts) ${total_volumes}/g" $subj_dir/rest/$subj'_'$ses'_task-rest_'$run'_bold'.fsf
     feat $subj_dir/rest/$subj'_'$ses'_task-rest_'$run'_bold'.fsf
 fi
 
