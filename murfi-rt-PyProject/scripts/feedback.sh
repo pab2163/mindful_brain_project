@@ -212,21 +212,21 @@ clear
 # Set up file paths needed for mask creation
 
 ## File to contain spatial correlations between ICs & template networks
-ica_directory=$subj_dir/rest/rs_network.ica/groupmelodic.ica/
+ica_directory=$subj_dir/rest/rs_network.gica/groupmelodic.ica/
 correlfile=$ica_directory/template_rsn_correlations_with_ICs.txt
 touch ${correlfile}
 
 # ICs in native space
-infile=$subj_dir/rest/$subj'_'$ses'_task-rest_'$run'_bold'.ica/filtered_func_data.ica/melodic_IC.nii.gz 
+infile=$ica_directory/melodic_IC.nii.gz 
 
 # ICs in 
-#infile_2mm=$subj_dir/rest/$subj'_'$ses'_task-rest_'$run'_bold'.ica/filtered_func_data.ica/melodic_IC_2mm.nii.gz
+#infile_2mm=$ica_directory/melodic_IC_2mm.nii.gz
 
 # Template & transform matrices needed for registration
-examplefunc=$subj_dir/rest/$subj'_'$ses'_task-rest_'$run'_bold'.ica/reg/example_func.nii.gz
-standard=$subj_dir/rest/$subj'_'$ses'_task-rest_'$run'_bold'.ica/reg/standard.nii.gz
-example_func2standard_mat=$subj_dir/rest/$subj'_'$ses'_task-rest_'$run'_bold'.ica/reg/example_func2standard.mat
-standard2example_func_mat=$subj_dir/rest/$subj'_'$ses'_task-rest_'$run'_bold'.ica/reg/standard2example_func.mat
+#examplefunc=$subj_dir/rest/$subj'_'$ses'_task-rest_'$run'_bold'.ica/reg/example_func.nii.gz
+#standard=$subj_dir/rest/$subj'_'$ses'_task-rest_'$run'_bold'.ica/reg/standard.nii.gz
+#example_func2standard_mat=$subj_dir/rest/$subj'_'$ses'_task-rest_'$run'_bold'.ica/reg/example_func2standard.mat
+#standard2example_func_mat=$subj_dir/rest/$subj'_'$ses'_task-rest_'$run'_bold'.ica/reg/standard2example_func.mat
 template_networks='template_networks.nii.gz'
 
 
@@ -238,40 +238,40 @@ template_cen='CENa_brainmaskero2.nii'
 fslmerge -tr ${template_networks} ${template_dmn} ${template_cen} 1
 
 # Warp template to native space (based on the resting state data used for ICA)
-template2example_func=$subj_dir/rest/$subj'_'$ses'_task-rest_'$run'_bold'.ica/reg/template_networks2example_func.nii.gz
-flirt -in ${template_networks} -ref ${examplefunc} -out ${template2example_func} -init ${standard2example_func_mat} -applyxfm
+#template2example_func=$subj_dir/rest/$subj'_'$ses'_task-rest_'$run'_bold'.ica/reg/template_networks2example_func.nii.gz
+#flirt -in ${template_networks} -ref ${examplefunc} -out ${template2example_func} -init ${standard2example_func_mat} -applyxfm
 
 # Correlate (spatially) ICA components (not thresholded) with DMN & CEN template files
-fslcc --noabs -p 3 -t 0.05 ${infile} ${template2example_func} >>${correlfile}
+fslcc --noabs -p 3 -t 0.05 ${infile} ${template_networks} >>${correlfile}
 
 # Split ICs to separate files
-split_outfile=$subj_dir/rest/$subj'_'$ses'_task-rest_'$run'_bold'.ica/filtered_func_data.ica/melodic_IC_
+split_outfile=$ica_directory/melodic_IC_
 fslsplit ${infile} ${split_outfile}
 
 # Selection of ICs most highly correlated with template networks
-python rsn_get.py ${subj} ${ses} ${run}
+python rsn_get.py ${subj}
 
 
 # Set paths for files needed for the next few steps 
 ## Unthresholded masks in native space
-dmn_uthresh=$subj_dir/rest/$subj'_'$ses'_task-rest_'$run'_bold'.ica/filtered_func_data.ica/dmn_uthresh.nii.gz
-cen_uthresh=$subj_dir/rest/$subj'_'$ses'_task-rest_'$run'_bold'.ica/filtered_func_data.ica/cen_uthresh.nii.gz
+#dmn_uthresh=$ica_directory/dmn_uthresh.nii.gz
+#cen_uthresh=$ica_directory/cen_uthresh.nii.gz
 
 ## Unthresholded masks in mni space
-dmn_mni_uthresh=$subj_dir/rest/$subj'_'$ses'_task-rest_'$run'_bold'.ica/filtered_func_data.ica/dmn_mni_uthresh.nii.gz
-cen_mni_uthresh=$subj_dir/rest/$subj'_'$ses'_task-rest_'$run'_bold'.ica/filtered_func_data.ica/cen_mni_uthresh.nii.gz
+dmn_mni_uthresh=$ica_directory/dmn_mni_uthresh.nii.gz
+cen_mni_uthresh=$ica_directory/cen_mni_uthresh.nii.gz
 
 ## Thresholded masks in MNI space
-dmn_mni_thresh=$subj_dir/rest/$subj'_'$ses'_task-rest_'$run'_bold'.ica/filtered_func_data.ica/dmn_mni_thresh.nii.gz
-cen_mni_thresh=$subj_dir/rest/$subj'_'$ses'_task-rest_'$run'_bold'.ica/filtered_func_data.ica/cen_mni_thresh.nii.gz
+dmn_mni_thresh=$ica_directory/dmn_mni_thresh.nii.gz
+cen_mni_thresh=$ica_directory/cen_mni_thresh.nii.gz
 
 
 # Hard code the number of voxels desired for each mask
 num_voxels_desired=1000
 
 # register non-thresholded masks to MNI space
-flirt -in  ${dmn_uthresh} -ref ${standard} -out ${dmn_mni_uthresh} -init ${example_func2standard_mat} -applyxfm
-flirt -in  ${cen_uthresh} -ref ${standard} -out ${cen_mni_uthresh} -init ${example_func2standard_mat} -applyxfm
+#flirt -in  ${dmn_uthresh} -ref ${standard} -out ${dmn_mni_uthresh} -init ${example_func2standard_mat} -applyxfm
+#flirt -in  ${cen_uthresh} -ref ${standard} -out ${cen_mni_uthresh} -init ${example_func2standard_mat} -applyxfm
 
 # zero out voxels not included in the template masks (i.e. so we only select voxels within template DMN/CEN)
 fslmaths ${dmn_mni_uthresh} -mul ${template_dmn} ${dmn_mni_uthresh}
