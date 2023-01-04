@@ -195,7 +195,7 @@ clear
     sed -i "s#OUTPUT#$OUTPUT_dir#g" $subj_dir/rest/$subj'_'$ses'_task-rest_'$run'_bold'.fsf
 
     # update fsf to match number of rest volumes
-    sed -i "s/set fmri(npts) 248/set fmri(npts) ${minvols}/g" $subj_dir_absolute/rest/$subj'_'$ses'_task-rest_'$run'_bold'.fsf
+    sed -i "s/set fmri(npts) 250/set fmri(npts) ${minvols}/g" $subj_dir_absolute/rest/$subj'_'$ses'_task-rest_'$run'_bold'.fsf
     feat $subj_dir/rest/$subj'_'$ses'_task-rest_'$run'_bold'.fsf
 fi
 
