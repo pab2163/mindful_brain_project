@@ -212,7 +212,8 @@ clear
 # Set up file paths needed for mask creation
 
 ## File to contain spatial correlations between ICs & template networks
-correlfile=$subj_dir/rest/$subj'_'$ses'_task-rest_'$run'_bold'.ica/filtered_func_data.ica/template_rsn_correlations_with_ICs.txt
+ica_directory=$subj_dir/rest/rs_network.ica/groupmelodic.ica/
+correlfile=$ica_directory/template_rsn_correlations_with_ICs.txt
 touch ${correlfile}
 
 # ICs in native space
