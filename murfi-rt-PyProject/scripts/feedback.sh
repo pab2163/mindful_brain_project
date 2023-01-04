@@ -112,6 +112,8 @@ then
 clear
     echo "+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++"
     echo "ready to receive resting state scan"
+    export MURFI_SUBJECTS_DIR="${absolute_path}/subjects/"
+    export MURFI_SUBJECT_NAME=$subj
     singularity exec /home/auerbachlinux/singularity-images/murfi2.sif murfi -f $subj_dir/xml/rest.xml
 fi
 
