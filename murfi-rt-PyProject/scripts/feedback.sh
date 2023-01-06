@@ -25,7 +25,7 @@ fsl_scripts=../scripts/fsl_scripts
 # Set paths & check that computers are properly connected with scanner via Ethernet
 if [ ${step} = setup ]
 then
-    clear
+    #clear
     echo "++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++"
     echo "+ Wellcome to MURFI real-time Neurofeedback"
     echo "+ running " ${step}
@@ -103,7 +103,9 @@ then
 clear
     echo "+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++"
     echo "ready to receive rtdmn feedback scan"
-    singularity exec /home/auerbachlinux/singularity-images/murfi2.sif murfi -f $subj_dir/xml/rtdmn.xml
+    export MURFI_SUBJECTS_DIR="${absolute_path}/subjects/"
+    export MURFI_SUBJECT_NAME=$subj
+    singularity exec /home/auerbachlinux/singularity-images/murfi2.sif murfi -f $subj_dir_absolute/xml/rtdmn.xml
 fi
 
 
@@ -126,79 +128,115 @@ clear
     echo "+ compiling resting state run into analysis folder"
 
     expected_volumes=250
-    # get all volumes of resting data (no matter how many) merged into 1 .nii.gz file
-    run_0_volumes=$(find ../subjects/${subj}/img/ -name "img-00000*" | wc -l)
-    run_1_volumes=$(find ../subjects/${subj}/img/ -name "img-00001*" | wc -l)
+    # # get all volumes of resting data (no matter how many) merged into 1 .nii.gz file
+    # run_0_volumes=$(find ../subjects/${subj}/img/ -name "img-00000*" | wc -l)
+    # run_1_volumes=$(find ../subjects/${subj}/img/ -name "img-00001*" | wc -l)
 
-    if [ ${run_0_volumes} -eq 250 ] && [ ${run_1_volumes} -eq 250 ];
+    # if [ ${run_0_volumes} -eq 250 ] && [ ${run_1_volumes} -eq 250 ];
+    # then
+    #     rest_runA_num=0
+    #     rest_runB_num=1
+    #else
+    runstring="Resting state runs should have ${expected_volumes} volumes\n"
+    for i in {0..10};
+    do
+        #echo $i
+        run_volumes=$(find ${subj_dir_absolute}/img/ -name "img-0000${i}*" | wc -l)
+        if [ ${run_volumes} -ne 0 ]
+        then
+            runstring="${runstring}\nRun ${i}: ${run_volumes} volumes"
+        fi
+    done
+
+    # use zenity to allow user to choose which resting volume to use (and how many runs to use)
+    input_string=$(zenity --forms --title="Which resting state runs to use for ICA?" \
+        --separator=" " --width 600 --height 600 \
+        --add-entry="First Input Run #" \
+        --add-entry="Second Input Run #" --text="`printf "${runstring}"`"\
+        --add-combo="How many resting runs to use for ICA?" --combo-values "2 (default) |1 (only to be used if there aren't 2 viable runs to use)")
+
+    # check that exit button hasn't been clicked
+    if [[ $? == 1 ]];
     then
-        rest_runA_num=0
-        rest_runB_num=1
-    else
-        runstring=''
-        for i in {0..10};
-        do
-            #echo $i
-            run_volumes=$(find ../subjects/${subj}/img/ -name "img-0000${i}*" | wc -l)
-            if [ ${run_volumes} -ne 0 ]
-            then
-                runstring="${runstring}\nRun ${i}: ${run_volumes} volumes"
-            fi
-        done
-
-        # use zenity to allow user to choose which resting volume to use
-        input_string=$(zenity --forms --title="Which resting state runs to use for ICA?" \
-            --separator=" " --width 600 --height 600 \
-            --add-entry="Run A" \
-            --add-entry="Run B" --text="`printf "${runstring}"`")
-
-
-        # parse zenity output using space as delimiter
-        read -a input_array <<< $input_string
-        rest_runA_num=${input_array[0]}
-        rest_runB_num=${input_array[1]}
-    fi
-    
-    echo "Using run ${rest_runA_num} and run ${rest_runB_num}"
-
-    # merge individual volumes to make 1 file for each resting state run
-    rest_runB_filename=$subj_dir_absolute/rest/$subj'_'$ses'_task-rest_run-01_bold'.nii.gz
-    rest_run2_filename=$subj_dir_absolute/rest/$subj'_'$ses'_task-rest_run-02_bold'.nii.gz 
-    fslmerge -tr $rest_runB_filename $subj_dir_absolute/img/img-0000${rest_runA_num}* 1.2
-    fslmerge -tr $rest_run2_filename $subj_dir_absolute/img/img-0000${rest_runB_num}* 1.2
-
-
-    # figure out how many volumes of resting state data there were to be used in ICA
-    restvolumes1=$(fslnvols $rest_runB_filename)
-    restvolumes2=$(fslnvols $rest_run2_filename)
-    if [ ${restvolumes1} -ne ${expected_volumes} ] || [ ${restvolumes2} -ne ${expected_volumes} ]; 
-    then
-        echo "WARNING! ${restvolumes1} volumes of resting-state data found for run 1."
-        echo "${restvolumes2} volumes of resting-state data found for run 2. ${expected_volumes} expected?"
-
-        # calculate minimum volumes (which run has fewer, then use fslroi to cut both runs to this minimum)
-        minvols=$(( run_0_volumes < run_1_volumes ? run_0_volumes : run_1_volumes ))
-        fslroi $rest_runB_filename $rest_runB_filename 0 $minvols
-        fslroi $rest_run2_filename $rest_run2_filename 0 $minvols
-        echo "Clipping runs so that both have ${minvols} volumes"
-    else
-        minvols=$expected_volumes
+        exit 0
     fi
 
-    echo "+ computing resting state networks this will take about 25 minutes"
-    echo "+ started at: $(date)"
-    
-    # update FEAT template with paths and # of volumes of resting state run
-    cp $fsl_scripts/rest_template.fsf $subj_dir_absolute/rest/$subj'_'$ses'_task-rest_'$run'_bold'.fsf
-    #DATA_path=$subj_dir/rest/$subj'_'$ses'_task-rest_'$run'_bold'.nii.gz
-    OUTPUT_dir=$subj_dir_absolute/rest/rs_network
-    sed -i "s#DATA1#$rest_runB_filename#g" $subj_dir_absolute/rest/$subj'_'$ses'_task-rest_'$run'_bold'.fsf
-    sed -i "s#DATA2#$rest_run2_filename#g" $subj_dir_absolute/rest/$subj'_'$ses'_task-rest_'$run'_bold'.fsf
-    sed -i "s#OUTPUT#$OUTPUT_dir#g" $subj_dir/rest/$subj'_'$ses'_task-rest_'$run'_bold'.fsf
+    # parse zenity output using space as delimiter
+    read -a input_array <<< $input_string
+    rest_runA_num=${input_array[0]}
+    rest_runB_num=${input_array[1]}
 
-    # update fsf to match number of rest volumes
-    sed -i "s/set fmri(npts) 250/set fmri(npts) ${minvols}/g" $subj_dir_absolute/rest/$subj'_'$ses'_task-rest_'$run'_bold'.fsf
-    feat $subj_dir/rest/$subj'_'$ses'_task-rest_'$run'_bold'.fsf
+    # Use 2 resting runs for ICA
+    echo ${input_array[2]}
+    if [[ ${input_array[2]} == '2' ]] ;
+    then
+        template_fsf_file=fsl_scripts/rest_template.fsf
+        echo "Using run ${rest_runA_num} and run ${rest_runB_num}"
+
+        # merge individual volumes to make 1 file for each resting state run
+        rest_runA_filename=$subj_dir_absolute/rest/$subj'_'$ses'_task-rest_run-01_bold'.nii.gz
+        rest_runB_filename=$subj_dir_absolute/rest/$subj'_'$ses'_task-rest_run-02_bold'.nii.gz 
+        fslmerge -tr $rest_runA_filename $subj_dir_absolute/img/img-0000${rest_runA_num}* 1.2
+        fslmerge -tr $rest_runB_filename $subj_dir_absolute/img/img-0000${rest_runB_num}* 1.2
+
+
+        # figure out how many volumes of resting state data there were to be used in ICA
+        rest_runA_volumes=$(fslnvols $rest_runA_filename)
+        rest_runB_volumes=$(fslnvols $rest_runB_filename)
+        if [ ${rest_runA_volumes} -ne ${expected_volumes} ] || [ ${rest_runB_volumes} -ne ${expected_volumes} ]; 
+        then
+            echo "WARNING! ${rest_runA_volumes} volumes of resting-state data found for run 1."
+            echo "${rest_runB_volumes} volumes of resting-state data found for run 2. ${expected_volumes} expected?"
+
+            # calculate minimum volumes (which run has fewer, then use fslroi to cut both runs to this minimum)
+            minvols=$(( rest_runA_volumes < rest_runB_volumes ? rest_runA_volumes : rest_runB_volumes ))
+            fslroi $rest_runA_filename $rest_runA_filename 0 $minvols
+            fslroi $rest_runB_filename $rest_runB_filename 0 $minvols
+            echo "Clipping runs so that both have ${minvols} volumes"
+        else
+            minvols=$expected_volumes
+        fi
+
+        echo "+ computing resting state networks this will take about 25 minutes"
+        echo "+ started at: $(date)"
+        
+        # update FEAT template with paths and # of volumes of resting state run
+        cp $fsl_scripts/rest_template.fsf $subj_dir_absolute/rest/$subj'_'$ses'_task-rest_'$run'_bold'.fsf
+        #DATA_path=$subj_dir/rest/$subj'_'$ses'_task-rest_'$run'_bold'.nii.gz
+        OUTPUT_dir=$subj_dir_absolute/rest/rs_network
+        sed -i "s#DATA1#$rest_runA_filename#g" $subj_dir_absolute/rest/$subj'_'$ses'_task-rest_'$run'_bold'.fsf
+        sed -i "s#DATA2#$rest_runB_filename#g" $subj_dir_absolute/rest/$subj'_'$ses'_task-rest_'$run'_bold'.fsf
+        sed -i "s#OUTPUT#$OUTPUT_dir#g" $subj_dir/rest/$subj'_'$ses'_task-rest_'$run'_bold'.fsf
+
+        # update fsf to match number of rest volumes
+        sed -i "s/set fmri(npts) 250/set fmri(npts) ${minvols}/g" $subj_dir_absolute/rest/$subj'_'$ses'_task-rest_'$run'_bold'.fsf
+        feat $subj_dir/rest/$subj'_'$ses'_task-rest_'$run'_bold'.fsf        
+    else
+        # Use just a single run for ICA (only to be used when 2 isn't viable)
+        template_fsf_file=fsl_scripts/rest_template_single_run.fsf
+        echo "Using run ${rest_runA_num} for single-run ICA"
+
+        # merge individual volumes to make 1 file for each resting state run
+        rest_runA_filename=$subj_dir_absolute/rest/$subj'_'$ses'_task-rest_run-01_bold'.nii.gz
+        fslmerge -tr $rest_runA_filename $subj_dir_absolute/img/img-0000${rest_runA_num}* 1.2
+
+        # figure out how many volumes of resting state data there were to be used in ICA
+        rest_runA_volumes=$(fslnvols $rest_runA_filename)
+        echo "${rest_runA_volumes} volumes of resting-state data found for run 1."
+        echo "+ computing resting state networks this will take about 25 minutes"
+        echo "+ started at: $(date)"
+        
+        # update FEAT template with paths and # of volumes of resting state run
+        cp $template_fsf_file $subj_dir_absolute/rest/$subj'_'$ses'_task-rest_'$run'_bold'.fsf
+        #DATA_path=$subj_dir/rest/$subj'_'$ses'_task-rest_'$run'_bold'.nii.gz
+        OUTPUT_dir=$subj_dir_absolute/rest/rs_network
+        sed -i "s#DATA#$rest_runA_filename#g" $subj_dir_absolute/rest/$subj'_'$ses'_task-rest_'$run'_bold'.fsf
+        sed -i "s#OUTPUT#$OUTPUT_dir#g" $subj_dir/rest/$subj'_'$ses'_task-rest_'$run'_bold'.fsf
+
+        # update fsf to match number of rest volumes
+        sed -i "s/set fmri(npts) 250/set fmri(npts) ${rest_runA_volumes}/g" $subj_dir_absolute/rest/$subj'_'$ses'_task-rest_'$run'_bold'.fsf
+        feat $subj_dir/rest/$subj'_'$ses'_task-rest_'$run'_bold'.fsf   
+    fi                        
 fi
 
 
