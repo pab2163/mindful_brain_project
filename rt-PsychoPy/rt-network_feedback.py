@@ -116,12 +116,12 @@ else:
         # last_run_scale_factor
         last_run_scale_factor = last_run_info.scale_factor[0]
 
-        # if 3+ hits in either direction, decrease scale factor
-        if last_run_dmn_hits >= 3 or last_run_cen_hits >= 3:
+        # if 5+ hits in either direction, decrease scale factor
+        if last_run_dmn_hits >= 5 or last_run_cen_hits >= 5:
             expInfo['scale_factor'] = last_run_scale_factor * 0.75
         
-        # if 0 hits at all, increase scale factor
-        elif last_run_cen_hits + last_run_dmn_hits == 0:
+        # if 0 or 1 total hits, increase scale factor
+        elif last_run_cen_hits + last_run_dmn_hits <= 1:
             expInfo['scale_factor'] = last_run_scale_factor * 1.25
 
         # otherwise, keep scale factor the same
