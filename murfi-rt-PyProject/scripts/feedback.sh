@@ -323,7 +323,7 @@ cen_mni_thresh=$ica_directory/cen_mni_thresh.nii.gz
 
 
 # Hard code the number of voxels desired for each mask
-num_voxels_desired=1000
+num_voxels_desired=2000
 
 # If single-run ICA, register non-thresholded masks to MNI space
 if [ $ica_version == 'single_run' ]
