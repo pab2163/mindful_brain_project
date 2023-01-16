@@ -27,15 +27,11 @@ else
 	partcipant_id=$MURFI_SUBJECT_NAME
 fi
 
-echo $ret
-
+# If user selects the Exit button, then quit MURFI
 if [[ $ret == 1 ]];
 then
 	exit 0
 fi
-
-
-
 
 
 # Run selected step
