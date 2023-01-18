@@ -212,7 +212,7 @@ set fmri(rendertype) 1
 set fmri(bgimage) 1
 
 # Create time series plots
-set fmri(tsplot_yn) 1
+set fmri(tsplot_yn) 0
 
 # Registration to initial structural
 set fmri(reginitial_highres_yn) 0
