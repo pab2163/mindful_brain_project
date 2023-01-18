@@ -89,7 +89,7 @@ then
     # If paths to personalized masks exist, then run MURFI. Otherwise, prompt user about whether to use template masks instead
     dmn_mni_thresh="../subjects/${subj}/mask/mni/dmn_mni.nii.gz"
     cen_mni_thresh="../subjects/${subj}/mask/mni/cen_mni.nii.gz"   
-    if [ -f "${dmn_mask}" ] && [ -f "${cen_mask}" ]
+    if [ -f "${dmn_mni_thresh}" ] && [ -f "${cen_mni_thresh}" ];
     then
         echo 'Found DMN & CEN MNI masks'
     else 
@@ -99,6 +99,8 @@ then
         then
             cp $template_dmn $dmn_mni_thresh
             cp $template_cen $cen_mni_thresh
+        else
+            exit 0
         fi
     fi
 
