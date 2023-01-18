@@ -25,7 +25,7 @@ if ica_version == 'multi_run':
     dmn_component=f'{ica_directory}/dmn_mni_uthresh.nii.gz'
     cen_component=f'{ica_directory}/cen_mni_uthresh.nii.gz' 
 elif ica_version == 'single_run':
-    ica_directory=f'../subjects/{subjID}/rest/rs_network.ica/filtered_func_data.ica/'
+    ica_directory=f'../subjects/{subjID}/rest/rs_network.ica/'
     dmn_component=f'{ica_directory}/dmn_uthresh.nii.gz'
     cen_component=f'{ica_directory}/cen_uthresh.nii.gz' 
 

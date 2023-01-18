@@ -1,6 +1,6 @@
 #! /bin/bash
 # Clemens Bauer
-# Modified by Paul Bloom December 202
+# Modified by Paul Bloom December 2022
 
 
 ## 4 ARGS: [subid] [ses] [run] [step]
@@ -261,9 +261,9 @@ then
     ica_version='multi_run'
 
 # if ICA feat dir for multi-run ICA isn't present, look for single-run version
-elif [ -d $subj_dir/rest/rs_network.ica/filtered_func_data.ica/ ] 
+elif [ -d "${subj_dir}/rest/rs_network.ica/filtered_func_data.ica/" ] 
 then
-    ica_directory=$subj_dir/rest/rs_network.ica/filtered_func_data.ica/ 
+    ica_directory="${subj_dir}/rest/rs_network.ica/" 
     ica_version='single_run'
 else
     echo "Error: no ICA directory found for ${subj}. Exiting now..."
@@ -280,12 +280,15 @@ template_networks='template_networks.nii.gz'
 # Merge template files to 1 image
 fslmerge -tr ${template_networks} ${template_dmn} ${template_cen} 1
 
-# ICs in native space
-infile=$ica_directory/melodic_IC.nii.gz 
+echo $ica_version
+
+
 
 # If single-session, then ICA was done in native space, and registration is needed
 if [ $ica_version == 'single_run' ]
 then
+    # ICs in native space
+    infile=$ica_directory/filtered_func_data.ica/melodic_IC.nii.gz 
     # ICA file, template, and transform matrices needed for registration
     examplefunc=${ica_directory}/reg/example_func.nii.gz
     standard=${ica_directory}/reg/standard.nii.gz
@@ -300,10 +303,17 @@ then
     ## Unthresholded masks in native space
     dmn_uthresh=$ica_directory/dmn_uthresh.nii.gz
     cen_uthresh=$ica_directory/cen_uthresh.nii.gz
+
+    # Correlate (spatially) ICA components (not thresholded) with DMN & CEN template files
+    fslcc --noabs -p 3 -t 0.05 ${infile} ${template2example_func} >>${correlfile}
+else
+    # ICs in template space
+    infile=$ica_directory/melodic_IC.nii.gz 
+    # Correlate (spatially) ICA components (not thresholded) with DMN & CEN template files
+    fslcc --noabs -p 3 -t 0.05 ${infile} ${template_networks} >>${correlfile}
 fi
 
-# Correlate (spatially) ICA components (not thresholded) with DMN & CEN template files
-fslcc --noabs -p 3 -t 0.05 ${infile} ${template_networks} >>${correlfile}
+
 
 # Split ICs to separate files
 split_outfile=$ica_directory/melodic_IC_
