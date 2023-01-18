@@ -22,6 +22,11 @@ absolute_path=$(dirname $cwd)
 subj_dir_absolute="${absolute_path}/subjects/$subj"
 fsl_scripts=../scripts/fsl_scripts
 
+
+# Set template files
+template_dmn='DMNax_brainmaskero2.nii'
+template_cen='CENa_brainmaskero2.nii'
+
 # Set paths & check that computers are properly connected with scanner via Ethernet
 if [ ${step} = setup ]
 then
@@ -78,9 +83,26 @@ then
     flirt -in MNI152_T1_2mm_LPS.nii.gz -ref ${latest_ref} -out $subj_dir/xfm/epi2reg/mnilps2studyref -omat $subj_dir/xfm/epi2reg/mnilps2studyref.mat
     flirt -in MNI152_T1_2mm_LPS_brain.nii.gz -ref ${latest_ref}_brain -out $subj_dir/xfm/epi2reg/mnilps2studyref_brain -omat $subj_dir/xfm/epi2reg/mnilps2studyref.mat
 
+    # make registration image for inspection, and open it
     slices $subj_dir/xfm/epi2reg/mnilps2studyref_brain ${latest_ref}_brain -o $subj_dir/xfm/MNI2_warp_to_2vol_native_check.gif
 
-    # For each MNI mask in the participant's MNI mask directory, swap dimension & register to 2vol native space
+    # If paths to personalized masks exist, then run MURFI. Otherwise, prompt user about whether to use template masks instead
+    dmn_mni_thresh="../subjects/${subj}/mask/mni/dmn_mni.nii.gz"
+    cen_mni_thresh="../subjects/${subj}/mask/mni/cen_mni.nii.gz"   
+    if [ -f "${dmn_mask}" ] && [ -f "${cen_mask}" ]
+    then
+        echo 'Found DMN & CEN MNI masks'
+    else 
+        # If the user wants, use standard DMN & CEN templates for feedback
+        if zenity --question --text="Continue using standard DMN &amp; CEN templates instead?" \
+            --width=800 --title="Warning, no masks found for ${subj}!"
+        then
+            cp $template_dmn $dmn_mni_thresh
+            cp $template_cen $cen_mni_thresh
+        fi
+    fi
+
+    # For each mask (MNI), swap dimension & register to 2vol native space
     for mni_mask in {dmn,cen};
     do 
         echo "+ REGISTERING ${mni_mask} TO study_ref" 
@@ -95,6 +117,7 @@ then
 
     echo "+ INSPECT"
     echo "++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++"
+    xdg-open $subj_dir/xfm/MNI2_warp_to_2vol_native_check.gif
     fsleyes ${latest_ref}_brain  $subj_dir/mask/cen.nii -cm red $subj_dir/mask/dmn.nii -cm blue  #$subj_dir/mask/smc.nii -cm yellow $subj_dir/mask/stg.nii -cm green
 fi
 
@@ -104,7 +127,8 @@ clear
     echo "+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++"
     echo "ready to receive rtdmn feedback scan"
     export MURFI_SUBJECTS_DIR="${absolute_path}/subjects/"
-    export MURFI_SUBJECT_NAME=$subj
+    export MURFI_SUBJECT_NAME=$subj 
+
     singularity exec /home/auerbachlinux/singularity-images/murfi2.sif murfi -f $subj_dir_absolute/xml/rtdmn.xml
 fi
 
@@ -272,9 +296,6 @@ fi
 correlfile=$ica_directory/template_rsn_correlations_with_ICs.txt
 touch ${correlfile}
 
-# Set template files
-template_dmn='DMNax_brainmaskero2.nii'
-template_cen='CENa_brainmaskero2.nii'
 template_networks='template_networks.nii.gz'
 
 # Merge template files to 1 image

@@ -37,10 +37,10 @@ fi
 # Run selected step
 if [ ${step} == 'create' ]
 then
-	echo "source createxml.sh ${partcipant_id} setup"
-	source createxml.sh ${partcipant_id} setup	
+	echo "[$(date +%F_%T)] source createxml.sh ${partcipant_id} setup" >> "../subjects/${partcipant_id}/murfi_command_log.txt"
+	source createxml.sh ${partcipant_id} setup 
 else
-	echo "source feedback.sh ${partcipant_id} ${step}"
+	echo "[$(date +%F_%T)] source feedback.sh ${partcipant_id} ${step}" >> "../subjects/${partcipant_id}/murfi_command_log.txt"
 	source feedback.sh ${partcipant_id} ${step}
 fi
 
