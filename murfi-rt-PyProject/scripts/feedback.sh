@@ -54,7 +54,7 @@ if [ ${step} = 2vol ]
 then
     clear
     echo "ready to receive 2 volume scan"
-    singularity exec /home/auerbachlinux/singularity-images/murfi2.sif murfi -f $subj_dir/xml/2vol.xml
+    singularity exec murfi2.sif murfi -f $subj_dir/xml/2vol.xml
 fi
 
 # For registering masks in MNI space to native space (based on 2vol scan)
@@ -131,7 +131,7 @@ clear
     export MURFI_SUBJECTS_DIR="${absolute_path}/subjects/"
     export MURFI_SUBJECT_NAME=$subj 
 
-    singularity exec /home/auerbachlinux/singularity-images/murfi2.sif murfi -f $subj_dir_absolute/xml/rtdmn.xml
+    singularity exec murfi2.sif murfi -f $subj_dir_absolute/xml/rtdmn.xml
 fi
 
 
@@ -142,7 +142,7 @@ clear
     echo "ready to receive resting state scan"
     export MURFI_SUBJECTS_DIR="${absolute_path}/subjects/"
     export MURFI_SUBJECT_NAME=$subj
-    singularity exec /home/auerbachlinux/singularity-images/murfi2.sif murfi -f $subj_dir/xml/rest.xml
+    singularity exec murfi2.sif murfi -f $subj_dir/xml/rest.xml
 fi
 
 
