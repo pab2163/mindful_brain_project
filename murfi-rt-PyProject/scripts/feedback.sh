@@ -143,6 +143,7 @@ clear
     export MURFI_SUBJECTS_DIR="${absolute_path}/subjects/"
     export MURFI_SUBJECT_NAME=$subj
     singularity exec murfi2.sif murfi -f $subj_dir/xml/rest.xml
+
 fi
 
 
@@ -153,7 +154,7 @@ clear
     echo "+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++"
     echo "+ compiling resting state run into analysis folder"
 
-    expected_volumes=250
+    expected_volumes=249
     # # get all volumes of resting data (no matter how many) merged into 1 .nii.gz file
     # run_0_volumes=$(find ../subjects/${subj}/img/ -name "img-00000*" | wc -l)
     # run_1_volumes=$(find ../subjects/${subj}/img/ -name "img-00001*" | wc -l)
@@ -166,8 +167,8 @@ clear
     runstring="Resting state runs should have ${expected_volumes} volumes\n"
     for i in {0..10};
     do
-        #echo $i
-        run_volumes=$(find ${subj_dir_absolute}/img/ -name "img-0000${i}*" | wc -l)
+        # Because of MURFI file-naming conventions, do not use the first volume!
+        run_volumes=$(find ${subj_dir_absolute}/img/ -type f \( -iname "img-0000${i}*" ! -iname "*00001.nii" \) | wc -l)
         if [ ${run_volumes} -ne 0 ]
         then
             runstring="${runstring}\nRun ${i}: ${run_volumes} volumes"
@@ -179,7 +180,7 @@ clear
         --separator=" " --width 600 --height 600 \
         --add-entry="First Input Run #" \
         --add-entry="Second Input Run #" --text="`printf "${runstring}"`"\
-        --add-combo="How many resting runs to use for ICA?" --combo-values "2 (default) |1 (only to be used if there aren't 2 viable runs to use)")
+        --add-combo="How many resting runs to use for ICA?\nOnly use runs that have 200+ volumes for ICA?" --combo-values "2 (default) |1 (only to be used if there aren't 2 viable runs to use)")
 
     # check that exit button hasn't been clicked
     if [[ $? == 1 ]];
@@ -202,8 +203,14 @@ clear
         # merge individual volumes to make 1 file for each resting state run
         rest_runA_filename=$subj_dir_absolute/rest/$subj'_'$ses'_task-rest_run-01_bold'.nii.gz
         rest_runB_filename=$subj_dir_absolute/rest/$subj'_'$ses'_task-rest_run-02_bold'.nii.gz 
-        fslmerge -tr $rest_runA_filename $subj_dir_absolute/img/img-0000${rest_runA_num}* 1.2
-        fslmerge -tr $rest_runB_filename $subj_dir_absolute/img/img-0000${rest_runB_num}* 1.2
+
+        #fslmerge -tr $rest_runA_filename $subj_dir_absolute/img/img-0000${rest_runA_num}* 1.2
+        #fslmerge -tr $rest_runB_filename $subj_dir_absolute/img/img-0000${rest_runB_num}* 1.2
+
+        volsA=$(find ${subj_dir_absolute}/img/ -type f \( -iname "img-0000${rest_runA_num}*" ! -iname "*00001.nii" \))
+        volsB=$(find ${subj_dir_absolute}/img/ -type f \( -iname "img-0000${rest_runB_num}*" ! -iname "*00001.nii" \)) 
+        fslmerge -tr $rest_runA_filename $volsA 1.2
+        fslmerge -tr $rest_runB_filename $volsB 1.2
 
 
         # figure out how many volumes of resting state data there were to be used in ICA
