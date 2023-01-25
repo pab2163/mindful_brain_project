@@ -185,15 +185,14 @@ else:
 tr_to_frame_ratio = expInfo['tr']/frameDur
 
 
-run_questions_file = filename + 'slider_questions.csv'
+run_questions_file = filename + '_slider_questions.csv'
 with open(run_questions_file, 'a') as csvfile:
     stim_writer = csv.writer(csvfile, delimiter=',', quotechar='|', quoting=csv.QUOTE_MINIMAL)
     stim_writer.writerow(["id", "run", 'feedback_on', "question_text", "reponse", "rt"])  
 
-def run_slider(question_text='Default Text'):
+def run_slider(question_text='Default Text', left_label='left', right_label='right'):
     slider_question = visual.TextStim(win=win, ori=0, name='text',
-        text=question_text, 
-        font=u'Arial',
+        text=question_text, font=u'Arial',
         pos=[0, 0.2], height=0.06, wrapWidth=1.2,
         color=u'white', colorSpace='rgb', opacity=1,
         depth=0.0)
@@ -201,10 +200,11 @@ def run_slider(question_text='Default Text'):
     vas = visual.Slider(win,
                 size=(0.85, 0.1),
                 ticks=(1, 9),
-                labels=('Never', 'Always'),
+                labels=(left_label, right_label),
                 granularity=1,
                 color='white',
-                fillColor='white')
+                fillColor='white',
+                font=u'Arial')
 
     event.clearEvents('keyboard')
     vas.markerPos = 5
@@ -235,12 +235,6 @@ def run_slider(question_text='Default Text'):
 
     
     return(vas.rating)
-
-
-run_slider(question_text='How often were you using the mental noting practice?')
-run_slider(question_text='How difficult was it to apply mental noting?')
-
-
 
 # Initialize components for Routine "instructions"
 instructionsClock = core.Clock()
@@ -842,6 +836,14 @@ for thisComponent in finishComponents:
     if hasattr(thisComponent, 'status'):
         thisComponent.status = NOT_STARTED
 
+# Ask slider questions
+run_slider(question_text='How often were you using the mental noting practice?',
+                left_label='Never', right_label='Always')
+run_slider(question_text='How difficult was it to apply mental noting?',
+                left_label='Easy', right_label='Difficult')
+run_slider(question_text='How are you feeling right now?',
+                left_label='Very bad', right_label='Very good')
+
 #-------Start Routine "finish"-------
 continueRoutine = True
 while continueRoutine and routineTimer.getTime() > 0:
@@ -881,6 +883,9 @@ while continueRoutine and routineTimer.getTime() > 0:
 for thisComponent in finishComponents:
     if hasattr(thisComponent, "setAutoDraw"):
         thisComponent.setAutoDraw(False)
+
+
+
 
 win.close()
 core.quit()
