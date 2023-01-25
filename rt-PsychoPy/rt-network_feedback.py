@@ -185,6 +185,57 @@ else:
 tr_to_frame_ratio = expInfo['tr']/frameDur
 
 
+run_questions_file = filename + '_slider_questions.csv'
+with open(run_questions_file, 'a') as csvfile:
+    stim_writer = csv.writer(csvfile, delimiter=',', quotechar='|', quoting=csv.QUOTE_MINIMAL)
+    stim_writer.writerow(["id", "run", 'feedback_on', "question_text", "reponse", "rt"])  
+
+def run_slider(question_text='Default Text', left_label='left', right_label='right'):
+    slider_question = visual.TextStim(win=win, ori=0, name='text',
+        text=question_text, font=u'Arial',
+        pos=[0, 0.2], height=0.06, wrapWidth=1.2,
+        color=u'white', colorSpace='rgb', opacity=1,
+        depth=0.0)
+
+    vas = visual.Slider(win,
+                size=(0.85, 0.1),
+                ticks=(1, 9),
+                labels=(left_label, right_label),
+                granularity=1,
+                color='white',
+                fillColor='white',
+                font=u'Arial')
+
+    event.clearEvents('keyboard')
+    vas.markerPos = 5
+    vas.draw()
+    slider_question.draw()
+    win.flip()
+    continueRoutine = True
+    while continueRoutine:
+        keys = event.getKeys(keyList=['2', '3', '4'])
+        if len(keys):
+            if '2' in keys:
+                vas.markerPos = vas.markerPos - 1
+            elif '3' in keys:
+                vas.markerPos = vas.markerPos  + 1 
+            elif '4' in keys:
+                vas.rating=vas.markerPos
+                continueRoutine=False
+            vas.draw()
+            slider_question.draw()
+            win.flip()
+            print(keys)
+
+    print(f'Rating: {vas.rating}, RT: {vas.rt}')
+    with open(run_questions_file, 'a') as csvfile:
+            stim_writer = csv.writer(csvfile, delimiter=',', quotechar='|', quoting=csv.QUOTE_MINIMAL)
+            stim_writer.writerow([expInfo['participant'], expInfo['run'], expInfo['feedback_on'],
+                                  question_text, vas.rating, vas.rt])   
+
+    
+    return(vas.rating)
+
 # Initialize components for Routine "instructions"
 instructionsClock = core.Clock()
 text = visual.TextStim(win=win, ori=0, name='text',
@@ -254,13 +305,18 @@ roi_pos = np.zeros((n_roi, 2))
 for i in range(n_roi):
     roi_pos[i, :] = [(np.real(positions[i]))/3, (np.imag(positions[i]))/3]
 
+# scale based on aspect ratio
+scale=[win.size[1]/win.size[0], 1]
 
 target_circles=[]
 target_circles_id=[]
 hit_counter=[]
 home=[]
 for i in range(n_roi):
-    roi_circle_i = visual.Circle(win, pos=(roi_pos[i, 1],roi_pos[i, 0]), radius=0.15,fillColor=None, lineColor=colors[i], lineWidth=2)
+    roi_circle_i = visual.Circle(win, pos=(roi_pos[i, 1],roi_pos[i, 0]), 
+                                 radius=0.15,fillColor=None, 
+                                 lineColor=colors[i], lineWidth=2)
+    roi_circle_i.size *= scale
     target_circles.append(roi_circle_i)
     hit_counter.append(0)
     print (hit_counter)
@@ -306,6 +362,8 @@ ball = visual.Circle(win,
                     fillColor='white',
                     lineColor='white',
                     lineWidth=3)
+
+ball.size *= scale
 
 def calculate_ball_position(circle_reference_position, activation, ball_x_position, ball_y_position):
     # New cursor position (of ball) will be dot product of position (negative if DMN, positive if CEN) and activity (always positive)
@@ -653,6 +711,7 @@ while continueRoutine and routineTimer.getTime() > 0:
         -1 = downwards (when DMN higher)
         '''
         for i in range(n_roi):
+            target_circles[i].fillColor=None
             # for each ROI, look for the index -- see whether that ROI has the highest activity
             if roi_activities.index(np.nanmax(roi_activities))==i and np.nanmean(roi_activities)!=0:
                 # Activity=absolute difference between ROI activations (always positive)
@@ -678,6 +737,8 @@ while continueRoutine and routineTimer.getTime() > 0:
 
                 # for each hit, position of target circle moves away from the middle (up to a point)
                 target_circles[i].pos=((target_circles[i].pos[0]*1.1), (target_circles[i].pos[1]*1.1))
+                target_circles[i].fillColor='white'
+
 
         # Save info to outfile for each volume       
         with open(filename+'_roi_outputs.csv', 'a') as csvfile:
@@ -775,6 +836,14 @@ for thisComponent in finishComponents:
     if hasattr(thisComponent, 'status'):
         thisComponent.status = NOT_STARTED
 
+# Ask slider questions
+run_slider(question_text='How often were you using the mental noting practice?',
+                left_label='Never', right_label='Always')
+run_slider(question_text='How difficult was it to apply mental noting?',
+                left_label='Easy', right_label='Difficult')
+run_slider(question_text='How are you feeling right now?',
+                left_label='Very bad', right_label='Very good')
+
 #-------Start Routine "finish"-------
 continueRoutine = True
 while continueRoutine and routineTimer.getTime() > 0:
@@ -814,6 +883,9 @@ while continueRoutine and routineTimer.getTime() > 0:
 for thisComponent in finishComponents:
     if hasattr(thisComponent, "setAutoDraw"):
         thisComponent.setAutoDraw(False)
+
+
+
 
 win.close()
 core.quit()
