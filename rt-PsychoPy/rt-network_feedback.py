@@ -169,7 +169,7 @@ endExpNow = False  # flag for 'escape' or other condition => quit the exp
 # Start Code - component code to be run before the window creation
 
 # Setup the Window
-win = visual.Window(size=(1080,1080), fullscr=True, screen=1, allowGUI=False, allowStencil=False,#1024, 1024
+win = visual.Window(size=(1080,1080), fullscr=False, screen=1, allowGUI=False, allowStencil=False,#1024, 1024
     monitor='testMonitor', color=[-1,-1,-1], colorSpace='rgb',
     blendMode='avg', useFBO=True,
     )
@@ -184,6 +184,48 @@ else:
 # Approximately how many frames does the monitor refresh per volume?
 tr_to_frame_ratio = expInfo['tr']/frameDur
 
+
+slider_question = visual.TextStim(win=win, ori=0, name='text',
+    text=u'How often were you using the mental noting practice?', 
+    font=u'Arial',
+    pos=[0, 0.2], height=0.06, wrapWidth=1.2,
+    color=u'white', colorSpace='rgb', opacity=1,
+    depth=0.0)
+
+vas = visual.Slider(win,
+             size=(0.85, 0.1),
+             ticks=(1, 9),
+             labels=('Never', 'Always'),
+             granularity=1,
+             color='white',
+             fillColor='white')
+
+event.clearEvents('keyboard')
+vas.markerPos = 5
+vas.draw()
+slider_question.draw()
+win.flip()
+continueRoutine = True
+while continueRoutine:
+    keys = event.getKeys(keyList=['2', '3', '4'])
+    if len(keys):
+        if '2' in keys:
+            vas.markerPos = vas.markerPos - 1
+        elif '3' in keys:
+            vas.markerPos = vas.markerPos  + 1 
+        elif '4' in keys:
+            vas.rating=vas.markerPos
+            continueRoutine=False
+        vas.draw()
+        slider_question.draw()
+        win.flip()
+        print(keys)
+
+    # while not vas.rating:
+    #     vas.draw()
+    #     win.flip()
+
+print(f'Rating: {vas.rating}, RT: {vas.rt}')
 
 # Initialize components for Routine "instructions"
 instructionsClock = core.Clock()
