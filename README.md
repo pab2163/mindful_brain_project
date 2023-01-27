@@ -1,4 +1,4 @@
-# R61_MBNF_MDD Code
+# MINDFUL BRAIN PROJECT (REMIND) Code
 
 This repo contains scripts for:
 
