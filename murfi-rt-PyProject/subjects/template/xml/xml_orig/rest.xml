@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<study name="rtDMN">
-  <option name="subjectsDir"> /home/rt/rtDMN/subjects </option>
+<study name="remind">
+  <option name="subjectsDir"> ../subjects </option>
   <subject>
     <option name="name"> test_rtdmn </option>
   </subject>
-    <option name="softwareDir"> /home/rt/murfi2/ </option>
+    <option name="softwareDir"> ./ </option>
 </study>
 
 <scanner>
@@ -33,7 +33,7 @@
 
   <module name="mask-gen">
     <option name="disabled"> true </option>
-    <option name="makeavail">true</option>
+    <option name="makeavail">false</option>
 
     <!-- the roi name this mask can be referenced by in later modules
          and the data store -->
@@ -55,7 +55,7 @@
     <option name="dynamic"> false </option>
 
     <!-- whether to save the mask to a file (good idea) -->
-    <option name="save"> true </option>
+    <option name="save"> false </option>
   </module>
 
   <!-- roi mask loading -->
@@ -64,7 +64,7 @@
   <module name="mask-load">
     <option name="disabled"> true </option>
 
-    <option name="makeavail">true</option>
+    <option name="makeavail">false</option>
 
     <!-- the roi name this mask can be referenced by in later
          modules and the data store -->
@@ -76,10 +76,10 @@
 
     <!-- whether to align the mask to the series reference after
          reading it in -->
-    <option name="align"> true </option>
+    <option name="align"> false </option>
 
     <!-- whether to save the mask to a file (good idea) -->
-    <option name="save"> true </option>
+    <option name="save"> false </option>
   </module>
 
   
@@ -88,7 +88,7 @@
   <module name="mask-load">
     <option name="disabled"> true </option>
 
-    <option name="makeavail">true</option>
+    <option name="makeavail">false</option>
 
     <!-- the roi name this mask can be referenced by in later
          modules and the data store -->
@@ -100,10 +100,10 @@
 
     <!-- whether to align the mask to the series reference after
          reading it in -->
-    <option name="align"> true </option>
+    <option name="align"> false </option>
 
     <!-- whether to save the mask to a file (good idea) -->
-    <option name="save"> true </option>
+    <option name="save"> false </option>
   </module>
 
  
@@ -111,14 +111,14 @@
   <module name="incremental-glm">
     <option name="disabled"> true </option>
 
-    <option name="makeavail">true</option>
+    <option name="makeavail">false</option>
     <output>display</output>
 
     <option name="maskRoiID">brain</option>
 
 	<!-- design matrix -->
     <design>
-      <option name="disabled"> false </option>
+      <option name="disabled"> true </option>
 
      <!-- parameters specifying neural conditions of interest -->
 
@@ -149,7 +149,7 @@
   <module name="current-activation">
 
     <option name="disabled"> true </option>
-    <option name="makeavail">true</option>
+    <option name="makeavail">false</option>
     <option name="print"> true </option>
 
     <option name="modelFitModuleID"> incremental-glm </option>
