@@ -839,10 +839,13 @@ for thisComponent in finishComponents:
 # Ask slider questions
 run_slider(question_text='How often were you using the mental noting practice?',
                 left_label='Never', right_label='Always')
+run_slider(question_text='How often did you check the position of the ball',
+                left_label='Never', right_label='All the time')
 run_slider(question_text='How difficult was it to apply mental noting?',
-                left_label='Easy', right_label='Difficult')
-run_slider(question_text='How are you feeling right now?',
-                left_label='Very bad', right_label='Very good')
+                left_label='Not at all', right_label='Very Difficult')
+run_slider(question_text='How calm do you feel right now?',
+                left_label='Not at all', right_label='Very calm')
+
 
 #-------Start Routine "finish"-------
 continueRoutine = True
