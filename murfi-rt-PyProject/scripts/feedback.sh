@@ -480,30 +480,42 @@ then
         example_func2standard_mat=${ica_directory}/reg/example_func2standard.mat
         standard2example_func_mat=${ica_directory}/reg/standard2example_func.mat
 
-        # Warp template to native space (based on the resting state data used for ICA)
-        template2example_func=${ica_directory}/reg/template_networks2example_func.nii.gz
-        dmn2example_func=${ica_directory}/reg/template_dmn2example_func.nii.gz
-        cen2example_func=${ica_directory}/reg/template_cen2example_func.nii.gz
-        flirt -in ${template_networks} -ref ${examplefunc} -out ${template2example_func} -init ${standard2example_func_mat} -applyxfm
-        flirt -in ${template_dmn} -ref ${examplefunc} -out ${dmn2example_func} -init ${standard2example_func_mat} -applyxfm
-        flirt -in ${template_cen} -ref ${examplefunc} -out ${cen2example_func} -init ${standard2example_func_mat} -applyxfm
 
-
-        # Set paths for files needed for the next few steps 
-        ## Unthresholded masks in native space
-        dmn_uthresh=$ica_directory/dmn_uthresh.nii.gz
-        cen_uthresh=$ica_directory/cen_uthresh.nii.gz
-
-        # Correlate (spatially) ICA components (not thresholded) with DMN & CEN template files
-        fslcc --noabs -p 3 -t -1 ${infile} ${template2example_func} >>${correlfile}
     else
-        # ICs in template space
-        infile=$ica_directory/melodic_IC.nii.gz 
-        # Correlate (spatially) ICA components (not thresholded) with DMN & CEN template files
-        fslcc --noabs -p 3 -t -1 ${infile} ${template_networks} >>${correlfile}
+        # ICs in "template" space - template is mean of first resting state run used in ICA
+        infile=$ica_directory/melodic_IC2example_func.nii.gz 
+        init_melodic=$ica_directory/melodic_IC
+        mkdir ${ica_directory}/reg
+
+        # Filepaths for registration
+        examplefunc=${subj_dir_absolute}/rest/func_reference_volume.nii.gz
+        standard2example_func_mat=${ica_directory}/reg/standard2example_func.mat
+        standard2xample_func=${ica_directory}/reg/standard2example_func.nii.gz
+
+        # Register MNI LPS brain to example func (mean of resting state run 1). This registration will be used to bring template networks to native space
+        flirt -in MNI152_T1_2mm_LPS_brain -ref ${examplefunc} -out ${standard2xample_func} -omat ${standard2example_func_mat}
+        flirt -in ${init_melodic} -ref ${examplefunc} -out ${infile} -init ${standard2example_func_mat} -applyxfm
     fi
 
 
+    # Set paths for files needed for the next few steps 
+    ## Unthresholded masks in native space
+    dmn_uthresh=$ica_directory/dmn_uthresh.nii.gz
+    cen_uthresh=$ica_directory/cen_uthresh.nii.gz
+
+    # Warp template to native space (based on the resting state data used for ICA)
+    template2example_func=${ica_directory}/reg/template_networks2example_func.nii.gz
+    dmn2example_func=${ica_directory}/reg/template_dmn2example_func.nii.gz
+    cen2example_func=${ica_directory}/reg/template_cen2example_func.nii.gz
+
+
+    flirt -in ${template_networks} -ref ${examplefunc} -out ${template2example_func} -init ${standard2example_func_mat} -applyxfm
+    flirt -in ${template_dmn} -ref ${examplefunc} -out ${dmn2example_func} -init ${standard2example_func_mat} -applyxfm
+    flirt -in ${template_cen} -ref ${examplefunc} -out ${cen2example_func} -init ${standard2example_func_mat} -applyxfm
+
+
+    # Correlate (spatially) ICA components (not thresholded) with DMN & CEN template files
+    fslcc --noabs -p 3 -t -1 ${infile} ${template2example_func} >>${correlfile}
 
     # Split ICs to separate files
     split_outfile=$ica_directory/melodic_IC_
@@ -514,11 +526,11 @@ then
 
 
     ## Unthresholded masks in mni space
-    dmn_mni_uthresh=$ica_directory/dmn_mni_uthresh.nii.gz
-    cen_mni_uthresh=$ica_directory/cen_mni_uthresh.nii.gz
+    #dmn_mni_uthresh=$ica_directory/dmn_mni_uthresh.nii.gz
+    #cen_mni_uthresh=$ica_directory/cen_mni_uthresh.nii.gz
 
     ## Thresholded masks in MNI space
-    dmn_thresh=$ica_directory/dmn_hresh.nii.gz
+    dmn_thresh=$ica_directory/dmn_thresh.nii.gz
     cen_thresh=$ica_directory/cen_thresh.nii.gz
 
 
@@ -565,7 +577,7 @@ then
 
 
     # Display masks with FSLEYES
-    fsleyes  ${ica_directory}/mean_func.nii.gz ${dmn_thresh} -cm blue ${cen_thresh} -cm red
+    fsleyes $subj_dir_absolute/rest/func_reference_volume ${dmn_thresh} -cm blue ${cen_thresh} -cm red
 
 fi
 
