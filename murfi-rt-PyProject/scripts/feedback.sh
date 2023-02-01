@@ -225,6 +225,11 @@ clear
         #fslorient -forceneurological $rest_runA_filename
         #fslorient -forceneurological $rest_runB_filename
 
+        # Mean of the first functional run is used as the "standard space" reference for ICA
+        reference_vol_for_ica=$subj_dir_absolute/rest/func_reference_volume.nii.gz
+        fslmaths $rest_runA_filename -Tmean $reference_vol_for_ica
+        echo "Clipping runs so that both have ${minvols} volumes"
+
         # figure out how many volumes of resting state data there were to be used in ICA
         rest_runA_volumes=$(fslnvols $rest_runA_filename)
         rest_runB_volumes=$(fslnvols $rest_runB_filename)
@@ -237,7 +242,6 @@ clear
             minvols=$(( rest_runA_volumes < rest_runB_volumes ? rest_runA_volumes : rest_runB_volumes ))
             fslroi $rest_runA_filename $rest_runA_filename 0 $minvols
             fslroi $rest_runB_filename $rest_runB_filename 0 $minvols
-            echo "Clipping runs so that both have ${minvols} volumes"
         else
             minvols=$expected_volumes
         fi
@@ -252,7 +256,7 @@ clear
         sed -i "s#DATA1#$rest_runA_filename#g" $subj_dir_absolute/rest/$subj'_'$ses'_task-rest_'$run'_bold'.fsf
         sed -i "s#DATA2#$rest_runB_filename#g" $subj_dir_absolute/rest/$subj'_'$ses'_task-rest_'$run'_bold'.fsf
         sed -i "s#OUTPUT#$OUTPUT_dir#g" $subj_dir/rest/$subj'_'$ses'_task-rest_'$run'_bold'.fsf
-        sed -i "s#TEMPLATE_LPS_PATH#$template_lps_path#g" $subj_dir/rest/$subj'_'$ses'_task-rest_'$run'_bold'.fsf 
+        sed -i "s#TEMPLATE_LPS_PATH#$reference_vol_for_ica#g" $subj_dir/rest/$subj'_'$ses'_task-rest_'$run'_bold'.fsf 
 
         # update fsf to match number of rest volumes
         sed -i "s/set fmri(npts) 250/set fmri(npts) ${minvols}/g" $subj_dir_absolute/rest/$subj'_'$ses'_task-rest_'$run'_bold'.fsf
@@ -567,3 +571,75 @@ fi
 
 
 
+# For registering masks in MNI space to native space (based on 2vol scan)
+if [ ${step} = register_native ]
+then
+    clear
+    echo "++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++"
+    echo "Registering masks to study_ref"
+    #echo "Ignore Flipping WARNINGS we need LPS/NEUROLOGICAL orientation for murfi feedback!!"
+    latest_ref=$(ls -t $subj_dir/xfm/*.nii | head -n1)
+    latest_ref="${latest_ref::-4}"
+    echo ${latest_ref}
+    bet ${latest_ref} ${latest_ref}_brain -R -f 0.4 -g 0 -m # changed from -f 0.6
+    slices ${latest_ref}_brain ${latest_ref} -o $subj_dir/xfm/2vol_skullstrip_check.gif
+
+    # CCCB version (direct flirt from subject functional to MNI structural: step 1)
+    # because the images that we get from Prisma through Vsend are in LPS orientation we need to change both our MNI mean image and our mni masks accordingly: 
+    #fslswapdim MNI152_T1_2mm.nii.gz x -y z MNI152_T1_2mm_LPS.nii.gz
+    #fslorient -forceneurological MNI152_T1_2mm_LPS.nii.gz
+    # once the images are in the same orientation we can do registration
+    rm -r $subj_dir/xfm/epi2reg
+    mkdir $subj_dir/xfm/epi2reg
+    #mkdir $subj_dir/mask/lps
+
+    # warp masks in RESTING STATE ICA SPACE into 2VOL native space (studyref)
+    flirt -in $subj_dir/rest/rs_network.ica/example_func.nii.gz -ref ${latest_ref}_brain -out $subj_dir/xfm/epi2reg/rest2studyref_brain -omat $subj_dir/xfm/epi2reg/rest2studyref.mat
+    #flirt -in MNI152_T1_2mm_LPS_brain.nii.gz -ref ${latest_ref}_brain -out $subj_dir/xfm/epi2reg/mnilps2studyref_brain -omat $subj_dir/xfm/epi2reg/mnilps2studyref.mat
+
+    # make registration image for inspection, and open it
+    slices $subj_dir/xfm/epi2reg/rest2studyref_brain ${latest_ref}_brain -o $subj_dir/xfm/rest_warp_to_2vol_native_check.gif
+
+    # If paths to personalized masks exist, then run MURFI. Otherwise, prompt user about whether to use template masks instead
+    dmn_thresh="../subjects/${subj}/mask/dmn_native_rest.nii.gz"
+    cen_thresh="../subjects/${subj}/mask/cen_native_rest.nii.gz"   
+    if [ -f "${dmn_thresh}" ] && [ -f "${cen_thresh}" ];
+    then
+        echo 'Found DMN & CEN MNI masks'
+    else 
+        # If the user wants, use standard DMN & CEN templates for feedback
+        if zenity --question --text="Continue using standard DMN &amp; CEN templates instead?" \
+            --width=800 --title="Warning, no masks found for ${subj}!"
+        then
+            cp $template_dmn $dmn_mni_thresh
+            cp $template_cen $cen_mni_thresh
+        else
+            exit 0
+        fi
+    fi
+
+    # For each mask (REST native space), swap register to 2vol native space
+    for mask_name in {'dmn','cen'};
+    do 
+        echo "+ REGISTERING ${mask_name} TO study_ref" 
+        #fslswapdim $subj_dir/mask/mni/${mask_name}_mni x -y z $subj_dir/mask/lps/${mask_name}_mni_lps
+        #fslorient -forceneurological $subj_dir/mask/lps/${mask_name}_mni_lps
+        
+        # warp masks from resting state space to 2vol space
+        flirt -in $subj_dir/mask/${mask_name}_native_rest.nii.gz -ref ${latest_ref} -out $subj_dir/mask/${mask_name} -init $subj_dir/xfm/epi2reg/rest2studyref.mat -applyxfm -interp nearestneighbour -datatype short
+        
+        # erode 2vvol brain mask one voxel
+        fslmaths ${latest_ref}_brain_mask -ero ${latest_ref}_brain_mask_ero1
+
+        # binarize masks based on eroded 2vol brain mask
+        fslmaths $subj_dir/mask/${mask_name}.nii.gz -mul ${latest_ref}_brain_mask_ero1 $subj_dir/mask/${mask_name}.nii.gz -odt short
+
+
+        gunzip -f $subj_dir/mask/${mask_name}.nii.gz
+    done
+
+    echo "+ INSPECT"
+    echo "++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++"
+    xdg-open $subj_dir/xfm/rest_warp_to_2vol_native_check.gif
+    fsleyes ${latest_ref}_brain  $subj_dir/xfm/epi2reg/rest2studyref_brain $subj_dir/mask/cen.nii -cm red $subj_dir/mask/dmn.nii -cm blue  #$subj_dir/mask/smc.nii -cm yellow $subj_dir/mask/stg.nii -cm green
+fi

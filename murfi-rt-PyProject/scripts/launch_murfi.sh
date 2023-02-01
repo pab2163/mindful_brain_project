@@ -18,7 +18,7 @@ else
 	input_string=$(zenity --forms --title="MURFI GUI" \
 	--text="PARTICIPANT NAME: ${MURFI_SUBJECT_NAME}" \
 	--separator=" " \
-	--add-combo="Step" --combo-values "setup|resting_state|2vol|register|extract_rs_networks|process_roi_masks|feedback|process_roi_masks_native" \
+	--add-combo="Step" --combo-values "setup|resting_state|2vol|register|extract_rs_networks|process_roi_masks|feedback|process_roi_masks_native|register_native" \
 	--cancel-label "Exit" --ok-label "Run Selected Step")
 	ret=$?
 	# parse zenity output using space as delimiter
