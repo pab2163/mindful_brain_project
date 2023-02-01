@@ -474,14 +474,13 @@ then
     then
         # ICs in native space
         infile=$ica_directory/filtered_func_data.ica/melodic_IC.nii.gz 
-        # ICA file, template, and transform matrices needed for registration
+        # Filepaths for registration
         examplefunc=${ica_directory}/reg/example_func.nii.gz
         standard=${ica_directory}/reg/standard.nii.gz
         example_func2standard_mat=${ica_directory}/reg/example_func2standard.mat
         standard2example_func_mat=${ica_directory}/reg/standard2example_func.mat
 
-
-    else
+    else # Multi run
         # ICs in "template" space - template is mean of first resting state run used in ICA
         infile=$ica_directory/melodic_IC2example_func.nii.gz 
         init_melodic=$ica_directory/melodic_IC
@@ -494,6 +493,8 @@ then
 
         # Register MNI LPS brain to example func (mean of resting state run 1). This registration will be used to bring template networks to native space
         flirt -in MNI152_T1_2mm_LPS_brain -ref ${examplefunc} -out ${standard2xample_func} -omat ${standard2example_func_mat}
+
+        # Melodic IC output SHOULD already be in native space, but warp it just in case
         flirt -in ${init_melodic} -ref ${examplefunc} -out ${infile} -init ${standard2example_func_mat} -applyxfm
     fi
 
@@ -503,12 +504,12 @@ then
     dmn_uthresh=$ica_directory/dmn_uthresh.nii.gz
     cen_uthresh=$ica_directory/cen_uthresh.nii.gz
 
-    # Warp template to native space (based on the resting state data used for ICA)
+    ## Paths for registration files
     template2example_func=${ica_directory}/reg/template_networks2example_func.nii.gz
     dmn2example_func=${ica_directory}/reg/template_dmn2example_func.nii.gz
     cen2example_func=${ica_directory}/reg/template_cen2example_func.nii.gz
 
-
+    # Register the networks from template (MNI LPS) space into resting-state run native space
     flirt -in ${template_networks} -ref ${examplefunc} -out ${template2example_func} -init ${standard2example_func_mat} -applyxfm
     flirt -in ${template_dmn} -ref ${examplefunc} -out ${dmn2example_func} -init ${standard2example_func_mat} -applyxfm
     flirt -in ${template_cen} -ref ${examplefunc} -out ${cen2example_func} -init ${standard2example_func_mat} -applyxfm
@@ -524,11 +525,6 @@ then
     # Selection of ICs most highly correlated with template networks
     python rsn_get.py ${subj} ${ica_version}
 
-
-    ## Unthresholded masks in mni space
-    #dmn_mni_uthresh=$ica_directory/dmn_mni_uthresh.nii.gz
-    #cen_mni_uthresh=$ica_directory/cen_mni_uthresh.nii.gz
-
     ## Thresholded masks in MNI space
     dmn_thresh=$ica_directory/dmn_thresh.nii.gz
     cen_thresh=$ica_directory/cen_thresh.nii.gz
@@ -536,15 +532,6 @@ then
 
     # Hard code the number of voxels desired for each mask
     num_voxels_desired=2000
-
-    # If single-run ICA, register non-thresholded masks to MNI space
-    #if [ $ica_version == 'single_run' ]
-    #then
-    #    flirt -in  ${dmn_uthresh} -ref ${standard} -out ${dmn_mni_uthresh} -init ${example_func2standard_mat} -applyxfm
-    #    flirt -in  ${cen_uthresh} -ref ${standard} -out ${cen_mni_uthresh} -init ${example_func2standard_mat} -applyxfm
-    #fi
-
-    # Everything from here to the end of this step is in template space
 
     # zero out voxels not included in the template masks (i.e. so we only select voxels within template DMN/CEN)
     fslmaths ${dmn_uthresh} -mul ${dmn2example_func} ${dmn_uthresh}
@@ -596,15 +583,9 @@ then
     bet ${latest_ref} ${latest_ref}_brain -R -f 0.4 -g 0 -m # changed from -f 0.6
     slices ${latest_ref}_brain ${latest_ref} -o $subj_dir/xfm/2vol_skullstrip_check.gif
 
-    # CCCB version (direct flirt from subject functional to MNI structural: step 1)
-    # because the images that we get from Prisma through Vsend are in LPS orientation we need to change both our MNI mean image and our mni masks accordingly: 
-    #fslswapdim MNI152_T1_2mm.nii.gz x -y z MNI152_T1_2mm_LPS.nii.gz
-    #fslorient -forceneurological MNI152_T1_2mm_LPS.nii.gz
-    # once the images are in the same orientation we can do registration
     rm -r $subj_dir/xfm/epi2reg
     mkdir $subj_dir/xfm/epi2reg
-    #mkdir $subj_dir/mask/lps
-
+    
     # warp masks in RESTING STATE ICA SPACE into 2VOL native space (studyref)
     flirt -in $subj_dir/rest/rs_network.ica/example_func.nii.gz -ref ${latest_ref}_brain -out $subj_dir/xfm/epi2reg/rest2studyref_brain -omat $subj_dir/xfm/epi2reg/rest2studyref.mat
     #flirt -in MNI152_T1_2mm_LPS_brain.nii.gz -ref ${latest_ref}_brain -out $subj_dir/xfm/epi2reg/mnilps2studyref_brain -omat $subj_dir/xfm/epi2reg/mnilps2studyref.mat
