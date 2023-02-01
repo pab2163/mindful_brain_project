@@ -43,6 +43,12 @@ fslcc_info.sort_values(by=[1, 2], ascending=False, inplace=True)
 dmn_info = fslcc_info.loc[fslcc_info[1] == 1, :].values
 cen_info = fslcc_info.loc[fslcc_info[1] == 2, :].values
 
+print('CEN')
+print(cen_info)
+print('\nDMN')
+print(dmn_info)
+
+
 # Convert to into to index the correct IC
 roi1 = int(dmn_info[0, 0]-1)
 roi2  = int(cen_info[0, 0]-1)
