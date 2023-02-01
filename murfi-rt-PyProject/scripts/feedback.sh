@@ -26,6 +26,9 @@ fsl_scripts=../scripts/fsl_scripts
 # Set template files
 template_dmn='DMNax_brainmaskero2_lps.nii.gz'
 template_cen='CENa_brainmaskero2_lps.nii.gz'
+SCRIPT_PATH=$(dirname $(realpath -s $0))
+template_lps_path=${SCRIPT_PATH}/MNI152_T1_2mm_LPS_brain
+echo $template_lps_path
 
 # Set paths & check that computers are properly connected with scanner via Ethernet
 if [ ${step} = setup ]
@@ -249,6 +252,7 @@ clear
         sed -i "s#DATA1#$rest_runA_filename#g" $subj_dir_absolute/rest/$subj'_'$ses'_task-rest_'$run'_bold'.fsf
         sed -i "s#DATA2#$rest_runB_filename#g" $subj_dir_absolute/rest/$subj'_'$ses'_task-rest_'$run'_bold'.fsf
         sed -i "s#OUTPUT#$OUTPUT_dir#g" $subj_dir/rest/$subj'_'$ses'_task-rest_'$run'_bold'.fsf
+        sed -i "s#TEMPLATE_LPS_PATH#$template_lps_path#g" $subj_dir/rest/$subj'_'$ses'_task-rest_'$run'_bold'.fsf 
 
         # update fsf to match number of rest volumes
         sed -i "s/set fmri(npts) 250/set fmri(npts) ${minvols}/g" $subj_dir_absolute/rest/$subj'_'$ses'_task-rest_'$run'_bold'.fsf
@@ -277,6 +281,7 @@ clear
         OUTPUT_dir=$subj_dir_absolute/rest/rs_network
         sed -i "s#DATA#$rest_runA_filename#g" $subj_dir_absolute/rest/$subj'_'$ses'_task-rest_'$run'_bold'.fsf
         sed -i "s#OUTPUT#$OUTPUT_dir#g" $subj_dir/rest/$subj'_'$ses'_task-rest_'$run'_bold'.fsf
+        sed -i "s#TEMPLATE_LPS_PATH#$template_lps_path#g" $subj_dir/rest/$subj'_'$ses'_task-rest_'$run'_bold'.fsf 
 
         # update fsf to match number of rest volumes
         sed -i "s/set fmri(npts) 250/set fmri(npts) ${rest_runA_volumes}/g" $subj_dir_absolute/rest/$subj'_'$ses'_task-rest_'$run'_bold'.fsf
