@@ -22,8 +22,8 @@ ica_version=sys.argv[2]
 
 if ica_version == 'multi_run':
     ica_directory=f'../subjects/{subjID}/rest/rs_network.gica/groupmelodic.ica/'
-    dmn_component=f'{ica_directory}/dmn_mni_uthresh.nii.gz'
-    cen_component=f'{ica_directory}/cen_mni_uthresh.nii.gz' 
+    dmn_component=f'{ica_directory}/dmn_uthresh.nii.gz'
+    cen_component=f'{ica_directory}/cen_uthresh.nii.gz' 
 elif ica_version == 'single_run':
     ica_directory=f'../subjects/{subjID}/rest/rs_network.ica/'
     dmn_component=f'{ica_directory}/dmn_uthresh.nii.gz'
@@ -43,15 +43,12 @@ fslcc_info.sort_values(by=[1, 2], ascending=False, inplace=True)
 dmn_info = fslcc_info.loc[fslcc_info[1] == 1, :].values
 cen_info = fslcc_info.loc[fslcc_info[1] == 2, :].values
 
-print('CEN')
-print(cen_info)
-print('\nDMN')
-print(dmn_info)
-
-
 # Convert to into to index the correct IC
 roi1 = int(dmn_info[0, 0]-1)
 roi2  = int(cen_info[0, 0]-1)
+
+print(f'CEN: {roi1}')
+print(f'DMN: {roi2}')
 
 # Pull the correct IC
 dmnfuncfile=split_outfile+'%0.4d.nii.gz' % roi1
