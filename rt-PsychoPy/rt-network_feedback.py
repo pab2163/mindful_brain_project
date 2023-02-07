@@ -57,6 +57,8 @@ expInfo['expName'] = expName
 expInfo['No_of_ROIs'] = 2
 expInfo['Level_1_2_3'] = 1
 expInfo['Run_Time'] = 120
+expInfo['pda_outlier_threshold']=2
+expInfo['num_pda_outliers']=0
 # Baseline time before feedback (seconds)
 BaseLineTime=30 
 
@@ -365,12 +367,16 @@ ball = visual.Circle(win,
 
 ball.size *= scale
 
-def calculate_ball_position(circle_reference_position, activation, ball_x_position, ball_y_position):
+def calculate_ball_position(circle_reference_position, activation, ball_x_position, ball_y_position, outlier):
     # New cursor position (of ball) will be dot product of position (negative if DMN, positive if CEN) and activity (always positive)
     cursor_position = np.dot(circle_reference_position, activation)
-    # The position of the target circle cumulatively adds the scaled cursor position on each frame
-    ball_y_position =ball_y_position+ (np.real(cursor_position) * (scale_factor_z2pixels/internal_scaler) / tr_to_frame_ratio) 
-    ball_x_position=ball_x_position+ (np.imag(cursor_position) * scale_factor_z2pixels/internal_scaler / tr_to_frame_ratio )
+
+    # only update ball position if the PDA metric isn't an outlier
+    if not outlier:
+        # The position of the target circle cumulatively adds the scaled cursor position on each frame
+        ball_y_position =ball_y_position+ (np.real(cursor_position) * (scale_factor_z2pixels/internal_scaler) / tr_to_frame_ratio) 
+        ball_x_position=ball_x_position+ (np.imag(cursor_position) * scale_factor_z2pixels/internal_scaler / tr_to_frame_ratio )
+    
     ball_position=(ball_x_position,ball_y_position)
     #print("Ball position:", ball_position)
     return(ball_position)    
@@ -644,7 +650,7 @@ for i in range(n_roi):
 ball.draw()
 win.flip()
 
-
+pda_outlier=False
 #-------Start Routine "feedback"-------
 continueRoutine = True
 # Loop keeps going until RUN_TIME is up
@@ -701,7 +707,12 @@ while continueRoutine and routineTimer.getTime() > 0:
     # a list of [CEN, DMN] for the current frame
     else:
         roi_activities=roi_raw_activations
-        
+        if np.nanmax(np.abs(roi_activities)) > expInfo['pda_outlier_threshold']:
+            pda_outlier=True
+            expInfo['num_pda_outliers']+=1
+        else:
+            pda_outlier=False
+
         print('time: ', routineTimer.getTime())
         print ("got feedback at frame : ",  frame, roi_raw_activations, roi_names_list)
         
@@ -736,7 +747,8 @@ while continueRoutine and routineTimer.getTime() > 0:
                 ball.pos = (0,0)
 
                 # for each hit, position of target circle moves away from the middle (up to a point)
-                target_circles[i].pos=((target_circles[i].pos[0]*1.1), (target_circles[i].pos[1]*1.1))
+                if np.abs(target_circles[i].pos[1]) + target_circles[i].radius + 0.1 < 1:
+                    target_circles[i].pos=((target_circles[i].pos[0]*1.1), (target_circles[i].pos[1]*1.1))
                 target_circles[i].fillColor='white'
 
 
@@ -750,7 +762,15 @@ while continueRoutine and routineTimer.getTime() > 0:
         frame += 1
     
     # calculate next ball position
-    ball.pos = calculate_ball_position(circle_reference_position=direction, activation=activity, ball_x_position=ball.pos[0], ball_y_position=ball.pos[1])             
+    pause_ball_movement=False
+    for i in range(n_roi):
+        if further_than_circles(position=i, 
+                    circle_center=target_circles[i].pos[1], 
+                    ball_center=ball.pos[1]):
+            pause_ball_movement=True
+
+    if not pause_ball_movement:
+        ball.pos = calculate_ball_position(circle_reference_position=direction, activation=activity, ball_x_position=ball.pos[0], ball_y_position=ball.pos[1], outlier=pda_outlier)             
 
     # Draw stimuli (if on feedback mode)
     if expInfo['feedback_on'] == 'Feedback':
