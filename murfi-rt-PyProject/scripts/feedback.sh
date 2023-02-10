@@ -210,10 +210,7 @@ clear
         rest_runA_filename=$subj_dir_absolute/rest/$subj'_'$ses'_task-rest_run-01_bold'.nii.gz
         rest_runB_filename=$subj_dir_absolute/rest/$subj'_'$ses'_task-rest_run-02_bold'.nii.gz 
 
-
-        #fslmerge -tr $rest_runA_filename $subj_dir_absolute/img/img-0000${rest_runA_num}* 1.2
-        #fslmerge -tr $rest_runB_filename $subj_dir_absolute/img/img-0000${rest_runB_num}* 1.2
-
+        # Merge all volumes in each run except for the first one -- this is because of the MURFI labeling issue where this first volume often is actually mislabeled and from a different run 
         volsA=$(find ${subj_dir_absolute}/img/ -type f \( -iname "img-0000${rest_runA_num}*" ! -iname "*00001.nii" \))
         volsB=$(find ${subj_dir_absolute}/img/ -type f \( -iname "img-0000${rest_runB_num}*" ! -iname "*00001.nii" \)) 
         fslmerge -tr $rest_runA_filename $volsA 1.2
@@ -266,9 +263,10 @@ clear
         template_fsf_file=fsl_scripts/rest_template_single_run.fsf
         echo "Using run ${rest_runA_num} for single-run ICA"
 
-        # merge individual volumes to make 1 file for each resting state run
+        # merge individual volumes (except volume 1, see note above!) to make 1 file for each resting state run
         rest_runA_filename=$subj_dir_absolute/rest/$subj'_'$ses'_task-rest_run-01_bold'.nii.gz
-        fslmerge -tr $rest_runA_filename $subj_dir_absolute/img/img-0000${rest_runA_num}* 1.2
+        volsA=$(find ${subj_dir_absolute}/img/ -type f \( -iname "img-0000${rest_runA_num}*" ! -iname "*00001.nii" \))
+        fslmerge -tr $rest_runA_filename $volsA 1.2
         # Re-orient to neurological (will be LPS from VSend)
         #fslswapdim $rest_runA_filename x -y z $rest_runA_filename
         #fslorient -forceneurological $rest_runA_filename
@@ -564,7 +562,12 @@ then
 
 
     # Display masks with FSLEYES
-    fsleyes $subj_dir_absolute/rest/func_reference_volume ${dmn_thresh} -cm blue ${cen_thresh} -cm red
+    if [ $ica_version == 'single_run' ]
+    then
+        fsleyes ${ica_directory}/reg/example_func.nii.gz ${dmn_thresh} -cm blue ${cen_thresh} -cm red
+    else
+        fsleyes $subj_dir_absolute/rest/func_reference_volume ${dmn_thresh} -cm blue ${cen_thresh} -cm red
+    fi
 
 fi
 
