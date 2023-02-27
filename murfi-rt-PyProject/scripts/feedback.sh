@@ -137,7 +137,7 @@ clear
     export MURFI_SUBJECTS_DIR="${absolute_path}/subjects/"
     export MURFI_SUBJECT_NAME=$subj 
 
-    singularity exec murfi2.sif murfi -f $subj_dir_absolute/xml/rtdmn.xml
+    singularity exec --bind home/rt:/home/rt murfi2.sif murfi -f $subj_dir_absolute/xml/rtdmn.xml
 fi
 
 
@@ -476,25 +476,35 @@ then
         examplefunc=${ica_directory}/reg/example_func.nii.gz
         standard=${ica_directory}/reg/standard.nii.gz
         example_func2standard_mat=${ica_directory}/reg/example_func2standard.mat
+        standard2xample_func=${ica_directory}/reg/standard2example_func.nii.gz
         standard2example_func_mat=${ica_directory}/reg/standard2example_func.mat
 
     else # Multi run
         # ICs in "template" space - template is mean of first resting state run used in ICA
         infile=$ica_directory/melodic_IC2example_func.nii.gz 
+        melodic_mean=$ica_directory/mean.nii.gz
         init_melodic=$ica_directory/melodic_IC
         mkdir ${ica_directory}/reg
 
         # Filepaths for registration
         examplefunc=${subj_dir_absolute}/rest/func_reference_volume.nii.gz
         standard2example_func_mat=${ica_directory}/reg/standard2example_func.mat
+        example_func2standard_mat=${ica_directory}/reg/example_func2standard.mat
         standard2xample_func=${ica_directory}/reg/standard2example_func.nii.gz
+        example_func2standard=${ica_directory}/reg/example_func2standard.nii.gz
+        melodic2example_func_mat=${ica_directory}/reg/melodic2example_func.mat
+        melodic_mean2_example_func=${ica_directory}/reg/melodic_mean2example_func.nii.gz
 
-        # Register MNI LPS brain to example func (mean of resting state run 1). This registration will be used to bring template networks to native space
-        flirt -in MNI152_T1_2mm_LPS_brain -ref ${examplefunc} -out ${standard2xample_func} -omat ${standard2example_func_mat}
+        # Register example func to LPS MNI template, then calculate inverse
+        # This registration will be used to bring template networks to native space
+        flirt -in ${examplefunc} -ref  MNI152_T1_2mm_LPS_brain -out ${example_func2standard} -omat ${example_func2standard_mat}
+        convert_xfm -omat ${standard2example_func_mat} -inverse ${example_func2standard_mat}
 
         # Melodic IC output SHOULD already be in native space, but warp it just in case
-        flirt -in ${init_melodic} -ref ${examplefunc} -out ${infile} -init ${standard2example_func_mat} -applyxfm
+        flirt -in ${melodic_mean} -ref ${examplefunc} -out ${melodic_mean2_example_func} -omat ${melodic2example_func_mat}
+        flirt -in ${init_melodic} -ref ${examplefunc} -out ${infile} -init ${melodic2example_func_mat} -applyxfm
     fi
+
 
 
     # Set paths for files needed for the next few steps 
@@ -507,6 +517,10 @@ then
     dmn2example_func=${ica_directory}/reg/template_dmn2example_func.nii.gz
     cen2example_func=${ica_directory}/reg/template_cen2example_func.nii.gz
 
+
+    # WARP LPS MNI brain template to resting-state run native space
+    flirt -in MNI152_T1_2mm_LPS_brain -ref ${examplefunc} -out ${standard2xample_func} -init ${standard2example_func_mat} -applyxfm
+    
     # Register the networks from template (MNI LPS) space into resting-state run native space
     flirt -in ${template_networks} -ref ${examplefunc} -out ${template2example_func} -init ${standard2example_func_mat} -applyxfm
     flirt -in ${template_dmn} -ref ${examplefunc} -out ${dmn2example_func} -init ${standard2example_func_mat} -applyxfm
@@ -549,7 +563,7 @@ then
 
     echo $dmn_thresh_value
 
-    # threshold masks in MNI space
+    # threshold masks 
     fslmaths ${dmn_uthresh} -thr ${dmn_thresh_value} -bin ${dmn_thresh} -odt short
     fslmaths ${cen_uthresh} -thr ${cen_thresh_value} -bin ${cen_thresh} -odt short
 
@@ -564,9 +578,9 @@ then
     # Display masks with FSLEYES
     if [ $ica_version == 'single_run' ]
     then
-        fsleyes ${ica_directory}/reg/example_func.nii.gz ${dmn_thresh} -cm blue ${cen_thresh} -cm red
+        fsleyes ${ica_directory}/reg/example_func.nii.gz ${standard2xample_func} ${dmn_thresh} -cm blue ${cen_thresh} -cm red
     else
-        fsleyes $subj_dir_absolute/rest/func_reference_volume ${dmn_thresh} -cm blue ${cen_thresh} -cm red
+        fsleyes $subj_dir_absolute/rest/func_reference_volume ${standard2xample_func} ${dmn_thresh} -cm blue ${cen_thresh} -cm red
     fi
 
 fi
