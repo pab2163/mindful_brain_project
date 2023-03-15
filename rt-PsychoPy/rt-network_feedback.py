@@ -14,7 +14,6 @@ import numpy as np  # whole numpy lib is available, prepend 'np.'
 from numpy import sin, cos, tan, log, log10, pi, average, sqrt, std, deg2rad, rad2deg, linspace, asarray
 from numpy.random import random, randint, normal, shuffle
 import os  # handy system and path functions
-from murfi_activation_communicator import MurfiActivationCommunicator
 import time
 import numpy as np
 import matplotlib.pyplot as plt
@@ -67,12 +66,22 @@ else:
     input_feedback = ['', 'Feedback', 'No Feedback']
 
 
-# cmd line arg 5 will be anchor
-# if there is no command line argument 3 -- use empty string
+# cmd line arg 5 will be 15min vs 30min
+if num_cmd_line_arguments >= 4:
+    if sys.argv[4] == '15min':
+        input_feedback_condition = ['15min', '30min']
+    else:
+        input_feedback_condition = ['30min', '15min']
+else:
+    input_feedback_condition = ['', '15min', '30min']
+
+
+# cmd line arg 6+ will be anchor
+# if there is no command line argument -- use empty string
 # otherwise, use that as rum number
 
-if num_cmd_line_arguments >= 5:
-    input_anchor = ' '.join(sys.argv[4:])
+if num_cmd_line_arguments >= 6:
+    input_anchor = ' '.join(sys.argv[5:])
 else:
     input_anchor = ''
 
@@ -82,7 +91,8 @@ else:
 
 # Store info about the experiment 
 expName = 'DMN_BallTask'  # from the Builder filename that created thi s script
-expInfo = {'participant':input_participant, 'run':input_run, 'anchor': input_anchor, 'feedback_on': input_feedback} 
+expInfo = {'participant':input_participant, 'run':input_run, 'anchor': input_anchor, 'feedback_on': input_feedback, 
+           'feedback_condition': input_feedback_condition} 
 
 
 murfi_FAKE=False
@@ -94,7 +104,8 @@ while expInfo['feedback_on'] not in ['Feedback', 'No Feedback']:
         labels = {'participant': 'Participant ID', 
                   'run': 'Run', 
                   'feedback_on': 'Display Feedback?',
-                  'anchor': 'Participant Anchor'},
+                  'anchor': 'Participant Anchor',
+                  'feedback_condition': 'Feedback Condition'},
         order = ['participant', 'run', 'feedback_on', 'anchor'])
     if dlg.OK == False: 
         core.quit()  # user pressed cancel
@@ -325,14 +336,6 @@ text_relax = visual.TextStim(win=win, ori=0, name='text_relax',
 # Initialize components for Routine "feedback"
 feedbackClock = core.Clock()
 
- #murfi communicator
-roi_names = ['cen', 'dmn']#, 'mpfc','wm']
-# REPLACE THIS IP WITH THE MURFI COMPUTER'S IP 192.168.2.5
-communicator = MurfiActivationCommunicator('192.168.2.5',
-                                           15001, 210,
-                                           roi_names,expInfo['tr'],murfi_FAKE)
-print ("murfi communicator ok")
-
 text_4 = visual.TextStim(win=win, ori=0, name='text_4',
     text='default text',    font=u'Arial',
     pos=[0, 0], height=0.1, wrapWidth=None,
@@ -391,7 +394,6 @@ def further_than_circles(position, circle_center, ball_center):
     # if ball is below center of bottom circle
     elif position == 1:
         further = ball_center < circle_center
-    print(f'further {further}')
     return(further)
 
 
@@ -495,6 +497,16 @@ for instructions_slide in instruction_slide_list:
     instruct_text.setText(instructions_slide)
     run_instructions(instruct_text)
 
+
+ #murfi communicator
+from murfi_activation_communicator import MurfiActivationCommunicator
+roi_names = ['cen', 'dmn']#, 'mpfc','wm']
+# REPLACE THIS IP WITH THE MURFI COMPUTER'S IP 192.168.2.5
+communicator = MurfiActivationCommunicator('192.168.2.5',
+                                           15001, 210,
+                                           roi_names,expInfo['tr'],murfi_FAKE)
+print ("murfi communicator ok")
+
 thisExp.addData('temporal_resolution', expInfo['tr'])
 
 
@@ -588,375 +600,375 @@ thisExp.nextEntry()
 
 
 
-# # instruct_text.setText('Relax')
-# # instruct_text.pos = (0, -1)
+# instruct_text.setText('Relax')
+# instruct_text.pos = (0, -1)
 
-# # BASELINE: wait for 30s before delivering feedback
-# #------Prepare to start Routine "baseline"-------
-# t = 0
-# baselineClock.reset()  # clock 
-# frameN = -1
-# frame = 0
-# routineTimer.add(BaseLineTime)
-# # update component parameters for each repeat
-# # keep track of which components have finished
-# baselineComponents = []
-# baselineComponents.append(text_2)
-# for thisComponent in baselineComponents:
-#     if hasattr(thisComponent, 'status'):
-#         thisComponent.status = NOT_STARTED
+# BASELINE: wait for 30s before delivering feedback
+#------Prepare to start Routine "baseline"-------
+t = 0
+baselineClock.reset()  # clock 
+frameN = -1
+frame = 0
+routineTimer.add(BaseLineTime)
+# update component parameters for each repeat
+# keep track of which components have finished
+baselineComponents = []
+baselineComponents.append(text_2)
+for thisComponent in baselineComponents:
+    if hasattr(thisComponent, 'status'):
+        thisComponent.status = NOT_STARTED
 
-# #-------Start Routine "baseline"-------
-# continueRoutine = True
-# print("starting baseline")
-# while continueRoutine and routineTimer.getTime() > 0:
-#     # During baseline period, we still want to record MURFI outputs
-#     # get current time
-#     communicator.update()
-#     roi_raw_activations=[]
+#-------Start Routine "baseline"-------
+continueRoutine = True
+print("starting baseline")
+while continueRoutine and routineTimer.getTime() > 0:
+    # During baseline period, we still want to record MURFI outputs
+    # get current time
+    communicator.update()
+    roi_raw_activations=[]
 
-#     # Where ROI activation first comes in
-#     # CEN, DMN
-#     try:
-#         for i in range(n_roi):
-#             roi_raw_i=communicator.get_roi_activation(roi_names_list[i], frame)
-#             roi_raw_activations.append(roi_raw_i)
-#     except:
-#         print (f"Did not get data for frame {frame}")
-#         roi_raw_activations = [np.nan, np.nan]
+    # Where ROI activation first comes in
+    # CEN, DMN
+    try:
+        for i in range(n_roi):
+            roi_raw_i=communicator.get_roi_activation(roi_names_list[i], frame)
+            roi_raw_activations.append(roi_raw_i)
+    except:
+        print (f"Did not get data for frame {frame}")
+        roi_raw_activations = [np.nan, np.nan]
 
-#     # check for any missing values (nan) in the roi_raw_activatinp.isnan(roi_raw_activations[0])ons pulled for the current frame
-#     # If there is a nan value, this most likely indicates that data hasn't been acquired yet for the current volume. 
-#     # In this case, continue, and keep trying to acquire roi_raw_activations from MURFI (without advancing the frame)
-#     if np.isnan(roi_raw_activations[0]) or np.isnan(roi_raw_activations[1]):
-#         pass
-#     else:
-#         # If there is a new volume of output from MURFI, record it, and advance frame
-#         with open(filename+'_roi_outputs.csv', 'a') as csvfile:
-#             stim_writer = csv.writer(csvfile, delimiter=',', quotechar='|', quoting=csv.QUOTE_MINIMAL)
-#             print(([frame, triggerClock.getTime(), roi_raw_activations[0], roi_raw_activations[1]]))
-#             stim_writer.writerow([frame, expInfo['scale_factor'], triggerClock.getTime(), triggerClock.getTime() + 1.2, roi_raw_activations[0], roi_raw_activations[1], 'baseline', 0, 0, np.nan, np.nan, np.nan, np.nan])      
-#         frame +=1       
+    # check for any missing values (nan) in the roi_raw_activatinp.isnan(roi_raw_activations[0])ons pulled for the current frame
+    # If there is a nan value, this most likely indicates that data hasn't been acquired yet for the current volume. 
+    # In this case, continue, and keep trying to acquire roi_raw_activations from MURFI (without advancing the frame)
+    if np.isnan(roi_raw_activations[0]) or np.isnan(roi_raw_activations[1]):
+        pass
+    else:
+        # If there is a new volume of output from MURFI, record it, and advance frame
+        with open(filename+'_roi_outputs.csv', 'a') as csvfile:
+            stim_writer = csv.writer(csvfile, delimiter=',', quotechar='|', quoting=csv.QUOTE_MINIMAL)
+            print(([frame, triggerClock.getTime(), roi_raw_activations[0], roi_raw_activations[1]]))
+            stim_writer.writerow([frame, expInfo['scale_factor'], triggerClock.getTime(), triggerClock.getTime() + 1.2, roi_raw_activations[0], roi_raw_activations[1], 'baseline', 0, 0, np.nan, np.nan, np.nan, np.nan])      
+        frame +=1       
 
 
-#     t = baselineClock.getTime()
-#     frameN = frameN + 1  # number of completed frames (so 0 is the first frame)
-#     # update/draw components on each frame
+    t = baselineClock.getTime()
+    frameN = frameN + 1  # number of completed frames (so 0 is the first frame)
+    # update/draw components on each frame
     
-#     # *text_2* updates
-#     if t >= 0.0 and text_2.status == NOT_STARTED:
-#         # keep track of start time/frame for later
-#         text_2.tStart = t  # underestimates by a little under one frame
-#         text_2.frameNStart = frameN  # exact frame index
-#         text_2.setAutoDraw(True)
-#         text_relax.setAutoDraw(True)
-#     if text_2.status == STARTED and t >= (0.0 + (BaseLineTime-win.monitorFramePeriod*0.75)): #most of one frame period left
-#         pass
+    # *text_2* updates
+    if t >= 0.0 and text_2.status == NOT_STARTED:
+        # keep track of start time/frame for later
+        text_2.tStart = t  # underestimates by a little under one frame
+        text_2.frameNStart = frameN  # exact frame index
+        text_2.setAutoDraw(True)
+        text_relax.setAutoDraw(True)
+    if text_2.status == STARTED and t >= (0.0 + (BaseLineTime-win.monitorFramePeriod*0.75)): #most of one frame period left
+        pass
         
     
-#     # check if all components have finished
-#     if not continueRoutine:  # a component has requested a forced-end of Routine
-#         routineTimer.reset()  # if we abort early the non-slip timer needs reset
-#         break
-#     continueRoutine = False  # will revert to True if at least one component still running
-#     for thisComponent in baselineComponents:
-#         if hasattr(thisComponent, "status") and thisComponent.status != FINISHED:
-#             continueRoutine = True
-#             break  # at least one component has not yet finished
+    # check if all components have finished
+    if not continueRoutine:  # a component has requested a forced-end of Routine
+        routineTimer.reset()  # if we abort early the non-slip timer needs reset
+        break
+    continueRoutine = False  # will revert to True if at least one component still running
+    for thisComponent in baselineComponents:
+        if hasattr(thisComponent, "status") and thisComponent.status != FINISHED:
+            continueRoutine = True
+            break  # at least one component has not yet finished
     
-#     # check for quit (the Esc key)
-#     if endExpNow or event.getKeys(keyList=["escape"]):
-#         core.quit()
+    # check for quit (the Esc key)
+    if endExpNow or event.getKeys(keyList=["escape"]):
+        core.quit()
     
-#     # refresh the screen
-#     if continueRoutine:  # don't flip if this routine is over or we'll get a blank screen
-#         win.flip()
+    # refresh the screen
+    if continueRoutine:  # don't flip if this routine is over or we'll get a blank screen
+        win.flip()
 
-# #-------Ending Routine "baseline"-------
-# text_2.setAutoDraw(False)
-# text_relax.setAutoDraw(False)
-# for thisComponent in baselineComponents:
-#     if hasattr(thisComponent, "setAutoDraw"):
-#         thisComponent.setAutoDraw(False)
+#-------Ending Routine "baseline"-------
+text_2.setAutoDraw(False)
+text_relax.setAutoDraw(False)
+for thisComponent in baselineComponents:
+    if hasattr(thisComponent, "setAutoDraw"):
+        thisComponent.setAutoDraw(False)
 
-# #------Prepare to start Routine "feedback"-------
-# t = 0
-# feedbackClock.reset()  # clock 
-# frameN = -1
-# # update component parameters for each repeat
-# subject_key_target = event.BuilderKeyResponse()  # create an object of type KeyResponse
-# subject_key_target.status = NOT_STARTED
-# subject_key_reset = event.BuilderKeyResponse()  # create an object of type KeyResponse
-# subject_key_reset.status = NOT_STARTED
-# routineTimer.add(RUN_TIME)
+#------Prepare to start Routine "feedback"-------
+t = 0
+feedbackClock.reset()  # clock 
+frameN = -1
+# update component parameters for each repeat
+subject_key_target = event.BuilderKeyResponse()  # create an object of type KeyResponse
+subject_key_target.status = NOT_STARTED
+subject_key_reset = event.BuilderKeyResponse()  # create an object of type KeyResponse
+subject_key_reset.status = NOT_STARTED
+routineTimer.add(RUN_TIME)
 
 
-# # Initialize parameters before feedback
-# activity = 0
-# direction=0
+# Initialize parameters before feedback
+activity = 0
+direction=0
 
-# # Draw initial stim positions
-# for i in range(n_roi):
-#     target_circles[i].draw()
-# ball.draw()
-# win.flip()
+# Draw initial stim positions
+for i in range(n_roi):
+    target_circles[i].draw()
+ball.draw()
+win.flip()
 
-# pda_outlier=False
-# #-------Start Routine "feedback"-------
-# continueRoutine = True
-# # Loop keeps going until RUN_TIME is up
-# while continueRoutine and routineTimer.getTime() > 0:
-#     # get current time
-#     t = feedbackClock.getTime()
-#     frameN = frameN + 1  # number of completed frames (so 0 is the first frame)
-#     # update/draw components on each frame
+pda_outlier=False
+#-------Start Routine "feedback"-------
+continueRoutine = True
+# Loop keeps going until RUN_TIME is up
+while continueRoutine and routineTimer.getTime() > 0:
+    # get current time
+    t = feedbackClock.getTime()
+    frameN = frameN + 1  # number of completed frames (so 0 is the first frame)
+    # update/draw components on each frame
     
-#     # *subject_key_target* updates
-#     if t >= 0.0 and subject_key_target.status == NOT_STARTED:
-#         # keep track of start time/frame for later
-#         subject_key_target.tStart = t  # underestimates by a little under one frame
-#         subject_key_target.frameNStart = frameN  # exact frame index
-#         subject_key_target.status = STARTED
-#         # keyboard checking is just starting
-#         subject_key_target.clock.reset()  # now t=0
-#         event.clearEvents(eventType='keyboard')
-#     if subject_key_target.status == STARTED:
-#         theseKeys = event.getKeys(keyList=['escape'])
-#         theseKeys_num=theseKeys
+    # *subject_key_target* updates
+    if t >= 0.0 and subject_key_target.status == NOT_STARTED:
+        # keep track of start time/frame for later
+        subject_key_target.tStart = t  # underestimates by a little under one frame
+        subject_key_target.frameNStart = frameN  # exact frame index
+        subject_key_target.status = STARTED
+        # keyboard checking is just starting
+        subject_key_target.clock.reset()  # now t=0
+        event.clearEvents(eventType='keyboard')
+    if subject_key_target.status == STARTED:
+        theseKeys = event.getKeys(keyList=['escape'])
+        theseKeys_num=theseKeys
 
-#         # check for quit:
-#         if "escape" in theseKeys:
-#             endExpNow = True
-#         if len(theseKeys) > 0:  # at least one key was pressed
-#             subject_key_target.keys = theseKeys[-1]  # just the last key pressed
-#             subject_key_target.rt = subject_key_target.clock.getTime()
+        # check for quit:
+        if "escape" in theseKeys:
+            endExpNow = True
+        if len(theseKeys) > 0:  # at least one key was pressed
+            subject_key_target.keys = theseKeys[-1]  # just the last key pressed
+            subject_key_target.rt = subject_key_target.clock.getTime()
     
-#     # get updated data from MURFI    
-#     communicator.update()
-#     roi_raw_activations=[]
+    # get updated data from MURFI    
+    communicator.update()
+    roi_raw_activations=[]
 
-#     # Where ROI activation first comes in
-#     # CEN, DMN
-#     for i in range(n_roi):
-#         roi_raw_i=communicator.get_roi_activation(roi_names_list[i], frame)
-#         roi_raw_activations.append(roi_raw_i)
+    # Where ROI activation first comes in
+    # CEN, DMN
+    for i in range(n_roi):
+        roi_raw_i=communicator.get_roi_activation(roi_names_list[i], frame)
+        roi_raw_activations.append(roi_raw_i)
     
-#     # So psychopy doesn't start too early if MURFI has started sending data early (real feedback values shouldn't be 0)
-#     # if roi_raw_activations[0] ==0: #and roi_raw_activations[0]==0:
-#     #     #win.close()
-#     #     print ("let's begin feedback")
+    # So psychopy doesn't start too early if MURFI has started sending data early (real feedback values shouldn't be 0)
+    # if roi_raw_activations[0] ==0: #and roi_raw_activations[0]==0:
+    #     #win.close()
+    #     print ("let's begin feedback")
        
-#     '''
-#     Check for any missing values (nan) from MURFI on the current frame. If there is a nan value, this most likely
-#     indicates that data hasn't been acquired yet for the current volume. In this case, continue, and keep trying to acquire
-#     roi_raw_activations from MURFI (without advancing the frame). This will happen several times for each volume before the data 
-#     for the next volume are available. 
-#     '''
-#     if np.isnan(roi_raw_activations[0]) or np.isnan(roi_raw_activations[1]):
-#         pass
+    '''
+    Check for any missing values (nan) from MURFI on the current frame. If there is a nan value, this most likely
+    indicates that data hasn't been acquired yet for the current volume. In this case, continue, and keep trying to acquire
+    roi_raw_activations from MURFI (without advancing the frame). This will happen several times for each volume before the data 
+    for the next volume are available. 
+    '''
+    if np.isnan(roi_raw_activations[0]) or np.isnan(roi_raw_activations[1]):
+        pass
     
-#     # a list of [CEN, DMN] for the current frame
-#     else:
-#         roi_activities=roi_raw_activations
-#         if np.nanmax(np.abs(roi_activities)) > expInfo['pda_outlier_threshold']:
-#             pda_outlier=True
-#             num_pda_outliers+=1
-#         else:
-#             pda_outlier=False
+    # a list of [CEN, DMN] for the current frame
+    else:
+        roi_activities=roi_raw_activations
+        if np.nanmax(np.abs(roi_activities)) > expInfo['pda_outlier_threshold']:
+            pda_outlier=True
+            num_pda_outliers+=1
+        else:
+            pda_outlier=False
 
-#         print('time: ', routineTimer.getTime())
-#         print ("got feedback at frame : ",  frame, roi_raw_activations, roi_names_list)
+        print('time: ', routineTimer.getTime())
+        print ("got feedback at frame : ",  frame, roi_raw_activations, roi_names_list)
         
-#         '''
-#         Loop through ROIs. Depending on which one has higher activity, change direction parameter 
-#         1 - upwards (when CEN higher)
-#         -1 = downwards (when DMN higher)
-#         '''
-#         for i in range(n_roi):
-#             target_circles[i].fillColor=None
-#             # for each ROI, look for the index -- see whether that ROI has the highest activity
-#             if roi_activities.index(np.nanmax(roi_activities))==i and np.nanmean(roi_activities)!=0:
-#                 # Activity=absolute difference between ROI activations (always positive)
-#                 activity=abs(np.nanmax(roi_activities)-(np.nanmin(roi_activities)))/10
-#                 print ("activity",activity, " roi_activities",roi_activities)
+        '''
+        Loop through ROIs. Depending on which one has higher activity, change direction parameter 
+        1 - upwards (when CEN higher)
+        -1 = downwards (when DMN higher)
+        '''
+        for i in range(n_roi):
+            target_circles[i].fillColor=None
+            # for each ROI, look for the index -- see whether that ROI has the highest activity
+            if roi_activities.index(np.nanmax(roi_activities))==i and np.nanmean(roi_activities)!=0:
+                # Activity=absolute difference between ROI activations (always positive)
+                activity=abs(np.nanmax(roi_activities)-(np.nanmin(roi_activities)))/10
+                print ("activity",activity, " roi_activities",roi_activities)
 
-#                 # activity will always be positive (PDA)
-#                 # positions refers to either CEN position positions[0] or DMN position positions[1]
-#                 print('Circle positions:', target_circles[0].pos[1], target_circles[1].pos[1])
-#                 print ("direction -->", roi_names_list[i])
-#                 print (roi_names_list[0],"hits: ",hit_counter[0], '   ', roi_names_list[1],"hits: ",hit_counter[1])
-#                 direction = positions[i]
+                # activity will always be positive (PDA)
+                # positions refers to either CEN position positions[0] or DMN position positions[1]
+                print('Circle positions:', target_circles[0].pos[1], target_circles[1].pos[1])
+                print ("direction -->", roi_names_list[i])
+                print (roi_names_list[0],"hits: ",hit_counter[0], '   ', roi_names_list[1],"hits: ",hit_counter[1])
+                direction = positions[i]
 
-#             # if the ball has passed the middle of either target circle, put position back to 0
-#             if further_than_circles(position=i, 
-#                 circle_center=target_circles[i].pos[1], 
-#                 ball_center=ball.pos[1]):
+            # if the ball has passed the middle of either target circle, put position back to 0
+            if further_than_circles(position=i, 
+                circle_center=target_circles[i].pos[1], 
+                ball_center=ball.pos[1]):
 
-#                 # increment hig count
-#                 hit_counter[i]=hit_counter[i]+1
-#                 print('HIT', roi_names_list[i])
-#                 ball.pos = (0,0)
+                # increment hig count
+                hit_counter[i]=hit_counter[i]+1
+                print('HIT', roi_names_list[i])
+                ball.pos = (0,0)
 
-#                 # for each hit, position of target circle moves away from the middle (up to a point)
-#                 if np.abs(target_circles[i].pos[1]) + target_circles[i].radius + 0.1 < 1:
-#                     target_circles[i].pos=((target_circles[i].pos[0]*1.1), (target_circles[i].pos[1]*1.1))
-#                 target_circles[i].fillColor='white'
+                # for each hit, position of target circle moves away from the middle (up to a point)
+                if np.abs(target_circles[i].pos[1]) + target_circles[i].radius + 0.1 < 1:
+                    target_circles[i].pos=((target_circles[i].pos[0]*1.1), (target_circles[i].pos[1]*1.1))
+                target_circles[i].fillColor='white'
 
 
-#         # Save info to outfile for each volume       
-#         with open(filename+'_roi_outputs.csv', 'a') as csvfile:
-#             stim_writer = csv.writer(csvfile, delimiter=',', quotechar='|', quoting=csv.QUOTE_MINIMAL)
-#             print(([frame, triggerClock.getTime(), roi_raw_activations[0], roi_raw_activations[1]]))
-#             stim_writer.writerow([frame, expInfo['scale_factor'], triggerClock.getTime(), triggerClock.getTime() + 1.2, roi_raw_activations[0], roi_raw_activations[1], 'feedback', hit_counter[0], hit_counter[1], pda_outlier, ball.pos[1], target_circles[0].pos[1], target_circles[1].pos[1]])   
+        # Save info to outfile for each volume       
+        with open(filename+'_roi_outputs.csv', 'a') as csvfile:
+            stim_writer = csv.writer(csvfile, delimiter=',', quotechar='|', quoting=csv.QUOTE_MINIMAL)
+            print(([frame, triggerClock.getTime(), roi_raw_activations[0], roi_raw_activations[1]]))
+            stim_writer.writerow([frame, expInfo['scale_factor'], triggerClock.getTime(), triggerClock.getTime() + 1.2, roi_raw_activations[0], roi_raw_activations[1], 'feedback', hit_counter[0], hit_counter[1], pda_outlier, ball.pos[1], target_circles[0].pos[1], target_circles[1].pos[1]])   
 
-#         # Increment the frame
-#         frame += 1
+        # Increment the frame
+        frame += 1
     
-#     # calculate next ball position
-#     pause_ball_movement=False
-#     for i in range(n_roi):
-#         if further_than_circles(position=i, 
-#                     circle_center=target_circles[i].pos[1], 
-#                     ball_center=ball.pos[1]):
-#             pause_ball_movement=True
+    # calculate next ball position
+    pause_ball_movement=False
+    for i in range(n_roi):
+        if further_than_circles(position=i, 
+                    circle_center=target_circles[i].pos[1], 
+                    ball_center=ball.pos[1]):
+            pause_ball_movement=True
 
-#     if not pause_ball_movement:
-#         ball.pos = calculate_ball_position(circle_reference_position=direction, activation=activity, ball_x_position=ball.pos[0], ball_y_position=ball.pos[1], outlier=pda_outlier)             
+    if not pause_ball_movement:
+        ball.pos = calculate_ball_position(circle_reference_position=direction, activation=activity, ball_x_position=ball.pos[0], ball_y_position=ball.pos[1], outlier=pda_outlier)             
 
-#     # Draw stimuli (if on feedback mode)
-#     if expInfo['feedback_on'] == 'Feedback':
-#         for i in range(n_roi):
-#             target_circles[i].draw()
-#         ball.draw()
+    # Draw stimuli (if on feedback mode)
+    if expInfo['feedback_on'] == 'Feedback':
+        for i in range(n_roi):
+            target_circles[i].draw()
+        ball.draw()
 
-#         # flip window
-#         win.flip()
+        # flip window
+        win.flip()
 
-#     # quit if escape pressed
-#     if endExpNow or event.getKeys(keyList=["escape"]):
-#         core.quit()
+    # quit if escape pressed
+    if endExpNow or event.getKeys(keyList=["escape"]):
+        core.quit()
     
 
-# # END OF FEEDBACK LOOP
+# END OF FEEDBACK LOOP
       
-# #------Prepare to start Routine "baseline"-------
-# t = 0
-# baselineClock.reset()  # clock 
-# frameN = -1
-# routineTimer.add(1.00000)
-# # update component parameters for each repeat
-# # keep track of which components have finished
-# baselineComponents = []
-# baselineComponents.append(text_2)
-# for thisComponent in baselineComponents:
-#     if hasattr(thisComponent, 'status'):
-#         thisComponent.status = NOT_STARTED
+#------Prepare to start Routine "baseline"-------
+t = 0
+baselineClock.reset()  # clock 
+frameN = -1
+routineTimer.add(1.00000)
+# update component parameters for each repeat
+# keep track of which components have finished
+baselineComponents = []
+baselineComponents.append(text_2)
+for thisComponent in baselineComponents:
+    if hasattr(thisComponent, 'status'):
+        thisComponent.status = NOT_STARTED
 
-# #-------Start Routine "baseline"-------
-# continueRoutine = True
-# while continueRoutine and routineTimer.getTime() > 0:
-#     # get current time
-#     t = baselineClock.getTime()
-#     frameN = frameN + 1  # number of completed frames (so 0 is the first frame)
-#     # update/draw components on each frame
+#-------Start Routine "baseline"-------
+continueRoutine = True
+while continueRoutine and routineTimer.getTime() > 0:
+    # get current time
+    t = baselineClock.getTime()
+    frameN = frameN + 1  # number of completed frames (so 0 is the first frame)
+    # update/draw components on each frame
 
-#     # *text_2* updates
-#     if t >= 0.0 and text_2.status == NOT_STARTED:
-#         # keep track of start time/frame for later
-#         text_2.tStart = t  # underestimates by a little under one frame
-#         text_2.frameNStart = frameN  # exact frame index
-#         text_2.setAutoDraw(True)
-#     if text_2.status == STARTED and t >= (0.0 + (1-win.monitorFramePeriod*0.75)): #most of one frame period left
-#         text_2.setAutoDraw(False)
+    # *text_2* updates
+    if t >= 0.0 and text_2.status == NOT_STARTED:
+        # keep track of start time/frame for later
+        text_2.tStart = t  # underestimates by a little under one frame
+        text_2.frameNStart = frameN  # exact frame index
+        text_2.setAutoDraw(True)
+    if text_2.status == STARTED and t >= (0.0 + (1-win.monitorFramePeriod*0.75)): #most of one frame period left
+        text_2.setAutoDraw(False)
 
-# # check if all components have finished
-#     if not continueRoutine:  # a component has requested a forced-end of Routine
-#         routineTimer.reset()  # if we abort early the non-slip timer needs reset
-#         break
-#     continueRoutine = False  # will revert to True if at least one component still running
-#     for thisComponent in baselineComponents:
-#         if hasattr(thisComponent, "status") and thisComponent.status != FINISHED:
-#             continueRoutine = True
-#             break  # at least one component has not yet finished
+# check if all components have finished
+    if not continueRoutine:  # a component has requested a forced-end of Routine
+        routineTimer.reset()  # if we abort early the non-slip timer needs reset
+        break
+    continueRoutine = False  # will revert to True if at least one component still running
+    for thisComponent in baselineComponents:
+        if hasattr(thisComponent, "status") and thisComponent.status != FINISHED:
+            continueRoutine = True
+            break  # at least one component has not yet finished
 
-# # check for quit (the Esc key)
-#     if endExpNow or event.getKeys(keyList=["escape"]):
-#         core.quit()
+# check for quit (the Esc key)
+    if endExpNow or event.getKeys(keyList=["escape"]):
+        core.quit()
 
-# # refresh the screen
-#     if continueRoutine:  # don't flip if this routine is over or we'll get a blank screen
-#         win.flip()
+# refresh the screen
+    if continueRoutine:  # don't flip if this routine is over or we'll get a blank screen
+        win.flip()
 
-# #-------Ending Routine "baseline"-------
-# for thisComponent in baselineComponents:
-#     if hasattr(thisComponent, "setAutoDraw"):
-#         thisComponent.setAutoDraw(False)
+#-------Ending Routine "baseline"-------
+for thisComponent in baselineComponents:
+    if hasattr(thisComponent, "setAutoDraw"):
+        thisComponent.setAutoDraw(False)
     
   
  
-# #------Prepare to start Routine "finish"-------
-# t = 0
-# finishClock.reset()  # clock 
-# frameN = -1
-# routineTimer.add(5.000000)
-# # update component parameters for each repeat
-# # keep track of which components have finished
-# finishComponents = []
-# finishComponents.append(text_5)
-# for thisComponent in finishComponents:
-#     if hasattr(thisComponent, 'status'):
-#         thisComponent.status = NOT_STARTED
+#------Prepare to start Routine "finish"-------
+t = 0
+finishClock.reset()  # clock 
+frameN = -1
+routineTimer.add(5.000000)
+# update component parameters for each repeat
+# keep track of which components have finished
+finishComponents = []
+finishComponents.append(text_5)
+for thisComponent in finishComponents:
+    if hasattr(thisComponent, 'status'):
+        thisComponent.status = NOT_STARTED
 
-# # Ask slider questions
-# run_slider(question_text='How often were you using the mental noting practice?',
-#                 left_label='Never', right_label='Always')
-# run_slider(question_text='How often did you check the position of the ball',
-#                 left_label='Never', right_label='All the time')
-# run_slider(question_text='How difficult was it to apply mental noting?',
-#                 left_label='Not at all', right_label='Very Difficult')
-# run_slider(question_text='How calm do you feel right now?',
-#                 left_label='Not at all', right_label='Very calm')
+# Ask slider questions
+run_slider(question_text='How often were you using the mental noting practice?',
+                left_label='Never', right_label='Always')
+run_slider(question_text='How often did you check the position of the ball',
+                left_label='Never', right_label='All the time')
+run_slider(question_text='How difficult was it to apply mental noting?',
+                left_label='Not at all', right_label='Very Difficult')
+run_slider(question_text='How calm do you feel right now?',
+                left_label='Not at all', right_label='Very calm')
 
 
-# #-------Start Routine "finish"-------
-# continueRoutine = True
-# while continueRoutine and routineTimer.getTime() > 0:
-#     # get current time
-#     t = finishClock.getTime()
-#     frameN = frameN + 1  # number of completed frames (so 0 is the first frame)
-#     # update/draw components on each frame
+#-------Start Routine "finish"-------
+continueRoutine = True
+while continueRoutine and routineTimer.getTime() > 0:
+    # get current time
+    t = finishClock.getTime()
+    frameN = frameN + 1  # number of completed frames (so 0 is the first frame)
+    # update/draw components on each frame
     
-#     # *text_5* updates
-#     if t >= 0.0 and text_5.status == NOT_STARTED:
-#         # keep track of start time/frame for later
-#         text_5.tStart = t  # underestimates by a little under one frame
-#         text_5.frameNStart = frameN  # exact frame index
-#         text_5.setAutoDraw(True)
-#     if text_5.status == STARTED and t >= (0.0 + (5-win.monitorFramePeriod*0.75)): #most of one frame period left
-#         text_5.setAutoDraw(False)
+    # *text_5* updates
+    if t >= 0.0 and text_5.status == NOT_STARTED:
+        # keep track of start time/frame for later
+        text_5.tStart = t  # underestimates by a little under one frame
+        text_5.frameNStart = frameN  # exact frame index
+        text_5.setAutoDraw(True)
+    if text_5.status == STARTED and t >= (0.0 + (5-win.monitorFramePeriod*0.75)): #most of one frame period left
+        text_5.setAutoDraw(False)
     
-#     # check if all components have finished
-#     if not continueRoutine:  # a component has requested a forced-end of Routine
-#         routineTimer.reset()  # if we abort early the non-slip timer needs reset
-#         break
-#     continueRoutine = False  # will revert to True if at least one component still running
-#     for thisComponent in finishComponents:
-#         if hasattr(thisComponent, "status") and thisComponent.status != FINISHED:
-#             continueRoutine = True
-#             break  # at least one component has not yet finished
+    # check if all components have finished
+    if not continueRoutine:  # a component has requested a forced-end of Routine
+        routineTimer.reset()  # if we abort early the non-slip timer needs reset
+        break
+    continueRoutine = False  # will revert to True if at least one component still running
+    for thisComponent in finishComponents:
+        if hasattr(thisComponent, "status") and thisComponent.status != FINISHED:
+            continueRoutine = True
+            break  # at least one component has not yet finished
     
-#     # check for quit (the Esc key)
-#     if endExpNow or event.getKeys(keyList=["escape"]):
-#         core.quit()
+    # check for quit (the Esc key)
+    if endExpNow or event.getKeys(keyList=["escape"]):
+        core.quit()
     
-#     # refresh the screen
-#     if continueRoutine:  # don't flip if this routine is over or we'll get a blank screen
-#         win.flip()
+    # refresh the screen
+    if continueRoutine:  # don't flip if this routine is over or we'll get a blank screen
+        win.flip()
 
-# #-------Ending Routine "finish"-------
-# for thisComponent in finishComponents:
-#     if hasattr(thisComponent, "setAutoDraw"):
-#         thisComponent.setAutoDraw(False)
+#-------Ending Routine "finish"-------
+for thisComponent in finishComponents:
+    if hasattr(thisComponent, "setAutoDraw"):
+        thisComponent.setAutoDraw(False)
 
 
 
@@ -981,6 +993,7 @@ else:
 
 next_participant=expInfo['participant']
 anchor = expInfo['anchor']
+next_feedback_condition = expInfo['feedback_condition']
 
 
 def quit_psychopy():
@@ -1001,10 +1014,16 @@ def quit_psychopy():
             thisThread.stop()
             while thisThread.running == 0:
                 pass  # wait until it has properly finished polling
-
 # Start next round!
 quit_psychopy()
-os.system(f"python rt-network_feedback.py {next_participant} {next_run} {next_feedback} {anchor}")
+#core.wait(5)
+
+if expInfo['feedback_condition']=='15min':
+    if next_run < 6:
+        os.system(f"python rt-network_feedback.py {next_participant} {next_run} {next_feedback} {next_feedback_condition} {anchor}")
+elif expInfo['feedback_condition']=='30min':
+    if not (expInfo['feedback_on'] == 'No Feedback' and int(expInfo['run'])==3):
+        os.system(f"python rt-network_feedback.py {next_participant} {next_run} {next_feedback} {next_feedback_condition} {anchor}")
 
 
 
