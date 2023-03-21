@@ -1,0 +1,2 @@
+
+currentFolder = pwd

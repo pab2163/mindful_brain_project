@@ -1,0 +1,5 @@
+instruction_text,voice_file1,voice_file2,voice_file3,voice_file4,question,voice_file1_duration,voice_file2_duration,voice_file3_duration,voice_file4_duration
+listen to self,stimulus/audio/999\999_143.wav,stimulus/audio/999\999_177.wav,stimulus/audio/999\999_149.wav,stimulus/audio/999\999_163.wav,How well were you able to attend to your voice?,2.696281179,1.511337868,2.909160998,1.406054422
+listen to self,stimulus/audio/999\999_184.wav,stimulus/audio/999\999_350.wav,stimulus/audio/999\999_51.wav,stimulus/audio/999\999_59.wav,How well were you able to attend to your voice?,1.353922902,1.830657596,1.833945578,1.833968254
+ignore all sounds,stimulus/audio/other_female\JO_S302.wav,stimulus/audio/other_female\JO_S213.wav,stimulus/audio/other_female\JO_S123.wav,stimulus/audio/other_female\JO_S172.wav,How well were you able to ignore all sounds?,2.113514739,1.784399093,1.610498866,1.589387755
+ignore all sounds,stimulus/audio/other_female\JO_S220.wav,stimulus/audio/other_female\JO_S139.wav,stimulus/audio/other_female\JO_S158.wav,stimulus/audio/other_female\JO_S179.wav,How well were you able to ignore all sounds?,1.84814059,1.509274376,1.948798186,1.689070295

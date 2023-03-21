@@ -57,7 +57,7 @@ negative_words = list(word_list.word[word_list.valence_condition == '-'])
 positive_words = list(word_list.word[word_list.valence_condition == '+']) 
 random.shuffle(positive_words)
 random.shuffle(negative_words)
-practice_words = ['polite', 'bossy', 'rude', 'cool', 'nice', 'jealous']
+practice_words = ['quiet', 'loud', 'cautious', 'wild', 'ordinary', 'precise']
 
 print(negative_words)
 print(positive_words)
