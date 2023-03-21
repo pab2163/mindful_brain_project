@@ -1,0 +1,2399 @@
+4.9213 	WARNING 	Speech-to-text recognition module for PocketSphinx is not available (use command `pip install SpeechRecognition` to get it). Transcription will be unavailable using that service this session.
+4.9219 	WARNING 	Speech-to-text recognition using Google online services is not available (use command `pip install google-api-core google-auth google-cloud google-cloud-speech googleapis-common-protos` to get it). Transcription will be unavailable using that service this session.
+5.1470 	WARNING 	We strongly recommend you activate the PTB sound engine in PsychoPy prefs as the preferred audio engine. Its timing is vastly superior. Your prefs are currently set to use ['sounddevice', 'PTB', 'pyo', 'pygame'] (in that order).
+52.0690 	WARNING 	Requested an unavailable screen number - using first available.
+52.0728 	WARNING 	User requested fullscreen with size [1920 1080], but screen is actually [2560, 1600]. Using actual size
+52.6196 	EXP 	Created window1 = Window(allowGUI=False, allowStencil=False, autoLog=True, backendConf=UNKNOWN, bitsMode=UNKNOWN, blendMode='avg', bpc=(8, 8, 8), color=array([-1, -1, -1]), colorSpace='rgb', depthBits=8, fullscr=<method-wrapper '__getattribute__' of attributeSetter object at 0x000001DB62EA62B0>, gamma=None, gammaErrorPolicy='raise', lms=UNKNOWN, monitor=<psychopy.monitors.calibTools.Monitor object at 0x000001DB67FA8820>, multiSample=False, name='window1', numSamples=2, pos=(0, 0), screen=1, size=array([2560, 1600]), stencilBits=0, stereo=False, units='norm', useFBO=True, useRetina=False, viewOri=0.0, viewPos=None, viewScale=None, waitBlanking=True, winType='pyglet')
+52.6202 	EXP 	window1: mouseVisible = True
+52.7985 	EXP 	Created instruct_text = TextStim(__class__=<class 'psychopy.visual.text.TextStim'>, alignHoriz=method-wrapper(...), alignText='center', alignVert=method-wrapper(...), anchorHoriz='center', anchorVert='center', antialias=True, autoDraw=False, autoLog=True, bold=False, color=array([1., 1., 1.]), colorSpace='rgb', contrast=1.0, depth=0.0, flipHoriz=False, flipVert=False, font='Arial', fontFiles=[], height=0.08, italic=False, languageStyle='LTR', name='instruct_text', opacity=1.0, ori=0, pos=array([0., 0.]), rgb=UNKNOWN, text=str(...), units='norm', win=Window(...), wrapWidth=1.5)
+52.8130 	EXP 	Created text_3 = TextStim(__class__=<class 'psychopy.visual.text.TextStim'>, alignHoriz=method-wrapper(...), alignText='center', alignVert=method-wrapper(...), anchorHoriz='center', anchorVert='center', antialias=True, autoDraw=False, autoLog=True, bold=False, color=array([1., 1., 1.]), colorSpace='rgb', contrast=1.0, depth=0.0, flipHoriz=False, flipVert=False, font='Arial', fontFiles=[], height=0.1, italic=False, languageStyle='LTR', name='text_3', opacity=1.0, ori=0, pos=array([0., 0.]), rgb=UNKNOWN, text='waiting for scanner to begin...', units='norm', win=Window(...), wrapWidth=2)
+52.8202 	EXP 	Created fix_stim = TextStim(__class__=<class 'psychopy.visual.text.TextStim'>, alignHoriz=method-wrapper(...), alignText='center', alignVert=method-wrapper(...), anchorHoriz='center', anchorVert='center', antialias=True, autoDraw=False, autoLog=True, bold=False, color=array([1., 1., 1.]), colorSpace='rgb', contrast=1.0, depth=0.0, flipHoriz=False, flipVert=False, font='Arial', fontFiles=[], height=0.2, italic=False, languageStyle='LTR', name='fix_stim', opacity=1.0, ori=0, pos=array([0., 0.]), rgb=UNKNOWN, text='+', units='norm', win=Window(...), wrapWidth=1)
+52.8225 	EXP 	Created prefix = TextStim(__class__=<class 'psychopy.visual.text.TextStim'>, alignHoriz=method-wrapper(...), alignText='center', alignVert=method-wrapper(...), anchorHoriz='center', anchorVert='center', antialias=True, autoDraw=False, autoLog=True, bold=False, color=array([1., 1., 1.]), colorSpace='rgb', contrast=1.0, depth=0.0, flipHoriz=False, flipVert=False, font='Arial', fontFiles=[], height=0.2, italic=False, languageStyle='LTR', name='prefix', opacity=1.0, ori=0, pos=array([0., 0.]), rgb=UNKNOWN, text='+', units='norm', win=Window(...), wrapWidth=1)
+52.8363 	EXP 	Created word = TextStim(__class__=<class 'psychopy.visual.text.TextStim'>, alignHoriz=method-wrapper(...), alignText='center', alignVert=method-wrapper(...), anchorHoriz='center', anchorVert='center', antialias=True, autoDraw=False, autoLog=True, bold=False, color=array([1., 1., 1.]), colorSpace='rgb', contrast=1.0, depth=-1.0, flipHoriz=False, flipVert=False, font='Arial', fontFiles=[], height=0.2, italic=False, languageStyle='LTR', name='word', opacity=1.0, ori=0, pos=array([ 0. , -0.2]), rgb=UNKNOWN, text='default text', units='norm', win=Window(...), wrapWidth=1)
+52.8418 	EXP 	Created word = TextStim(__class__=<class 'psychopy.visual.text.TextStim'>, alignHoriz=method-wrapper(...), alignText='center', alignVert=method-wrapper(...), anchorHoriz='center', anchorVert='center', antialias=True, autoDraw=False, autoLog=True, bold=False, color=array([1., 1., 1.]), colorSpace='rgb', contrast=1.0, depth=-1.0, flipHoriz=False, flipVert=False, font='Arial', fontFiles=[], height=0.2, italic=False, languageStyle='LTR', name='word', opacity=1.0, ori=0, pos=array([ 0.7, -0.8]), rgb=UNKNOWN, text='yes', units='norm', win=Window(...), wrapWidth=1)
+52.8472 	EXP 	Created word = TextStim(__class__=<class 'psychopy.visual.text.TextStim'>, alignHoriz=method-wrapper(...), alignText='center', alignVert=method-wrapper(...), anchorHoriz='center', anchorVert='center', antialias=True, autoDraw=False, autoLog=True, bold=False, color=array([1., 1., 1.]), colorSpace='rgb', contrast=1.0, depth=-1.0, flipHoriz=False, flipVert=False, font='Arial', fontFiles=[], height=0.2, italic=False, languageStyle='LTR', name='word', opacity=1.0, ori=0, pos=array([-0.7, -0.8]), rgb=UNKNOWN, text='no', units='norm', win=Window(...), wrapWidth=1)
+52.8570 	EXP 	Created word = TextStim(__class__=<class 'psychopy.visual.text.TextStim'>, alignHoriz=method-wrapper(...), alignText='center', alignVert=method-wrapper(...), anchorHoriz='center', anchorVert='center', antialias=True, autoDraw=False, autoLog=True, bold=False, color=array([1., 1., 1.]), colorSpace='rgb', contrast=1.0, depth=-1.0, flipHoriz=False, flipVert=False, font='Arial', fontFiles=[], height=0.2, italic=False, languageStyle='LTR', name='word', opacity=1.0, ori=0, pos=array([0. , 0.2]), rgb=UNKNOWN, text='block_text', units='norm', win=Window(...), wrapWidth=1)
+52.8593 	EXP 	Created postfix = TextStim(__class__=<class 'psychopy.visual.text.TextStim'>, alignHoriz=method-wrapper(...), alignText='center', alignVert=method-wrapper(...), anchorHoriz='center', anchorVert='center', antialias=True, autoDraw=False, autoLog=True, bold=False, color=array([1., 1., 1.]), colorSpace='rgb', contrast=1.0, depth=-2.0, flipHoriz=False, flipVert=False, font='Arial', fontFiles=[], height=0.2, italic=False, languageStyle='LTR', name='postfix', opacity=1.0, ori=0, pos=array([0., 0.]), rgb=UNKNOWN, text='+', units='norm', win=Window(...), wrapWidth=1)
+52.8593 	EXP 	window1: Attempting to measure frame rate of screen (1) ...
+52.8593 	EXP 	window1: recordFrameIntervals = False
+53.0525 	EXP 	window1: recordFrameIntervals = True
+53.2357 	EXP 	Screen (1) actual frame rate measured at 59.66Hz
+53.2358 	EXP 	window1: recordFrameIntervals = False
+67.8958 	DATA 	Keypress: space
+67.9681 	EXP 	instruct_text: height = 0.08
+67.9681 	EXP 	instruct_text: height = 0.08
+67.9681 	EXP 	instruct_text: height = 0.08
+67.9681 	EXP 	instruct_text: text = 'Each time you see a word, you will be asked to make one of the following decisions:        \n\n\n1) Does the word describe you?         \n\n 2) Does the word describe your friend?         \n\n 3) Is the word positive?'
+81.7587 	DATA 	Keypress: space
+81.7996 	EXP 	instruct_text: height = 0.08
+81.7996 	EXP 	instruct_text: height = 0.08
+81.7996 	EXP 	instruct_text: height = 0.08
+81.7996 	EXP 	instruct_text: text = 'Each time you see a word:        \n\n\npress with your index finger to answer NO\n\npress with your middle finger to answer YES'
+93.6195 	DATA 	Keypress: space
+93.6848 	EXP 	instruct_text: height = 0.08
+93.6848 	EXP 	instruct_text: height = 0.08
+93.6848 	EXP 	instruct_text: height = 0.08
+93.6848 	EXP 	instruct_text: text = 'Just to make sure everything is working with the buttons.        \n\nPlease press your index finger to answer NO'
+102.7183 	DATA 	Keypress: 2
+102.7650 	EXP 	instruct_text: height = 0.08
+102.7650 	EXP 	instruct_text: height = 0.08
+102.7650 	EXP 	instruct_text: height = 0.08
+102.7650 	EXP 	instruct_text: text = 'Just to make sure everything is working with the buttons.        \n\nPlease press your middle finger to answer YES'
+103.0082 	DATA 	Keypress: 5
+106.2752 	DATA 	Keypress: 3
+106.2974 	EXP 	instruct_text: height = 0.08
+106.2974 	EXP 	instruct_text: height = 0.08
+106.2974 	EXP 	instruct_text: height = 0.08
+106.2974 	EXP 	instruct_text: text = 'Great! We will go through a few practice trials of each type now.        \n\nTry to make your decision quickly!'
+117.3991 	DATA 	Keypress: space
+117.4482 	EXP 	word: height = 0.2
+117.4482 	EXP 	word: height = 0.2
+117.4482 	EXP 	word: height = 0.2
+117.4482 	EXP 	word: text = 'Does this word describe you?'
+117.4482 	EXP 	word: height = 0.2
+117.4482 	EXP 	word: height = 0.2
+117.4482 	EXP 	word: height = 0.2
+117.4482 	EXP 	word: height = 0.2
+117.4482 	EXP 	word: text = 'Does this word describe you?'
+119.4820 	EXP 	word: height = 0.2
+119.4820 	EXP 	word: height = 0.2
+119.4820 	EXP 	word: height = 0.2
+119.4820 	EXP 	word: text = 'Are you?'
+119.4820 	EXP 	word: height = 0.08
+120.5150 	EXP 	word: height = 0.2
+120.5150 	EXP 	word: height = 0.2
+120.5150 	EXP 	word: height = 0.2
+120.5150 	EXP 	word: text = 'polite'
+120.5150 	EXP 	word: font = 'Arial'
+120.5150 	EXP 	word: bold = False
+120.5150 	EXP 	word: font = 'Arial'
+120.5150 	EXP 	word: italic = False
+120.5150 	EXP 	word: font = 'Arial'
+120.5150 	EXP 	word: bold = False
+120.5150 	EXP 	word: font = 'Arial'
+120.5150 	EXP 	word: italic = False
+120.5150 	EXP 	word: height = 0.2
+120.5150 	EXP 	word: height = 0.2
+120.5150 	EXP 	word: height = 0.2
+120.5150 	EXP 	word: text = 'yes'
+120.5150 	EXP 	word: height = 0.2
+120.5150 	EXP 	word: height = 0.2
+120.5150 	EXP 	word: height = 0.2
+120.5150 	EXP 	word: text = 'no'
+120.5150 	EXP 	word: height = 0.08
+120.5150 	EXP 	word: height = 0.08
+120.5150 	EXP 	word: height = 0.08
+120.5150 	EXP 	word: text = 'Are you?'
+123.7837 	DATA 	Keypress: 3
+124.0314 	EXP 	word: height = 0.2
+124.0314 	EXP 	word: height = 0.2
+124.0314 	EXP 	word: height = 0.2
+124.0314 	EXP 	word: text = 'bossy'
+124.0314 	EXP 	word: font = 'Arial'
+124.0314 	EXP 	word: bold = False
+124.0314 	EXP 	word: font = 'Arial'
+124.0314 	EXP 	word: italic = False
+124.0314 	EXP 	word: font = 'Arial'
+124.0314 	EXP 	word: bold = False
+124.0314 	EXP 	word: font = 'Arial'
+124.0314 	EXP 	word: italic = False
+124.0314 	EXP 	word: height = 0.2
+124.0314 	EXP 	word: height = 0.2
+124.0314 	EXP 	word: height = 0.2
+124.0314 	EXP 	word: text = 'yes'
+124.0314 	EXP 	word: height = 0.2
+124.0314 	EXP 	word: height = 0.2
+124.0314 	EXP 	word: height = 0.2
+124.0314 	EXP 	word: text = 'no'
+125.7560 	DATA 	Keypress: 2
+125.8151 	EXP 	word: font = 'Arial'
+125.8151 	EXP 	word: bold = True
+125.8151 	EXP 	word: font = 'Arial'
+125.8151 	EXP 	word: italic = True
+125.8151 	EXP 	word: height = 0.2
+125.8151 	EXP 	word: height = 0.2
+125.8151 	EXP 	word: height = 0.2
+125.8151 	EXP 	word: text = 'no'
+126.5483 	EXP 	word: height = 0.08
+126.5483 	EXP 	word: height = 0.08
+126.5483 	EXP 	word: height = 0.08
+126.5483 	EXP 	word: text = 'Does this word describe your friend?'
+126.5483 	EXP 	word: height = 0.2
+126.5483 	EXP 	word: height = 0.2
+126.5483 	EXP 	word: height = 0.2
+126.5483 	EXP 	word: height = 0.2
+126.5483 	EXP 	word: text = 'Does this word describe your friend?'
+128.5813 	EXP 	word: height = 0.2
+128.5813 	EXP 	word: height = 0.2
+128.5813 	EXP 	word: height = 0.2
+128.5813 	EXP 	word: text = 'Is your friend?'
+128.5813 	EXP 	word: height = 0.08
+129.6314 	EXP 	word: height = 0.2
+129.6314 	EXP 	word: height = 0.2
+129.6314 	EXP 	word: height = 0.2
+129.6314 	EXP 	word: text = 'rude'
+129.6314 	EXP 	word: font = 'Arial'
+129.6314 	EXP 	word: bold = False
+129.6314 	EXP 	word: font = 'Arial'
+129.6314 	EXP 	word: italic = False
+129.6314 	EXP 	word: font = 'Arial'
+129.6314 	EXP 	word: bold = False
+129.6314 	EXP 	word: font = 'Arial'
+129.6314 	EXP 	word: italic = False
+129.6314 	EXP 	word: height = 0.2
+129.6314 	EXP 	word: height = 0.2
+129.6314 	EXP 	word: height = 0.2
+129.6314 	EXP 	word: text = 'yes'
+129.6314 	EXP 	word: height = 0.2
+129.6314 	EXP 	word: height = 0.2
+129.6314 	EXP 	word: height = 0.2
+129.6314 	EXP 	word: text = 'no'
+129.6314 	EXP 	word: height = 0.08
+129.6314 	EXP 	word: height = 0.08
+129.6314 	EXP 	word: height = 0.08
+129.6314 	EXP 	word: text = 'Is your friend?'
+131.2902 	DATA 	Keypress: 2
+131.3489 	EXP 	word: font = 'Arial'
+131.3489 	EXP 	word: bold = True
+131.3489 	EXP 	word: font = 'Arial'
+131.3489 	EXP 	word: italic = True
+131.3489 	EXP 	word: height = 0.2
+131.3489 	EXP 	word: height = 0.2
+131.3489 	EXP 	word: height = 0.2
+131.3489 	EXP 	word: text = 'no'
+133.1307 	EXP 	word: height = 0.2
+133.1307 	EXP 	word: height = 0.2
+133.1307 	EXP 	word: height = 0.2
+133.1307 	EXP 	word: text = 'cool'
+133.1307 	EXP 	word: font = 'Arial'
+133.1307 	EXP 	word: bold = False
+133.1307 	EXP 	word: font = 'Arial'
+133.1307 	EXP 	word: italic = False
+133.1307 	EXP 	word: font = 'Arial'
+133.1307 	EXP 	word: bold = False
+133.1307 	EXP 	word: font = 'Arial'
+133.1307 	EXP 	word: italic = False
+133.1307 	EXP 	word: height = 0.2
+133.1307 	EXP 	word: height = 0.2
+133.1307 	EXP 	word: height = 0.2
+133.1307 	EXP 	word: text = 'yes'
+133.1307 	EXP 	word: height = 0.2
+133.1307 	EXP 	word: height = 0.2
+133.1307 	EXP 	word: height = 0.2
+133.1307 	EXP 	word: text = 'no'
+134.2681 	DATA 	Keypress: 3
+134.3144 	EXP 	word: font = 'Arial'
+134.3144 	EXP 	word: bold = True
+134.3144 	EXP 	word: font = 'Arial'
+134.3144 	EXP 	word: italic = True
+134.3144 	EXP 	word: height = 0.2
+134.3144 	EXP 	word: height = 0.2
+134.3144 	EXP 	word: height = 0.2
+134.3144 	EXP 	word: text = 'yes'
+135.6479 	EXP 	word: height = 0.08
+135.6479 	EXP 	word: height = 0.08
+135.6479 	EXP 	word: height = 0.08
+135.6479 	EXP 	word: text = 'Is the word positive?'
+135.6479 	EXP 	word: height = 0.2
+135.6479 	EXP 	word: height = 0.2
+135.6479 	EXP 	word: height = 0.2
+135.6479 	EXP 	word: height = 0.2
+135.6479 	EXP 	word: text = 'Is the word positive?'
+137.6806 	EXP 	word: height = 0.2
+137.6806 	EXP 	word: height = 0.2
+137.6806 	EXP 	word: height = 0.2
+137.6806 	EXP 	word: text = 'Is this word positive?'
+137.6806 	EXP 	word: height = 0.08
+138.7145 	EXP 	word: height = 0.2
+138.7145 	EXP 	word: height = 0.2
+138.7145 	EXP 	word: height = 0.2
+138.7145 	EXP 	word: text = 'nice'
+138.7145 	EXP 	word: font = 'Arial'
+138.7145 	EXP 	word: bold = False
+138.7145 	EXP 	word: font = 'Arial'
+138.7145 	EXP 	word: italic = False
+138.7145 	EXP 	word: font = 'Arial'
+138.7145 	EXP 	word: bold = False
+138.7145 	EXP 	word: font = 'Arial'
+138.7145 	EXP 	word: italic = False
+138.7145 	EXP 	word: height = 0.2
+138.7145 	EXP 	word: height = 0.2
+138.7145 	EXP 	word: height = 0.2
+138.7145 	EXP 	word: text = 'yes'
+138.7145 	EXP 	word: height = 0.2
+138.7145 	EXP 	word: height = 0.2
+138.7145 	EXP 	word: height = 0.2
+138.7145 	EXP 	word: text = 'no'
+138.7145 	EXP 	word: height = 0.08
+138.7145 	EXP 	word: height = 0.08
+138.7145 	EXP 	word: height = 0.08
+138.7145 	EXP 	word: text = 'Is this word positive?'
+139.8911 	DATA 	Keypress: 3
+139.9309 	EXP 	word: font = 'Arial'
+139.9309 	EXP 	word: bold = True
+139.9309 	EXP 	word: font = 'Arial'
+139.9309 	EXP 	word: italic = True
+139.9309 	EXP 	word: height = 0.2
+139.9309 	EXP 	word: height = 0.2
+139.9309 	EXP 	word: height = 0.2
+139.9309 	EXP 	word: text = 'yes'
+142.2477 	EXP 	word: height = 0.2
+142.2477 	EXP 	word: height = 0.2
+142.2477 	EXP 	word: height = 0.2
+142.2477 	EXP 	word: text = 'jealous'
+142.2477 	EXP 	word: font = 'Arial'
+142.2477 	EXP 	word: bold = False
+142.2477 	EXP 	word: font = 'Arial'
+142.2477 	EXP 	word: italic = False
+142.2477 	EXP 	word: font = 'Arial'
+142.2477 	EXP 	word: bold = False
+142.2477 	EXP 	word: font = 'Arial'
+142.2477 	EXP 	word: italic = False
+142.2477 	EXP 	word: height = 0.2
+142.2477 	EXP 	word: height = 0.2
+142.2477 	EXP 	word: height = 0.2
+142.2477 	EXP 	word: text = 'yes'
+142.2477 	EXP 	word: height = 0.2
+142.2477 	EXP 	word: height = 0.2
+142.2477 	EXP 	word: height = 0.2
+142.2477 	EXP 	word: text = 'no'
+144.1861 	DATA 	Keypress: 2
+144.2315 	EXP 	word: font = 'Arial'
+144.2315 	EXP 	word: bold = True
+144.2315 	EXP 	word: font = 'Arial'
+144.2315 	EXP 	word: italic = True
+144.2315 	EXP 	word: height = 0.2
+144.2315 	EXP 	word: height = 0.2
+144.2315 	EXP 	word: height = 0.2
+144.2315 	EXP 	word: text = 'no'
+144.7311 	EXP 	instruct_text: height = 0.08
+144.7311 	EXP 	instruct_text: height = 0.08
+144.7311 	EXP 	instruct_text: height = 0.08
+144.7311 	EXP 	instruct_text: text = 'Great job! Any questions on what to do?'
+155.4175 	DATA 	Keypress: space
+186.5561 	DATA 	Keypress: t
+194.3997 	DATA 	Keypress: t
+194.4001 	DATA 	Keypress: t
+194.4005 	DATA 	Keypress: t
+194.4009 	DATA 	Keypress: t
+194.4012 	DATA 	Keypress: t
+194.4016 	DATA 	Keypress: t
+194.7118 	EXP 	word: height = 0.08
+194.7118 	EXP 	word: height = 0.08
+194.7118 	EXP 	word: height = 0.08
+194.7118 	EXP 	word: text = 'Is the word positive?'
+194.7118 	EXP 	word: height = 0.2
+194.7118 	EXP 	word: height = 0.2
+194.7118 	EXP 	word: height = 0.2
+194.7118 	EXP 	word: height = 0.2
+194.7118 	EXP 	word: text = 'Is the word positive?'
+196.5132 	DATA 	Keypress: t
+196.5138 	DATA 	Keypress: t
+196.7634 	EXP 	word: height = 0.2
+196.7634 	EXP 	word: height = 0.2
+196.7634 	EXP 	word: height = 0.2
+196.7634 	EXP 	word: text = 'Is this word positive?'
+196.7634 	EXP 	word: height = 0.08
+197.3124 	EXP 	word: height = 0.2
+197.3124 	EXP 	word: height = 0.2
+197.3124 	EXP 	word: height = 0.2
+197.3124 	EXP 	word: text = 'wise'
+197.3124 	EXP 	word: font = 'Arial'
+197.3124 	EXP 	word: bold = False
+197.3124 	EXP 	word: font = 'Arial'
+197.3124 	EXP 	word: italic = False
+197.3124 	EXP 	word: font = 'Arial'
+197.3124 	EXP 	word: bold = False
+197.3124 	EXP 	word: font = 'Arial'
+197.3124 	EXP 	word: italic = False
+197.3124 	EXP 	word: height = 0.2
+197.3124 	EXP 	word: height = 0.2
+197.3124 	EXP 	word: height = 0.2
+197.3124 	EXP 	word: text = 'yes'
+197.3124 	EXP 	word: height = 0.2
+197.3124 	EXP 	word: height = 0.2
+197.3124 	EXP 	word: height = 0.2
+197.3124 	EXP 	word: text = 'no'
+197.3124 	EXP 	word: height = 0.08
+197.3124 	EXP 	word: height = 0.08
+197.3124 	EXP 	word: height = 0.08
+197.3124 	EXP 	word: text = 'Is this word positive?'
+197.3559 	DATA 	Keypress: t
+198.5560 	DATA 	Keypress: t
+198.6151 	DATA 	Keypress: 3
+198.6621 	EXP 	word: font = 'Arial'
+198.6621 	EXP 	word: bold = True
+198.6621 	EXP 	word: font = 'Arial'
+198.6621 	EXP 	word: italic = True
+198.6621 	EXP 	word: height = 0.2
+198.6621 	EXP 	word: height = 0.2
+198.6621 	EXP 	word: height = 0.2
+198.6621 	EXP 	word: text = 'yes'
+200.6338 	DATA 	Keypress: t
+200.9149 	EXP 	word: height = 0.2
+200.9149 	EXP 	word: height = 0.2
+200.9149 	EXP 	word: height = 0.2
+200.9149 	EXP 	word: text = 'violent'
+200.9149 	EXP 	word: font = 'Arial'
+200.9149 	EXP 	word: bold = False
+200.9149 	EXP 	word: font = 'Arial'
+200.9149 	EXP 	word: italic = False
+200.9149 	EXP 	word: font = 'Arial'
+200.9149 	EXP 	word: bold = False
+200.9149 	EXP 	word: font = 'Arial'
+200.9149 	EXP 	word: italic = False
+200.9149 	EXP 	word: height = 0.2
+200.9149 	EXP 	word: height = 0.2
+200.9149 	EXP 	word: height = 0.2
+200.9149 	EXP 	word: text = 'yes'
+200.9149 	EXP 	word: height = 0.2
+200.9149 	EXP 	word: height = 0.2
+200.9149 	EXP 	word: height = 0.2
+200.9149 	EXP 	word: text = 'no'
+200.9559 	DATA 	Keypress: t
+202.1560 	DATA 	Keypress: t
+202.4950 	DATA 	Keypress: 2
+202.5456 	EXP 	word: font = 'Arial'
+202.5456 	EXP 	word: bold = True
+202.5456 	EXP 	word: font = 'Arial'
+202.5456 	EXP 	word: italic = True
+202.5456 	EXP 	word: height = 0.2
+202.5456 	EXP 	word: height = 0.2
+202.5456 	EXP 	word: height = 0.2
+202.5456 	EXP 	word: text = 'no'
+203.6576 	DATA 	Keypress: t
+203.9122 	EXP 	word: height = 0.2
+203.9122 	EXP 	word: height = 0.2
+203.9122 	EXP 	word: height = 0.2
+203.9122 	EXP 	word: text = 'unpleasant'
+203.9122 	EXP 	word: font = 'Arial'
+203.9122 	EXP 	word: bold = False
+203.9122 	EXP 	word: font = 'Arial'
+203.9122 	EXP 	word: italic = False
+203.9122 	EXP 	word: font = 'Arial'
+203.9122 	EXP 	word: bold = False
+203.9122 	EXP 	word: font = 'Arial'
+203.9122 	EXP 	word: italic = False
+203.9122 	EXP 	word: height = 0.2
+203.9122 	EXP 	word: height = 0.2
+203.9122 	EXP 	word: height = 0.2
+203.9122 	EXP 	word: text = 'yes'
+203.9122 	EXP 	word: height = 0.2
+203.9122 	EXP 	word: height = 0.2
+203.9122 	EXP 	word: height = 0.2
+203.9122 	EXP 	word: text = 'no'
+204.5560 	DATA 	Keypress: t
+205.3619 	DATA 	Keypress: 2
+205.3948 	EXP 	word: font = 'Arial'
+205.3948 	EXP 	word: bold = True
+205.3948 	EXP 	word: font = 'Arial'
+205.3948 	EXP 	word: italic = True
+205.3948 	EXP 	word: height = 0.2
+205.3948 	EXP 	word: height = 0.2
+205.3948 	EXP 	word: height = 0.2
+205.3948 	EXP 	word: text = 'no'
+205.7559 	DATA 	Keypress: t
+207.8987 	DATA 	Keypress: t
+208.1786 	EXP 	word: height = 0.2
+208.1786 	EXP 	word: height = 0.2
+208.1786 	EXP 	word: height = 0.2
+208.1786 	EXP 	word: text = 'triumphant'
+208.1786 	EXP 	word: font = 'Arial'
+208.1786 	EXP 	word: bold = False
+208.1786 	EXP 	word: font = 'Arial'
+208.1786 	EXP 	word: italic = False
+208.1786 	EXP 	word: font = 'Arial'
+208.1786 	EXP 	word: bold = False
+208.1786 	EXP 	word: font = 'Arial'
+208.1786 	EXP 	word: italic = False
+208.1786 	EXP 	word: height = 0.2
+208.1786 	EXP 	word: height = 0.2
+208.1786 	EXP 	word: height = 0.2
+208.1786 	EXP 	word: text = 'yes'
+208.1786 	EXP 	word: height = 0.2
+208.1786 	EXP 	word: height = 0.2
+208.1786 	EXP 	word: height = 0.2
+208.1786 	EXP 	word: text = 'no'
+208.1801 	DATA 	Keypress: t
+209.3559 	DATA 	Keypress: t
+209.6577 	DATA 	Keypress: 3
+209.6952 	EXP 	word: font = 'Arial'
+209.6952 	EXP 	word: bold = True
+209.6952 	EXP 	word: font = 'Arial'
+209.6952 	EXP 	word: italic = True
+209.6952 	EXP 	word: height = 0.2
+209.6952 	EXP 	word: height = 0.2
+209.6952 	EXP 	word: height = 0.2
+209.6952 	EXP 	word: text = 'yes'
+210.5560 	DATA 	Keypress: t
+212.7129 	DATA 	Keypress: t
+212.9784 	EXP 	word: height = 0.2
+212.9784 	EXP 	word: height = 0.2
+212.9784 	EXP 	word: height = 0.2
+212.9784 	EXP 	word: text = 'neat'
+212.9784 	EXP 	word: font = 'Arial'
+212.9784 	EXP 	word: bold = False
+212.9784 	EXP 	word: font = 'Arial'
+212.9784 	EXP 	word: italic = False
+212.9784 	EXP 	word: font = 'Arial'
+212.9784 	EXP 	word: bold = False
+212.9784 	EXP 	word: font = 'Arial'
+212.9784 	EXP 	word: italic = False
+212.9784 	EXP 	word: height = 0.2
+212.9784 	EXP 	word: height = 0.2
+212.9784 	EXP 	word: height = 0.2
+212.9784 	EXP 	word: text = 'yes'
+212.9784 	EXP 	word: height = 0.2
+212.9784 	EXP 	word: height = 0.2
+212.9784 	EXP 	word: height = 0.2
+212.9784 	EXP 	word: text = 'no'
+212.9797 	DATA 	Keypress: t
+213.9009 	DATA 	Keypress: 3
+213.9446 	EXP 	word: font = 'Arial'
+213.9446 	EXP 	word: bold = True
+213.9446 	EXP 	word: font = 'Arial'
+213.9446 	EXP 	word: italic = True
+213.9446 	EXP 	word: height = 0.2
+213.9446 	EXP 	word: height = 0.2
+213.9446 	EXP 	word: height = 0.2
+213.9446 	EXP 	word: text = 'yes'
+214.1558 	DATA 	Keypress: t
+215.3559 	DATA 	Keypress: t
+216.5561 	DATA 	Keypress: t
+216.6284 	EXP 	word: height = 0.2
+216.6284 	EXP 	word: height = 0.2
+216.6284 	EXP 	word: height = 0.2
+216.6284 	EXP 	word: text = 'vindictive'
+216.6284 	EXP 	word: font = 'Arial'
+216.6284 	EXP 	word: bold = False
+216.6284 	EXP 	word: font = 'Arial'
+216.6284 	EXP 	word: italic = False
+216.6284 	EXP 	word: font = 'Arial'
+216.6284 	EXP 	word: bold = False
+216.6284 	EXP 	word: font = 'Arial'
+216.6284 	EXP 	word: italic = False
+216.6284 	EXP 	word: height = 0.2
+216.6284 	EXP 	word: height = 0.2
+216.6284 	EXP 	word: height = 0.2
+216.6284 	EXP 	word: text = 'yes'
+216.6284 	EXP 	word: height = 0.2
+216.6284 	EXP 	word: height = 0.2
+216.6284 	EXP 	word: height = 0.2
+216.6284 	EXP 	word: text = 'no'
+217.7559 	DATA 	Keypress: t
+218.9560 	DATA 	Keypress: t
+226.8795 	DATA 	Keypress: 2
+226.8801 	DATA 	Keypress: t
+226.8804 	DATA 	Keypress: t
+226.8808 	DATA 	Keypress: t
+226.8812 	DATA 	Keypress: t
+226.8815 	DATA 	Keypress: t
+226.8819 	DATA 	Keypress: t
+227.1449 	EXP 	word: height = 0.08
+227.1449 	EXP 	word: height = 0.08
+227.1449 	EXP 	word: height = 0.08
+227.1449 	EXP 	word: text = 'Does this word describe you?'
+227.1449 	EXP 	word: height = 0.2
+227.1449 	EXP 	word: height = 0.2
+227.1449 	EXP 	word: height = 0.2
+227.1449 	EXP 	word: height = 0.2
+227.1449 	EXP 	word: text = 'Does this word describe you?'
+228.9458 	DATA 	Keypress: t
+228.9464 	DATA 	Keypress: t
+229.1776 	EXP 	word: height = 0.2
+229.1776 	EXP 	word: height = 0.2
+229.1776 	EXP 	word: height = 0.2
+229.1776 	EXP 	word: text = 'Are you?'
+229.1776 	EXP 	word: height = 0.08
+229.7112 	EXP 	word: height = 0.2
+229.7112 	EXP 	word: height = 0.2
+229.7112 	EXP 	word: height = 0.2
+229.7112 	EXP 	word: text = 'tiresome'
+229.7112 	EXP 	word: font = 'Arial'
+229.7112 	EXP 	word: bold = False
+229.7112 	EXP 	word: font = 'Arial'
+229.7112 	EXP 	word: italic = False
+229.7112 	EXP 	word: font = 'Arial'
+229.7112 	EXP 	word: bold = False
+229.7112 	EXP 	word: font = 'Arial'
+229.7112 	EXP 	word: italic = False
+229.7112 	EXP 	word: height = 0.2
+229.7112 	EXP 	word: height = 0.2
+229.7112 	EXP 	word: height = 0.2
+229.7112 	EXP 	word: text = 'yes'
+229.7112 	EXP 	word: height = 0.2
+229.7112 	EXP 	word: height = 0.2
+229.7112 	EXP 	word: height = 0.2
+229.7112 	EXP 	word: text = 'no'
+229.7112 	EXP 	word: height = 0.08
+229.7112 	EXP 	word: height = 0.08
+229.7112 	EXP 	word: height = 0.08
+229.7112 	EXP 	word: text = 'Are you?'
+229.7559 	DATA 	Keypress: t
+230.9562 	DATA 	Keypress: t
+232.1559 	DATA 	Keypress: t
+233.3894 	DATA 	Keypress: t
+233.6272 	EXP 	word: height = 0.2
+233.6272 	EXP 	word: height = 0.2
+233.6272 	EXP 	word: height = 0.2
+233.6272 	EXP 	word: text = 'sunny'
+233.6272 	EXP 	word: font = 'Arial'
+233.6272 	EXP 	word: bold = False
+233.6272 	EXP 	word: font = 'Arial'
+233.6272 	EXP 	word: italic = False
+233.6272 	EXP 	word: font = 'Arial'
+233.6272 	EXP 	word: bold = False
+233.6272 	EXP 	word: font = 'Arial'
+233.6272 	EXP 	word: italic = False
+233.6272 	EXP 	word: height = 0.2
+233.6272 	EXP 	word: height = 0.2
+233.6272 	EXP 	word: height = 0.2
+233.6272 	EXP 	word: text = 'yes'
+233.6272 	EXP 	word: height = 0.2
+233.6272 	EXP 	word: height = 0.2
+233.6272 	EXP 	word: height = 0.2
+233.6272 	EXP 	word: text = 'no'
+234.5558 	DATA 	Keypress: t
+234.5809 	DATA 	Keypress: 3
+234.6279 	EXP 	word: font = 'Arial'
+234.6279 	EXP 	word: bold = True
+234.6279 	EXP 	word: font = 'Arial'
+234.6279 	EXP 	word: italic = True
+234.6279 	EXP 	word: height = 0.2
+234.6279 	EXP 	word: height = 0.2
+234.6279 	EXP 	word: height = 0.2
+234.6279 	EXP 	word: text = 'yes'
+235.7559 	DATA 	Keypress: t
+237.1728 	DATA 	Keypress: t
+237.4275 	EXP 	word: height = 0.2
+237.4275 	EXP 	word: height = 0.2
+237.4275 	EXP 	word: height = 0.2
+237.4275 	EXP 	word: text = 'glorious'
+237.4275 	EXP 	word: font = 'Arial'
+237.4275 	EXP 	word: bold = False
+237.4275 	EXP 	word: font = 'Arial'
+237.4275 	EXP 	word: italic = False
+237.4275 	EXP 	word: font = 'Arial'
+237.4275 	EXP 	word: bold = False
+237.4275 	EXP 	word: font = 'Arial'
+237.4275 	EXP 	word: italic = False
+237.4275 	EXP 	word: height = 0.2
+237.4275 	EXP 	word: height = 0.2
+237.4275 	EXP 	word: height = 0.2
+237.4275 	EXP 	word: text = 'yes'
+237.4275 	EXP 	word: height = 0.2
+237.4275 	EXP 	word: height = 0.2
+237.4275 	EXP 	word: height = 0.2
+237.4275 	EXP 	word: text = 'no'
+238.1559 	DATA 	Keypress: t
+238.5279 	DATA 	Keypress: 2
+238.5776 	EXP 	word: font = 'Arial'
+238.5776 	EXP 	word: bold = True
+238.5776 	EXP 	word: font = 'Arial'
+238.5776 	EXP 	word: italic = True
+238.5776 	EXP 	word: height = 0.2
+238.5776 	EXP 	word: height = 0.2
+238.5776 	EXP 	word: height = 0.2
+238.5776 	EXP 	word: text = 'no'
+239.3559 	DATA 	Keypress: t
+241.3859 	DATA 	Keypress: t
+241.6445 	EXP 	word: height = 0.2
+241.6445 	EXP 	word: height = 0.2
+241.6445 	EXP 	word: height = 0.2
+241.6445 	EXP 	word: text = 'kind'
+241.6445 	EXP 	word: font = 'Arial'
+241.6445 	EXP 	word: bold = False
+241.6445 	EXP 	word: font = 'Arial'
+241.6445 	EXP 	word: italic = False
+241.6445 	EXP 	word: font = 'Arial'
+241.6445 	EXP 	word: bold = False
+241.6445 	EXP 	word: font = 'Arial'
+241.6445 	EXP 	word: italic = False
+241.6445 	EXP 	word: height = 0.2
+241.6445 	EXP 	word: height = 0.2
+241.6445 	EXP 	word: height = 0.2
+241.6445 	EXP 	word: text = 'yes'
+241.6445 	EXP 	word: height = 0.2
+241.6445 	EXP 	word: height = 0.2
+241.6445 	EXP 	word: height = 0.2
+241.6445 	EXP 	word: text = 'no'
+241.7558 	DATA 	Keypress: t
+242.6739 	DATA 	Keypress: 3
+242.7276 	EXP 	word: font = 'Arial'
+242.7276 	EXP 	word: bold = True
+242.7276 	EXP 	word: font = 'Arial'
+242.7276 	EXP 	word: italic = True
+242.7276 	EXP 	word: height = 0.2
+242.7276 	EXP 	word: height = 0.2
+242.7276 	EXP 	word: height = 0.2
+242.7276 	EXP 	word: text = 'yes'
+242.9558 	DATA 	Keypress: t
+245.8652 	DATA 	Keypress: t
+245.8658 	DATA 	Keypress: t
+246.1273 	EXP 	word: height = 0.2
+246.1273 	EXP 	word: height = 0.2
+246.1273 	EXP 	word: height = 0.2
+246.1273 	EXP 	word: text = 'weak'
+246.1273 	EXP 	word: font = 'Arial'
+246.1273 	EXP 	word: bold = False
+246.1273 	EXP 	word: font = 'Arial'
+246.1273 	EXP 	word: italic = False
+246.1273 	EXP 	word: font = 'Arial'
+246.1273 	EXP 	word: bold = False
+246.1273 	EXP 	word: font = 'Arial'
+246.1273 	EXP 	word: italic = False
+246.1273 	EXP 	word: height = 0.2
+246.1273 	EXP 	word: height = 0.2
+246.1273 	EXP 	word: height = 0.2
+246.1273 	EXP 	word: text = 'yes'
+246.1273 	EXP 	word: height = 0.2
+246.1273 	EXP 	word: height = 0.2
+246.1273 	EXP 	word: height = 0.2
+246.1273 	EXP 	word: text = 'no'
+246.5558 	DATA 	Keypress: t
+247.7558 	DATA 	Keypress: t
+249.8095 	DATA 	Keypress: t
+250.0606 	EXP 	word: height = 0.2
+250.0606 	EXP 	word: height = 0.2
+250.0606 	EXP 	word: height = 0.2
+250.0606 	EXP 	word: text = 'immature'
+250.0606 	EXP 	word: font = 'Arial'
+250.0606 	EXP 	word: bold = False
+250.0606 	EXP 	word: font = 'Arial'
+250.0606 	EXP 	word: italic = False
+250.0606 	EXP 	word: font = 'Arial'
+250.0606 	EXP 	word: bold = False
+250.0606 	EXP 	word: font = 'Arial'
+250.0606 	EXP 	word: italic = False
+250.0606 	EXP 	word: height = 0.2
+250.0606 	EXP 	word: height = 0.2
+250.0606 	EXP 	word: height = 0.2
+250.0606 	EXP 	word: text = 'yes'
+250.0606 	EXP 	word: height = 0.2
+250.0606 	EXP 	word: height = 0.2
+250.0606 	EXP 	word: height = 0.2
+250.0606 	EXP 	word: text = 'no'
+250.1558 	DATA 	Keypress: t
+251.3559 	DATA 	Keypress: t
+252.3198 	DATA 	Keypress: 2
+252.3772 	EXP 	word: font = 'Arial'
+252.3772 	EXP 	word: bold = True
+252.3772 	EXP 	word: font = 'Arial'
+252.3772 	EXP 	word: italic = True
+252.3772 	EXP 	word: height = 0.2
+252.3772 	EXP 	word: height = 0.2
+252.3772 	EXP 	word: height = 0.2
+252.3772 	EXP 	word: text = 'no'
+260.3123 	DATA 	Keypress: t
+260.3130 	DATA 	Keypress: t
+260.3133 	DATA 	Keypress: t
+260.3137 	DATA 	Keypress: t
+260.3140 	DATA 	Keypress: t
+260.3144 	DATA 	Keypress: t
+260.3148 	DATA 	Keypress: t
+260.5764 	EXP 	word: height = 0.08
+260.5764 	EXP 	word: height = 0.08
+260.5764 	EXP 	word: height = 0.08
+260.5764 	EXP 	word: text = 'Does this word describe your friend?'
+260.5764 	EXP 	word: height = 0.2
+260.5764 	EXP 	word: height = 0.2
+260.5764 	EXP 	word: height = 0.2
+260.5764 	EXP 	word: height = 0.2
+260.5764 	EXP 	word: text = 'Does this word describe your friend?'
+262.3775 	DATA 	Keypress: t
+262.3780 	DATA 	Keypress: t
+262.6096 	EXP 	word: height = 0.2
+262.6096 	EXP 	word: height = 0.2
+262.6096 	EXP 	word: height = 0.2
+262.6096 	EXP 	word: text = 'Is your friend?'
+262.6096 	EXP 	word: height = 0.08
+263.1598 	EXP 	word: height = 0.2
+263.1598 	EXP 	word: height = 0.2
+263.1598 	EXP 	word: height = 0.2
+263.1598 	EXP 	word: text = 'greedy'
+263.1598 	EXP 	word: font = 'Arial'
+263.1598 	EXP 	word: bold = False
+263.1598 	EXP 	word: font = 'Arial'
+263.1598 	EXP 	word: italic = False
+263.1598 	EXP 	word: font = 'Arial'
+263.1598 	EXP 	word: bold = False
+263.1598 	EXP 	word: font = 'Arial'
+263.1598 	EXP 	word: italic = False
+263.1598 	EXP 	word: height = 0.2
+263.1598 	EXP 	word: height = 0.2
+263.1598 	EXP 	word: height = 0.2
+263.1598 	EXP 	word: text = 'yes'
+263.1598 	EXP 	word: height = 0.2
+263.1598 	EXP 	word: height = 0.2
+263.1598 	EXP 	word: height = 0.2
+263.1598 	EXP 	word: text = 'no'
+263.1598 	EXP 	word: height = 0.08
+263.1598 	EXP 	word: height = 0.08
+263.1598 	EXP 	word: height = 0.08
+263.1598 	EXP 	word: text = 'Is your friend?'
+263.3558 	DATA 	Keypress: t
+264.5188 	DATA 	Keypress: 2
+264.5601 	EXP 	word: font = 'Arial'
+264.5601 	EXP 	word: bold = True
+264.5601 	EXP 	word: font = 'Arial'
+264.5601 	EXP 	word: italic = True
+264.5601 	EXP 	word: height = 0.2
+264.5601 	EXP 	word: height = 0.2
+264.5601 	EXP 	word: height = 0.2
+264.5601 	EXP 	word: text = 'no'
+264.5607 	DATA 	Keypress: t
+266.5213 	DATA 	Keypress: t
+266.7766 	EXP 	word: height = 0.2
+266.7766 	EXP 	word: height = 0.2
+266.7766 	EXP 	word: height = 0.2
+266.7766 	EXP 	word: text = 'merry'
+266.7766 	EXP 	word: font = 'Arial'
+266.7766 	EXP 	word: bold = False
+266.7766 	EXP 	word: font = 'Arial'
+266.7766 	EXP 	word: italic = False
+266.7766 	EXP 	word: font = 'Arial'
+266.7766 	EXP 	word: bold = False
+266.7766 	EXP 	word: font = 'Arial'
+266.7766 	EXP 	word: italic = False
+266.7766 	EXP 	word: height = 0.2
+266.7766 	EXP 	word: height = 0.2
+266.7766 	EXP 	word: height = 0.2
+266.7766 	EXP 	word: text = 'yes'
+266.7766 	EXP 	word: height = 0.2
+266.7766 	EXP 	word: height = 0.2
+266.7766 	EXP 	word: height = 0.2
+266.7766 	EXP 	word: text = 'no'
+266.9559 	DATA 	Keypress: t
+267.9978 	DATA 	Keypress: 3
+268.0621 	EXP 	word: font = 'Arial'
+268.0621 	EXP 	word: bold = True
+268.0621 	EXP 	word: font = 'Arial'
+268.0621 	EXP 	word: italic = True
+268.0621 	EXP 	word: height = 0.2
+268.0621 	EXP 	word: height = 0.2
+268.0621 	EXP 	word: height = 0.2
+268.0621 	EXP 	word: text = 'yes'
+268.1558 	DATA 	Keypress: t
+270.9247 	DATA 	Keypress: t
+270.9252 	DATA 	Keypress: t
+271.1930 	EXP 	word: height = 0.2
+271.1930 	EXP 	word: height = 0.2
+271.1930 	EXP 	word: height = 0.2
+271.1930 	EXP 	word: text = 'romantic'
+271.1930 	EXP 	word: font = 'Arial'
+271.1930 	EXP 	word: bold = False
+271.1930 	EXP 	word: font = 'Arial'
+271.1930 	EXP 	word: italic = False
+271.1930 	EXP 	word: font = 'Arial'
+271.1930 	EXP 	word: bold = False
+271.1930 	EXP 	word: font = 'Arial'
+271.1930 	EXP 	word: italic = False
+271.1930 	EXP 	word: height = 0.2
+271.1930 	EXP 	word: height = 0.2
+271.1930 	EXP 	word: height = 0.2
+271.1930 	EXP 	word: text = 'yes'
+271.1930 	EXP 	word: height = 0.2
+271.1930 	EXP 	word: height = 0.2
+271.1930 	EXP 	word: height = 0.2
+271.1930 	EXP 	word: text = 'no'
+271.7558 	DATA 	Keypress: t
+272.9558 	DATA 	Keypress: t
+273.4968 	DATA 	Keypress: 3
+273.5425 	EXP 	word: font = 'Arial'
+273.5425 	EXP 	word: bold = True
+273.5425 	EXP 	word: font = 'Arial'
+273.5425 	EXP 	word: italic = True
+273.5425 	EXP 	word: height = 0.2
+273.5425 	EXP 	word: height = 0.2
+273.5425 	EXP 	word: height = 0.2
+273.5425 	EXP 	word: text = 'yes'
+275.1000 	DATA 	Keypress: t
+275.3591 	EXP 	word: height = 0.2
+275.3591 	EXP 	word: height = 0.2
+275.3591 	EXP 	word: height = 0.2
+275.3591 	EXP 	word: text = 'terrible'
+275.3591 	EXP 	word: font = 'Arial'
+275.3591 	EXP 	word: bold = False
+275.3591 	EXP 	word: font = 'Arial'
+275.3591 	EXP 	word: italic = False
+275.3591 	EXP 	word: font = 'Arial'
+275.3591 	EXP 	word: bold = False
+275.3591 	EXP 	word: font = 'Arial'
+275.3591 	EXP 	word: italic = False
+275.3591 	EXP 	word: height = 0.2
+275.3591 	EXP 	word: height = 0.2
+275.3591 	EXP 	word: height = 0.2
+275.3591 	EXP 	word: text = 'yes'
+275.3591 	EXP 	word: height = 0.2
+275.3591 	EXP 	word: height = 0.2
+275.3591 	EXP 	word: height = 0.2
+275.3591 	EXP 	word: text = 'no'
+275.3606 	DATA 	Keypress: t
+276.1658 	DATA 	Keypress: 2
+276.2092 	EXP 	word: font = 'Arial'
+276.2092 	EXP 	word: bold = True
+276.2092 	EXP 	word: font = 'Arial'
+276.2092 	EXP 	word: italic = True
+276.2092 	EXP 	word: height = 0.2
+276.2092 	EXP 	word: height = 0.2
+276.2092 	EXP 	word: height = 0.2
+276.2092 	EXP 	word: text = 'no'
+276.5558 	DATA 	Keypress: t
+277.7559 	DATA 	Keypress: t
+278.9280 	EXP 	word: height = 0.2
+278.9280 	EXP 	word: height = 0.2
+278.9280 	EXP 	word: height = 0.2
+278.9280 	EXP 	word: text = 'immoral'
+278.9280 	EXP 	word: font = 'Arial'
+278.9280 	EXP 	word: bold = False
+278.9280 	EXP 	word: font = 'Arial'
+278.9280 	EXP 	word: italic = False
+278.9280 	EXP 	word: font = 'Arial'
+278.9280 	EXP 	word: bold = False
+278.9280 	EXP 	word: font = 'Arial'
+278.9280 	EXP 	word: italic = False
+278.9280 	EXP 	word: height = 0.2
+278.9280 	EXP 	word: height = 0.2
+278.9280 	EXP 	word: height = 0.2
+278.9280 	EXP 	word: text = 'yes'
+278.9280 	EXP 	word: height = 0.2
+278.9280 	EXP 	word: height = 0.2
+278.9280 	EXP 	word: height = 0.2
+278.9280 	EXP 	word: text = 'no'
+278.9558 	DATA 	Keypress: t
+280.1558 	DATA 	Keypress: t
+280.4246 	DATA 	Keypress: 3
+280.4592 	EXP 	word: font = 'Arial'
+280.4592 	EXP 	word: bold = True
+280.4592 	EXP 	word: font = 'Arial'
+280.4592 	EXP 	word: italic = True
+280.4592 	EXP 	word: height = 0.2
+280.4592 	EXP 	word: height = 0.2
+280.4592 	EXP 	word: height = 0.2
+280.4592 	EXP 	word: text = 'yes'
+280.9678 	DATA 	Keypress: 2
+281.0091 	EXP 	word: font = 'Arial'
+281.0091 	EXP 	word: bold = True
+281.0091 	EXP 	word: font = 'Arial'
+281.0091 	EXP 	word: italic = True
+281.0091 	EXP 	word: height = 0.2
+281.0091 	EXP 	word: height = 0.2
+281.0091 	EXP 	word: height = 0.2
+281.0091 	EXP 	word: text = 'no'
+281.2347 	DATA 	Keypress: 2
+281.3094 	EXP 	word: font = 'Arial'
+281.3094 	EXP 	word: bold = True
+281.3094 	EXP 	word: font = 'Arial'
+281.3094 	EXP 	word: italic = True
+281.3094 	EXP 	word: height = 0.2
+281.3094 	EXP 	word: height = 0.2
+281.3094 	EXP 	word: height = 0.2
+281.3094 	EXP 	word: text = 'no'
+281.3557 	DATA 	Keypress: t
+282.4254 	EXP 	word: height = 0.2
+282.4254 	EXP 	word: height = 0.2
+282.4254 	EXP 	word: height = 0.2
+282.4254 	EXP 	word: text = 'open'
+282.4254 	EXP 	word: font = 'Arial'
+282.4254 	EXP 	word: bold = False
+282.4254 	EXP 	word: font = 'Arial'
+282.4254 	EXP 	word: italic = False
+282.4254 	EXP 	word: font = 'Arial'
+282.4254 	EXP 	word: bold = False
+282.4254 	EXP 	word: font = 'Arial'
+282.4254 	EXP 	word: italic = False
+282.4254 	EXP 	word: height = 0.2
+282.4254 	EXP 	word: height = 0.2
+282.4254 	EXP 	word: height = 0.2
+282.4254 	EXP 	word: text = 'yes'
+282.4254 	EXP 	word: height = 0.2
+282.4254 	EXP 	word: height = 0.2
+282.4254 	EXP 	word: height = 0.2
+282.4254 	EXP 	word: text = 'no'
+282.5558 	DATA 	Keypress: t
+283.5237 	DATA 	Keypress: 3
+283.5755 	EXP 	word: font = 'Arial'
+283.5755 	EXP 	word: bold = True
+283.5755 	EXP 	word: font = 'Arial'
+283.5755 	EXP 	word: italic = True
+283.5755 	EXP 	word: height = 0.2
+283.5755 	EXP 	word: height = 0.2
+283.5755 	EXP 	word: height = 0.2
+283.5755 	EXP 	word: text = 'yes'
+283.7557 	DATA 	Keypress: t
+292.6941 	DATA 	Keypress: t
+292.6946 	DATA 	Keypress: t
+292.6950 	DATA 	Keypress: t
+292.6954 	DATA 	Keypress: t
+292.6957 	DATA 	Keypress: t
+292.6961 	DATA 	Keypress: t
+292.6964 	DATA 	Keypress: t
+292.9588 	EXP 	word: height = 0.08
+292.9588 	EXP 	word: height = 0.08
+292.9588 	EXP 	word: height = 0.08
+292.9588 	EXP 	word: text = 'Does this word describe your friend?'
+292.9588 	EXP 	word: height = 0.2
+292.9588 	EXP 	word: height = 0.2
+292.9588 	EXP 	word: height = 0.2
+292.9588 	EXP 	word: height = 0.2
+292.9588 	EXP 	word: text = 'Does this word describe your friend?'
+294.7599 	DATA 	Keypress: t
+294.7605 	DATA 	Keypress: t
+294.9924 	EXP 	word: height = 0.2
+294.9924 	EXP 	word: height = 0.2
+294.9924 	EXP 	word: height = 0.2
+294.9924 	EXP 	word: text = 'Is your friend?'
+294.9924 	EXP 	word: height = 0.08
+295.5253 	EXP 	word: height = 0.2
+295.5253 	EXP 	word: height = 0.2
+295.5253 	EXP 	word: height = 0.2
+295.5253 	EXP 	word: text = 'cynical'
+295.5253 	EXP 	word: font = 'Arial'
+295.5253 	EXP 	word: bold = False
+295.5253 	EXP 	word: font = 'Arial'
+295.5253 	EXP 	word: italic = False
+295.5253 	EXP 	word: font = 'Arial'
+295.5253 	EXP 	word: bold = False
+295.5253 	EXP 	word: font = 'Arial'
+295.5253 	EXP 	word: italic = False
+295.5253 	EXP 	word: height = 0.2
+295.5253 	EXP 	word: height = 0.2
+295.5253 	EXP 	word: height = 0.2
+295.5253 	EXP 	word: text = 'yes'
+295.5253 	EXP 	word: height = 0.2
+295.5253 	EXP 	word: height = 0.2
+295.5253 	EXP 	word: height = 0.2
+295.5253 	EXP 	word: text = 'no'
+295.5253 	EXP 	word: height = 0.08
+295.5253 	EXP 	word: height = 0.08
+295.5253 	EXP 	word: height = 0.08
+295.5253 	EXP 	word: text = 'Is your friend?'
+295.7558 	DATA 	Keypress: t
+296.9557 	DATA 	Keypress: t
+301.9335 	DATA 	Keypress: t
+301.9340 	DATA 	Keypress: t
+301.9344 	DATA 	Keypress: t
+301.9347 	DATA 	Keypress: t
+302.1749 	EXP 	word: height = 0.2
+302.1749 	EXP 	word: height = 0.2
+302.1749 	EXP 	word: height = 0.2
+302.1749 	EXP 	word: text = 'composed'
+302.1749 	EXP 	word: font = 'Arial'
+302.1749 	EXP 	word: bold = False
+302.1749 	EXP 	word: font = 'Arial'
+302.1749 	EXP 	word: italic = False
+302.1749 	EXP 	word: font = 'Arial'
+302.1749 	EXP 	word: bold = False
+302.1749 	EXP 	word: font = 'Arial'
+302.1749 	EXP 	word: italic = False
+302.1749 	EXP 	word: height = 0.2
+302.1749 	EXP 	word: height = 0.2
+302.1749 	EXP 	word: height = 0.2
+302.1749 	EXP 	word: text = 'yes'
+302.1749 	EXP 	word: height = 0.2
+302.1749 	EXP 	word: height = 0.2
+302.1749 	EXP 	word: height = 0.2
+302.1749 	EXP 	word: text = 'no'
+302.9557 	DATA 	Keypress: t
+304.0247 	DATA 	Keypress: 3
+304.0746 	EXP 	word: font = 'Arial'
+304.0746 	EXP 	word: bold = True
+304.0746 	EXP 	word: font = 'Arial'
+304.0746 	EXP 	word: italic = True
+304.0746 	EXP 	word: height = 0.2
+304.0746 	EXP 	word: height = 0.2
+304.0746 	EXP 	word: height = 0.2
+304.0746 	EXP 	word: text = 'yes'
+304.1557 	DATA 	Keypress: t
+305.3085 	EXP 	word: height = 0.2
+305.3085 	EXP 	word: height = 0.2
+305.3085 	EXP 	word: height = 0.2
+305.3085 	EXP 	word: text = 'malicious'
+305.3085 	EXP 	word: font = 'Arial'
+305.3085 	EXP 	word: bold = False
+305.3085 	EXP 	word: font = 'Arial'
+305.3085 	EXP 	word: italic = False
+305.3085 	EXP 	word: font = 'Arial'
+305.3085 	EXP 	word: bold = False
+305.3085 	EXP 	word: font = 'Arial'
+305.3085 	EXP 	word: italic = False
+305.3085 	EXP 	word: height = 0.2
+305.3085 	EXP 	word: height = 0.2
+305.3085 	EXP 	word: height = 0.2
+305.3085 	EXP 	word: text = 'yes'
+305.3085 	EXP 	word: height = 0.2
+305.3085 	EXP 	word: height = 0.2
+305.3085 	EXP 	word: height = 0.2
+305.3085 	EXP 	word: text = 'no'
+305.3557 	DATA 	Keypress: t
+306.3787 	DATA 	Keypress: 2
+306.4252 	EXP 	word: font = 'Arial'
+306.4252 	EXP 	word: bold = True
+306.4252 	EXP 	word: font = 'Arial'
+306.4252 	EXP 	word: italic = True
+306.4252 	EXP 	word: height = 0.2
+306.4252 	EXP 	word: height = 0.2
+306.4252 	EXP 	word: height = 0.2
+306.4252 	EXP 	word: text = 'no'
+306.5557 	DATA 	Keypress: t
+308.8897 	DATA 	Keypress: t
+308.9557 	DATA 	Keypress: t
+309.1423 	EXP 	word: height = 0.2
+309.1423 	EXP 	word: height = 0.2
+309.1423 	EXP 	word: height = 0.2
+309.1423 	EXP 	word: text = 'insensitive'
+309.1423 	EXP 	word: font = 'Arial'
+309.1423 	EXP 	word: bold = False
+309.1423 	EXP 	word: font = 'Arial'
+309.1423 	EXP 	word: italic = False
+309.1423 	EXP 	word: font = 'Arial'
+309.1423 	EXP 	word: bold = False
+309.1423 	EXP 	word: font = 'Arial'
+309.1423 	EXP 	word: italic = False
+309.1423 	EXP 	word: height = 0.2
+309.1423 	EXP 	word: height = 0.2
+309.1423 	EXP 	word: height = 0.2
+309.1423 	EXP 	word: text = 'yes'
+309.1423 	EXP 	word: height = 0.2
+309.1423 	EXP 	word: height = 0.2
+309.1423 	EXP 	word: height = 0.2
+309.1423 	EXP 	word: text = 'no'
+310.1557 	DATA 	Keypress: t
+311.3557 	DATA 	Keypress: t
+312.5557 	DATA 	Keypress: t
+312.7252 	EXP 	word: height = 0.2
+312.7252 	EXP 	word: height = 0.2
+312.7252 	EXP 	word: height = 0.2
+312.7252 	EXP 	word: text = 'outgoing'
+312.7252 	EXP 	word: font = 'Arial'
+312.7252 	EXP 	word: bold = False
+312.7252 	EXP 	word: font = 'Arial'
+312.7252 	EXP 	word: italic = False
+312.7252 	EXP 	word: font = 'Arial'
+312.7252 	EXP 	word: bold = False
+312.7252 	EXP 	word: font = 'Arial'
+312.7252 	EXP 	word: italic = False
+312.7252 	EXP 	word: height = 0.2
+312.7252 	EXP 	word: height = 0.2
+312.7252 	EXP 	word: height = 0.2
+312.7252 	EXP 	word: text = 'yes'
+312.7252 	EXP 	word: height = 0.2
+312.7252 	EXP 	word: height = 0.2
+312.7252 	EXP 	word: height = 0.2
+312.7252 	EXP 	word: text = 'no'
+313.7557 	DATA 	Keypress: t
+313.7775 	DATA 	Keypress: 3
+313.8248 	EXP 	word: font = 'Arial'
+313.8248 	EXP 	word: bold = True
+313.8248 	EXP 	word: font = 'Arial'
+313.8248 	EXP 	word: italic = True
+313.8248 	EXP 	word: height = 0.2
+313.8248 	EXP 	word: height = 0.2
+313.8248 	EXP 	word: height = 0.2
+313.8248 	EXP 	word: text = 'yes'
+314.9557 	DATA 	Keypress: t
+316.1556 	DATA 	Keypress: t
+316.3577 	EXP 	word: height = 0.2
+316.3577 	EXP 	word: height = 0.2
+316.3577 	EXP 	word: height = 0.2
+316.3577 	EXP 	word: text = 'daring'
+316.3577 	EXP 	word: font = 'Arial'
+316.3577 	EXP 	word: bold = False
+316.3577 	EXP 	word: font = 'Arial'
+316.3577 	EXP 	word: italic = False
+316.3577 	EXP 	word: font = 'Arial'
+316.3577 	EXP 	word: bold = False
+316.3577 	EXP 	word: font = 'Arial'
+316.3577 	EXP 	word: italic = False
+316.3577 	EXP 	word: height = 0.2
+316.3577 	EXP 	word: height = 0.2
+316.3577 	EXP 	word: height = 0.2
+316.3577 	EXP 	word: text = 'yes'
+316.3577 	EXP 	word: height = 0.2
+316.3577 	EXP 	word: height = 0.2
+316.3577 	EXP 	word: height = 0.2
+316.3577 	EXP 	word: text = 'no'
+317.3557 	DATA 	Keypress: t
+318.1996 	DATA 	Keypress: 3
+318.2581 	EXP 	word: font = 'Arial'
+318.2581 	EXP 	word: bold = True
+318.2581 	EXP 	word: font = 'Arial'
+318.2581 	EXP 	word: italic = True
+318.2581 	EXP 	word: height = 0.2
+318.2581 	EXP 	word: height = 0.2
+318.2581 	EXP 	word: height = 0.2
+318.2581 	EXP 	word: text = 'yes'
+318.5557 	DATA 	Keypress: t
+326.6262 	DATA 	Keypress: t
+326.6267 	DATA 	Keypress: t
+326.6271 	DATA 	Keypress: t
+326.6274 	DATA 	Keypress: t
+326.6278 	DATA 	Keypress: t
+326.6282 	DATA 	Keypress: t
+326.8913 	EXP 	word: height = 0.08
+326.8913 	EXP 	word: height = 0.08
+326.8913 	EXP 	word: height = 0.08
+326.8913 	EXP 	word: text = 'Does this word describe you?'
+326.8913 	EXP 	word: height = 0.2
+326.8913 	EXP 	word: height = 0.2
+326.8913 	EXP 	word: height = 0.2
+326.8913 	EXP 	word: height = 0.2
+326.8913 	EXP 	word: text = 'Does this word describe you?'
+328.6924 	DATA 	Keypress: t
+328.6929 	DATA 	Keypress: t
+328.9245 	EXP 	word: height = 0.2
+328.9245 	EXP 	word: height = 0.2
+328.9245 	EXP 	word: height = 0.2
+328.9245 	EXP 	word: text = 'Are you?'
+328.9245 	EXP 	word: height = 0.08
+329.3556 	DATA 	Keypress: t
+329.4745 	EXP 	word: height = 0.2
+329.4745 	EXP 	word: height = 0.2
+329.4745 	EXP 	word: height = 0.2
+329.4745 	EXP 	word: text = 'obnoxious'
+329.4745 	EXP 	word: font = 'Arial'
+329.4745 	EXP 	word: bold = False
+329.4745 	EXP 	word: font = 'Arial'
+329.4745 	EXP 	word: italic = False
+329.4745 	EXP 	word: font = 'Arial'
+329.4745 	EXP 	word: bold = False
+329.4745 	EXP 	word: font = 'Arial'
+329.4745 	EXP 	word: italic = False
+329.4745 	EXP 	word: height = 0.2
+329.4745 	EXP 	word: height = 0.2
+329.4745 	EXP 	word: height = 0.2
+329.4745 	EXP 	word: text = 'yes'
+329.4745 	EXP 	word: height = 0.2
+329.4745 	EXP 	word: height = 0.2
+329.4745 	EXP 	word: height = 0.2
+329.4745 	EXP 	word: text = 'no'
+329.4745 	EXP 	word: height = 0.08
+329.4745 	EXP 	word: height = 0.08
+329.4745 	EXP 	word: height = 0.08
+329.4745 	EXP 	word: text = 'Are you?'
+330.5556 	DATA 	Keypress: t
+331.7556 	DATA 	Keypress: t
+332.6240 	EXP 	word: height = 0.2
+332.6240 	EXP 	word: height = 0.2
+332.6240 	EXP 	word: height = 0.2
+332.6240 	EXP 	word: text = 'beautiful'
+332.6240 	EXP 	word: font = 'Arial'
+332.6240 	EXP 	word: bold = False
+332.6240 	EXP 	word: font = 'Arial'
+332.6240 	EXP 	word: italic = False
+332.6240 	EXP 	word: font = 'Arial'
+332.6240 	EXP 	word: bold = False
+332.6240 	EXP 	word: font = 'Arial'
+332.6240 	EXP 	word: italic = False
+332.6240 	EXP 	word: height = 0.2
+332.6240 	EXP 	word: height = 0.2
+332.6240 	EXP 	word: height = 0.2
+332.6240 	EXP 	word: text = 'yes'
+332.6240 	EXP 	word: height = 0.2
+332.6240 	EXP 	word: height = 0.2
+332.6240 	EXP 	word: height = 0.2
+332.6240 	EXP 	word: text = 'no'
+332.9556 	DATA 	Keypress: t
+334.1557 	DATA 	Keypress: t
+336.2792 	DATA 	Keypress: 3
+336.2797 	DATA 	Keypress: t
+336.5243 	EXP 	word: height = 0.2
+336.5243 	EXP 	word: height = 0.2
+336.5243 	EXP 	word: height = 0.2
+336.5243 	EXP 	word: text = 'independent'
+336.5243 	EXP 	word: font = 'Arial'
+336.5243 	EXP 	word: bold = False
+336.5243 	EXP 	word: font = 'Arial'
+336.5243 	EXP 	word: italic = False
+336.5243 	EXP 	word: font = 'Arial'
+336.5243 	EXP 	word: bold = False
+336.5243 	EXP 	word: font = 'Arial'
+336.5243 	EXP 	word: italic = False
+336.5243 	EXP 	word: height = 0.2
+336.5243 	EXP 	word: height = 0.2
+336.5243 	EXP 	word: height = 0.2
+336.5243 	EXP 	word: text = 'yes'
+336.5243 	EXP 	word: height = 0.2
+336.5243 	EXP 	word: height = 0.2
+336.5243 	EXP 	word: height = 0.2
+336.5243 	EXP 	word: text = 'no'
+336.5556 	DATA 	Keypress: t
+337.7556 	DATA 	Keypress: t
+338.2146 	DATA 	Keypress: 3
+338.2741 	EXP 	word: font = 'Arial'
+338.2741 	EXP 	word: bold = True
+338.2741 	EXP 	word: font = 'Arial'
+338.2741 	EXP 	word: italic = True
+338.2741 	EXP 	word: height = 0.2
+338.2741 	EXP 	word: height = 0.2
+338.2741 	EXP 	word: height = 0.2
+338.2741 	EXP 	word: text = 'yes'
+338.9556 	DATA 	Keypress: t
+339.7755 	EXP 	word: height = 0.2
+339.7755 	EXP 	word: height = 0.2
+339.7755 	EXP 	word: height = 0.2
+339.7755 	EXP 	word: text = 'healthy'
+339.7755 	EXP 	word: font = 'Arial'
+339.7755 	EXP 	word: bold = False
+339.7755 	EXP 	word: font = 'Arial'
+339.7755 	EXP 	word: italic = False
+339.7755 	EXP 	word: font = 'Arial'
+339.7755 	EXP 	word: bold = False
+339.7755 	EXP 	word: font = 'Arial'
+339.7755 	EXP 	word: italic = False
+339.7755 	EXP 	word: height = 0.2
+339.7755 	EXP 	word: height = 0.2
+339.7755 	EXP 	word: height = 0.2
+339.7755 	EXP 	word: text = 'yes'
+339.7755 	EXP 	word: height = 0.2
+339.7755 	EXP 	word: height = 0.2
+339.7755 	EXP 	word: height = 0.2
+339.7755 	EXP 	word: text = 'no'
+340.1555 	DATA 	Keypress: t
+340.5976 	DATA 	Keypress: 3
+340.6569 	EXP 	word: font = 'Arial'
+340.6569 	EXP 	word: bold = True
+340.6569 	EXP 	word: font = 'Arial'
+340.6569 	EXP 	word: italic = True
+340.6569 	EXP 	word: height = 0.2
+340.6569 	EXP 	word: height = 0.2
+340.6569 	EXP 	word: height = 0.2
+340.6569 	EXP 	word: text = 'yes'
+341.3556 	DATA 	Keypress: t
+344.1952 	DATA 	Keypress: t
+344.1957 	DATA 	Keypress: t
+344.4568 	EXP 	word: height = 0.2
+344.4568 	EXP 	word: height = 0.2
+344.4568 	EXP 	word: height = 0.2
+344.4568 	EXP 	word: text = 'smug'
+344.4568 	EXP 	word: font = 'Arial'
+344.4568 	EXP 	word: bold = False
+344.4568 	EXP 	word: font = 'Arial'
+344.4568 	EXP 	word: italic = False
+344.4568 	EXP 	word: font = 'Arial'
+344.4568 	EXP 	word: bold = False
+344.4568 	EXP 	word: font = 'Arial'
+344.4568 	EXP 	word: italic = False
+344.4568 	EXP 	word: height = 0.2
+344.4568 	EXP 	word: height = 0.2
+344.4568 	EXP 	word: height = 0.2
+344.4568 	EXP 	word: text = 'yes'
+344.4568 	EXP 	word: height = 0.2
+344.4568 	EXP 	word: height = 0.2
+344.4568 	EXP 	word: height = 0.2
+344.4568 	EXP 	word: text = 'no'
+344.9555 	DATA 	Keypress: t
+346.1556 	DATA 	Keypress: t
+347.8991 	DATA 	Keypress: t
+348.1401 	EXP 	word: height = 0.2
+348.1401 	EXP 	word: height = 0.2
+348.1401 	EXP 	word: height = 0.2
+348.1401 	EXP 	word: text = 'negligent'
+348.1401 	EXP 	word: font = 'Arial'
+348.1401 	EXP 	word: bold = False
+348.1401 	EXP 	word: font = 'Arial'
+348.1401 	EXP 	word: italic = False
+348.1401 	EXP 	word: font = 'Arial'
+348.1401 	EXP 	word: bold = False
+348.1401 	EXP 	word: font = 'Arial'
+348.1401 	EXP 	word: italic = False
+348.1401 	EXP 	word: height = 0.2
+348.1401 	EXP 	word: height = 0.2
+348.1401 	EXP 	word: height = 0.2
+348.1401 	EXP 	word: text = 'yes'
+348.1401 	EXP 	word: height = 0.2
+348.1401 	EXP 	word: height = 0.2
+348.1401 	EXP 	word: height = 0.2
+348.1401 	EXP 	word: text = 'no'
+348.5556 	DATA 	Keypress: t
+349.7556 	DATA 	Keypress: t
+349.8514 	DATA 	Keypress: 2
+349.8901 	EXP 	word: font = 'Arial'
+349.8901 	EXP 	word: bold = True
+349.8901 	EXP 	word: font = 'Arial'
+349.8901 	EXP 	word: italic = True
+349.8901 	EXP 	word: height = 0.2
+349.8901 	EXP 	word: height = 0.2
+349.8901 	EXP 	word: height = 0.2
+349.8901 	EXP 	word: text = 'no'
+358.4248 	DATA 	Keypress: t
+358.4254 	DATA 	Keypress: t
+358.4257 	DATA 	Keypress: t
+358.4261 	DATA 	Keypress: t
+358.4266 	DATA 	Keypress: t
+358.4270 	DATA 	Keypress: t
+358.4273 	DATA 	Keypress: t
+358.6896 	EXP 	word: height = 0.08
+358.6896 	EXP 	word: height = 0.08
+358.6896 	EXP 	word: height = 0.08
+358.6896 	EXP 	word: text = 'Does this word describe your friend?'
+358.6896 	EXP 	word: height = 0.2
+358.6896 	EXP 	word: height = 0.2
+358.6896 	EXP 	word: height = 0.2
+358.6896 	EXP 	word: height = 0.2
+358.6896 	EXP 	word: text = 'Does this word describe your friend?'
+360.4908 	DATA 	Keypress: t
+360.5555 	DATA 	Keypress: t
+360.7415 	EXP 	word: height = 0.2
+360.7415 	EXP 	word: height = 0.2
+360.7415 	EXP 	word: height = 0.2
+360.7415 	EXP 	word: text = 'Is your friend?'
+360.7415 	EXP 	word: height = 0.08
+361.2894 	EXP 	word: height = 0.2
+361.2894 	EXP 	word: height = 0.2
+361.2894 	EXP 	word: height = 0.2
+361.2894 	EXP 	word: text = 'unproductive'
+361.2894 	EXP 	word: font = 'Arial'
+361.2894 	EXP 	word: bold = False
+361.2894 	EXP 	word: font = 'Arial'
+361.2894 	EXP 	word: italic = False
+361.2894 	EXP 	word: font = 'Arial'
+361.2894 	EXP 	word: bold = False
+361.2894 	EXP 	word: font = 'Arial'
+361.2894 	EXP 	word: italic = False
+361.2894 	EXP 	word: height = 0.2
+361.2894 	EXP 	word: height = 0.2
+361.2894 	EXP 	word: height = 0.2
+361.2894 	EXP 	word: text = 'yes'
+361.2894 	EXP 	word: height = 0.2
+361.2894 	EXP 	word: height = 0.2
+361.2894 	EXP 	word: height = 0.2
+361.2894 	EXP 	word: text = 'no'
+361.2894 	EXP 	word: height = 0.08
+361.2894 	EXP 	word: height = 0.08
+361.2894 	EXP 	word: height = 0.08
+361.2894 	EXP 	word: text = 'Is your friend?'
+361.7555 	DATA 	Keypress: t
+362.6575 	DATA 	Keypress: 2
+362.7067 	EXP 	word: font = 'Arial'
+362.7067 	EXP 	word: bold = True
+362.7067 	EXP 	word: font = 'Arial'
+362.7067 	EXP 	word: italic = True
+362.7067 	EXP 	word: height = 0.2
+362.7067 	EXP 	word: height = 0.2
+362.7067 	EXP 	word: height = 0.2
+362.7067 	EXP 	word: text = 'no'
+362.9556 	DATA 	Keypress: t
+366.1913 	DATA 	Keypress: t
+366.1918 	DATA 	Keypress: t
+366.4401 	EXP 	word: height = 0.2
+366.4401 	EXP 	word: height = 0.2
+366.4401 	EXP 	word: height = 0.2
+366.4401 	EXP 	word: text = 'dull'
+366.4401 	EXP 	word: font = 'Arial'
+366.4401 	EXP 	word: bold = False
+366.4401 	EXP 	word: font = 'Arial'
+366.4401 	EXP 	word: italic = False
+366.4401 	EXP 	word: font = 'Arial'
+366.4401 	EXP 	word: bold = False
+366.4401 	EXP 	word: font = 'Arial'
+366.4401 	EXP 	word: italic = False
+366.4401 	EXP 	word: height = 0.2
+366.4401 	EXP 	word: height = 0.2
+366.4401 	EXP 	word: height = 0.2
+366.4401 	EXP 	word: text = 'yes'
+366.4401 	EXP 	word: height = 0.2
+366.4401 	EXP 	word: height = 0.2
+366.4401 	EXP 	word: height = 0.2
+366.4401 	EXP 	word: text = 'no'
+366.5556 	DATA 	Keypress: t
+367.3086 	DATA 	Keypress: 2
+367.3559 	EXP 	word: font = 'Arial'
+367.3559 	EXP 	word: bold = True
+367.3559 	EXP 	word: font = 'Arial'
+367.3559 	EXP 	word: italic = True
+367.3559 	EXP 	word: height = 0.2
+367.3559 	EXP 	word: height = 0.2
+367.3559 	EXP 	word: height = 0.2
+367.3559 	EXP 	word: text = 'no'
+367.7555 	DATA 	Keypress: t
+372.3481 	DATA 	Keypress: t
+372.3484 	DATA 	Keypress: t
+372.3487 	DATA 	Keypress: t
+372.5791 	DATA 	Keypress: t
+372.6233 	EXP 	word: height = 0.2
+372.6233 	EXP 	word: height = 0.2
+372.6233 	EXP 	word: height = 0.2
+372.6233 	EXP 	word: text = 'petty'
+372.6233 	EXP 	word: font = 'Arial'
+372.6233 	EXP 	word: bold = False
+372.6233 	EXP 	word: font = 'Arial'
+372.6233 	EXP 	word: italic = False
+372.6233 	EXP 	word: font = 'Arial'
+372.6233 	EXP 	word: bold = False
+372.6233 	EXP 	word: font = 'Arial'
+372.6233 	EXP 	word: italic = False
+372.6233 	EXP 	word: height = 0.2
+372.6233 	EXP 	word: height = 0.2
+372.6233 	EXP 	word: height = 0.2
+372.6233 	EXP 	word: text = 'yes'
+372.6233 	EXP 	word: height = 0.2
+372.6233 	EXP 	word: height = 0.2
+372.6233 	EXP 	word: height = 0.2
+372.6233 	EXP 	word: text = 'no'
+373.7555 	DATA 	Keypress: t
+373.8784 	DATA 	Keypress: 2
+373.9222 	EXP 	word: font = 'Arial'
+373.9222 	EXP 	word: bold = True
+373.9222 	EXP 	word: font = 'Arial'
+373.9222 	EXP 	word: italic = True
+373.9222 	EXP 	word: height = 0.2
+373.9222 	EXP 	word: height = 0.2
+373.9222 	EXP 	word: height = 0.2
+373.9222 	EXP 	word: text = 'no'
+374.9555 	DATA 	Keypress: t
+375.6566 	EXP 	word: height = 0.2
+375.6566 	EXP 	word: height = 0.2
+375.6566 	EXP 	word: height = 0.2
+375.6566 	EXP 	word: text = 'enthusiastic'
+375.6566 	EXP 	word: font = 'Arial'
+375.6566 	EXP 	word: bold = False
+375.6566 	EXP 	word: font = 'Arial'
+375.6566 	EXP 	word: italic = False
+375.6566 	EXP 	word: font = 'Arial'
+375.6566 	EXP 	word: bold = False
+375.6566 	EXP 	word: font = 'Arial'
+375.6566 	EXP 	word: italic = False
+375.6566 	EXP 	word: height = 0.2
+375.6566 	EXP 	word: height = 0.2
+375.6566 	EXP 	word: height = 0.2
+375.6566 	EXP 	word: text = 'yes'
+375.6566 	EXP 	word: height = 0.2
+375.6566 	EXP 	word: height = 0.2
+375.6566 	EXP 	word: height = 0.2
+375.6566 	EXP 	word: text = 'no'
+376.1556 	DATA 	Keypress: t
+376.8165 	DATA 	Keypress: 3
+376.8558 	EXP 	word: font = 'Arial'
+376.8558 	EXP 	word: bold = True
+376.8558 	EXP 	word: font = 'Arial'
+376.8558 	EXP 	word: italic = True
+376.8558 	EXP 	word: height = 0.2
+376.8558 	EXP 	word: height = 0.2
+376.8558 	EXP 	word: height = 0.2
+376.8558 	EXP 	word: text = 'yes'
+377.3554 	DATA 	Keypress: t
+378.8053 	DATA 	Keypress: t
+379.0564 	EXP 	word: height = 0.2
+379.0564 	EXP 	word: height = 0.2
+379.0564 	EXP 	word: height = 0.2
+379.0564 	EXP 	word: text = 'sympathetic'
+379.0564 	EXP 	word: font = 'Arial'
+379.0564 	EXP 	word: bold = False
+379.0564 	EXP 	word: font = 'Arial'
+379.0564 	EXP 	word: italic = False
+379.0564 	EXP 	word: font = 'Arial'
+379.0564 	EXP 	word: bold = False
+379.0564 	EXP 	word: font = 'Arial'
+379.0564 	EXP 	word: italic = False
+379.0564 	EXP 	word: height = 0.2
+379.0564 	EXP 	word: height = 0.2
+379.0564 	EXP 	word: height = 0.2
+379.0564 	EXP 	word: text = 'yes'
+379.0564 	EXP 	word: height = 0.2
+379.0564 	EXP 	word: height = 0.2
+379.0564 	EXP 	word: height = 0.2
+379.0564 	EXP 	word: text = 'no'
+379.7555 	DATA 	Keypress: t
+379.9154 	DATA 	Keypress: 3
+379.9918 	EXP 	word: font = 'Arial'
+379.9918 	EXP 	word: bold = True
+379.9918 	EXP 	word: font = 'Arial'
+379.9918 	EXP 	word: italic = True
+379.9918 	EXP 	word: height = 0.2
+379.9918 	EXP 	word: height = 0.2
+379.9918 	EXP 	word: height = 0.2
+379.9918 	EXP 	word: text = 'yes'
+380.9554 	DATA 	Keypress: t
+382.1555 	DATA 	Keypress: t
+382.2224 	EXP 	word: height = 0.2
+382.2224 	EXP 	word: height = 0.2
+382.2224 	EXP 	word: height = 0.2
+382.2224 	EXP 	word: text = 'gentle'
+382.2224 	EXP 	word: font = 'Arial'
+382.2224 	EXP 	word: bold = False
+382.2224 	EXP 	word: font = 'Arial'
+382.2224 	EXP 	word: italic = False
+382.2224 	EXP 	word: font = 'Arial'
+382.2224 	EXP 	word: bold = False
+382.2224 	EXP 	word: font = 'Arial'
+382.2224 	EXP 	word: italic = False
+382.2224 	EXP 	word: height = 0.2
+382.2224 	EXP 	word: height = 0.2
+382.2224 	EXP 	word: height = 0.2
+382.2224 	EXP 	word: text = 'yes'
+382.2224 	EXP 	word: height = 0.2
+382.2224 	EXP 	word: height = 0.2
+382.2224 	EXP 	word: height = 0.2
+382.2224 	EXP 	word: text = 'no'
+382.9764 	DATA 	Keypress: 3
+383.0219 	EXP 	word: font = 'Arial'
+383.0219 	EXP 	word: bold = True
+383.0219 	EXP 	word: font = 'Arial'
+383.0219 	EXP 	word: italic = True
+383.0219 	EXP 	word: height = 0.2
+383.0219 	EXP 	word: height = 0.2
+383.0219 	EXP 	word: height = 0.2
+383.0219 	EXP 	word: text = 'yes'
+383.3555 	DATA 	Keypress: t
+384.5554 	DATA 	Keypress: t
+392.4924 	DATA 	Keypress: t
+392.4929 	DATA 	Keypress: t
+392.4933 	DATA 	Keypress: t
+392.4937 	DATA 	Keypress: t
+392.4940 	DATA 	Keypress: t
+392.4944 	DATA 	Keypress: t
+392.7751 	EXP 	word: height = 0.08
+392.7751 	EXP 	word: height = 0.08
+392.7751 	EXP 	word: height = 0.08
+392.7751 	EXP 	word: text = 'Does this word describe you?'
+392.7751 	EXP 	word: height = 0.2
+392.7751 	EXP 	word: height = 0.2
+392.7751 	EXP 	word: height = 0.2
+392.7751 	EXP 	word: height = 0.2
+392.7751 	EXP 	word: text = 'Does this word describe you?'
+394.5759 	DATA 	Keypress: t
+394.5764 	DATA 	Keypress: t
+394.8224 	EXP 	word: height = 0.2
+394.8224 	EXP 	word: height = 0.2
+394.8224 	EXP 	word: height = 0.2
+394.8224 	EXP 	word: text = 'Are you?'
+394.8224 	EXP 	word: height = 0.08
+395.3724 	EXP 	word: height = 0.2
+395.3724 	EXP 	word: height = 0.2
+395.3724 	EXP 	word: height = 0.2
+395.3724 	EXP 	word: text = 'awful'
+395.3724 	EXP 	word: font = 'Arial'
+395.3724 	EXP 	word: bold = False
+395.3724 	EXP 	word: font = 'Arial'
+395.3724 	EXP 	word: italic = False
+395.3724 	EXP 	word: font = 'Arial'
+395.3724 	EXP 	word: bold = False
+395.3724 	EXP 	word: font = 'Arial'
+395.3724 	EXP 	word: italic = False
+395.3724 	EXP 	word: height = 0.2
+395.3724 	EXP 	word: height = 0.2
+395.3724 	EXP 	word: height = 0.2
+395.3724 	EXP 	word: text = 'yes'
+395.3724 	EXP 	word: height = 0.2
+395.3724 	EXP 	word: height = 0.2
+395.3724 	EXP 	word: height = 0.2
+395.3724 	EXP 	word: text = 'no'
+395.3724 	EXP 	word: height = 0.08
+395.3724 	EXP 	word: height = 0.08
+395.3724 	EXP 	word: height = 0.08
+395.3724 	EXP 	word: text = 'Are you?'
+395.3741 	DATA 	Keypress: t
+396.3365 	DATA 	Keypress: 2
+396.3714 	EXP 	word: font = 'Arial'
+396.3714 	EXP 	word: bold = True
+396.3714 	EXP 	word: font = 'Arial'
+396.3714 	EXP 	word: italic = True
+396.3714 	EXP 	word: height = 0.2
+396.3714 	EXP 	word: height = 0.2
+396.3714 	EXP 	word: height = 0.2
+396.3714 	EXP 	word: text = 'no'
+396.5554 	DATA 	Keypress: t
+397.7554 	DATA 	Keypress: t
+401.0734 	DATA 	Keypress: t
+401.0740 	DATA 	Keypress: t
+401.3237 	EXP 	word: height = 0.2
+401.3237 	EXP 	word: height = 0.2
+401.3237 	EXP 	word: height = 0.2
+401.3237 	EXP 	word: text = 'cheerful'
+401.3237 	EXP 	word: font = 'Arial'
+401.3237 	EXP 	word: bold = False
+401.3237 	EXP 	word: font = 'Arial'
+401.3237 	EXP 	word: italic = False
+401.3237 	EXP 	word: font = 'Arial'
+401.3237 	EXP 	word: bold = False
+401.3237 	EXP 	word: font = 'Arial'
+401.3237 	EXP 	word: italic = False
+401.3237 	EXP 	word: height = 0.2
+401.3237 	EXP 	word: height = 0.2
+401.3237 	EXP 	word: height = 0.2
+401.3237 	EXP 	word: text = 'yes'
+401.3237 	EXP 	word: height = 0.2
+401.3237 	EXP 	word: height = 0.2
+401.3237 	EXP 	word: height = 0.2
+401.3237 	EXP 	word: text = 'no'
+401.3553 	DATA 	Keypress: t
+402.5553 	DATA 	Keypress: t
+403.7555 	DATA 	Keypress: t
+406.5803 	DATA 	Keypress: t
+406.5807 	DATA 	Keypress: t
+406.8214 	EXP 	word: height = 0.2
+406.8214 	EXP 	word: height = 0.2
+406.8214 	EXP 	word: height = 0.2
+406.8214 	EXP 	word: text = 'sincere'
+406.8214 	EXP 	word: font = 'Arial'
+406.8214 	EXP 	word: bold = False
+406.8214 	EXP 	word: font = 'Arial'
+406.8214 	EXP 	word: italic = False
+406.8214 	EXP 	word: font = 'Arial'
+406.8214 	EXP 	word: bold = False
+406.8214 	EXP 	word: font = 'Arial'
+406.8214 	EXP 	word: italic = False
+406.8214 	EXP 	word: height = 0.2
+406.8214 	EXP 	word: height = 0.2
+406.8214 	EXP 	word: height = 0.2
+406.8214 	EXP 	word: text = 'yes'
+406.8214 	EXP 	word: height = 0.2
+406.8214 	EXP 	word: height = 0.2
+406.8214 	EXP 	word: height = 0.2
+406.8214 	EXP 	word: text = 'no'
+407.3554 	DATA 	Keypress: t
+408.3945 	DATA 	Keypress: 3
+408.4383 	EXP 	word: font = 'Arial'
+408.4383 	EXP 	word: bold = True
+408.4383 	EXP 	word: font = 'Arial'
+408.4383 	EXP 	word: italic = True
+408.4383 	EXP 	word: height = 0.2
+408.4383 	EXP 	word: height = 0.2
+408.4383 	EXP 	word: height = 0.2
+408.4383 	EXP 	word: text = 'yes'
+408.5553 	DATA 	Keypress: t
+409.7555 	DATA 	Keypress: t
+409.9382 	EXP 	word: height = 0.2
+409.9382 	EXP 	word: height = 0.2
+409.9382 	EXP 	word: height = 0.2
+409.9382 	EXP 	word: text = 'cruel'
+409.9382 	EXP 	word: font = 'Arial'
+409.9382 	EXP 	word: bold = False
+409.9382 	EXP 	word: font = 'Arial'
+409.9382 	EXP 	word: italic = False
+409.9382 	EXP 	word: font = 'Arial'
+409.9382 	EXP 	word: bold = False
+409.9382 	EXP 	word: font = 'Arial'
+409.9382 	EXP 	word: italic = False
+409.9382 	EXP 	word: height = 0.2
+409.9382 	EXP 	word: height = 0.2
+409.9382 	EXP 	word: height = 0.2
+409.9382 	EXP 	word: text = 'yes'
+409.9382 	EXP 	word: height = 0.2
+409.9382 	EXP 	word: height = 0.2
+409.9382 	EXP 	word: height = 0.2
+409.9382 	EXP 	word: text = 'no'
+410.9554 	DATA 	Keypress: t
+411.0003 	DATA 	Keypress: 2
+411.0545 	EXP 	word: font = 'Arial'
+411.0545 	EXP 	word: bold = True
+411.0545 	EXP 	word: font = 'Arial'
+411.0545 	EXP 	word: italic = True
+411.0545 	EXP 	word: height = 0.2
+411.0545 	EXP 	word: height = 0.2
+411.0545 	EXP 	word: height = 0.2
+411.0545 	EXP 	word: text = 'no'
+412.1555 	DATA 	Keypress: t
+413.2046 	EXP 	word: height = 0.2
+413.2046 	EXP 	word: height = 0.2
+413.2046 	EXP 	word: height = 0.2
+413.2046 	EXP 	word: text = 'good'
+413.2046 	EXP 	word: font = 'Arial'
+413.2046 	EXP 	word: bold = False
+413.2046 	EXP 	word: font = 'Arial'
+413.2046 	EXP 	word: italic = False
+413.2046 	EXP 	word: font = 'Arial'
+413.2046 	EXP 	word: bold = False
+413.2046 	EXP 	word: font = 'Arial'
+413.2046 	EXP 	word: italic = False
+413.2046 	EXP 	word: height = 0.2
+413.2046 	EXP 	word: height = 0.2
+413.2046 	EXP 	word: height = 0.2
+413.2046 	EXP 	word: text = 'yes'
+413.2046 	EXP 	word: height = 0.2
+413.2046 	EXP 	word: height = 0.2
+413.2046 	EXP 	word: height = 0.2
+413.2046 	EXP 	word: text = 'no'
+413.3554 	DATA 	Keypress: t
+414.5544 	DATA 	Keypress: 3
+414.5660 	DATA 	Keypress: t
+414.6043 	EXP 	word: font = 'Arial'
+414.6043 	EXP 	word: bold = True
+414.6043 	EXP 	word: font = 'Arial'
+414.6043 	EXP 	word: italic = True
+414.6043 	EXP 	word: height = 0.2
+414.6043 	EXP 	word: height = 0.2
+414.6043 	EXP 	word: height = 0.2
+414.6043 	EXP 	word: text = 'yes'
+416.0945 	DATA 	Keypress: t
+416.3545 	EXP 	word: height = 0.2
+416.3545 	EXP 	word: height = 0.2
+416.3545 	EXP 	word: height = 0.2
+416.3545 	EXP 	word: text = 'prejudiced'
+416.3545 	EXP 	word: font = 'Arial'
+416.3545 	EXP 	word: bold = False
+416.3545 	EXP 	word: font = 'Arial'
+416.3545 	EXP 	word: italic = False
+416.3545 	EXP 	word: font = 'Arial'
+416.3545 	EXP 	word: bold = False
+416.3545 	EXP 	word: font = 'Arial'
+416.3545 	EXP 	word: italic = False
+416.3545 	EXP 	word: height = 0.2
+416.3545 	EXP 	word: height = 0.2
+416.3545 	EXP 	word: height = 0.2
+416.3545 	EXP 	word: text = 'yes'
+416.3545 	EXP 	word: height = 0.2
+416.3545 	EXP 	word: height = 0.2
+416.3545 	EXP 	word: height = 0.2
+416.3545 	EXP 	word: text = 'no'
+416.9553 	DATA 	Keypress: t
+418.1555 	DATA 	Keypress: t
+418.3955 	DATA 	Keypress: 2
+418.4377 	EXP 	word: font = 'Arial'
+418.4377 	EXP 	word: bold = True
+418.4377 	EXP 	word: font = 'Arial'
+418.4377 	EXP 	word: italic = True
+418.4377 	EXP 	word: height = 0.2
+418.4377 	EXP 	word: height = 0.2
+418.4377 	EXP 	word: height = 0.2
+418.4377 	EXP 	word: text = 'no'
+426.6063 	DATA 	Keypress: t
+426.6068 	DATA 	Keypress: t
+426.6072 	DATA 	Keypress: t
+426.6075 	DATA 	Keypress: t
+426.6079 	DATA 	Keypress: t
+426.6083 	DATA 	Keypress: t
+426.6086 	DATA 	Keypress: t
+426.8706 	EXP 	word: height = 0.08
+426.8706 	EXP 	word: height = 0.08
+426.8706 	EXP 	word: height = 0.08
+426.8706 	EXP 	word: text = 'Does this word describe you?'
+426.8706 	EXP 	word: height = 0.2
+426.8706 	EXP 	word: height = 0.2
+426.8706 	EXP 	word: height = 0.2
+426.8706 	EXP 	word: height = 0.2
+426.8706 	EXP 	word: text = 'Does this word describe you?'
+428.6716 	DATA 	Keypress: t
+428.9039 	EXP 	word: height = 0.2
+428.9039 	EXP 	word: height = 0.2
+428.9039 	EXP 	word: height = 0.2
+428.9039 	EXP 	word: text = 'Are you?'
+428.9039 	EXP 	word: height = 0.08
+429.1891 	DATA 	Keypress: t
+429.4374 	EXP 	word: height = 0.2
+429.4374 	EXP 	word: height = 0.2
+429.4374 	EXP 	word: height = 0.2
+429.4374 	EXP 	word: text = 'responsible'
+429.4374 	EXP 	word: font = 'Arial'
+429.4374 	EXP 	word: bold = False
+429.4374 	EXP 	word: font = 'Arial'
+429.4374 	EXP 	word: italic = False
+429.4374 	EXP 	word: font = 'Arial'
+429.4374 	EXP 	word: bold = False
+429.4374 	EXP 	word: font = 'Arial'
+429.4374 	EXP 	word: italic = False
+429.4374 	EXP 	word: height = 0.2
+429.4374 	EXP 	word: height = 0.2
+429.4374 	EXP 	word: height = 0.2
+429.4374 	EXP 	word: text = 'yes'
+429.4374 	EXP 	word: height = 0.2
+429.4374 	EXP 	word: height = 0.2
+429.4374 	EXP 	word: height = 0.2
+429.4374 	EXP 	word: text = 'no'
+429.4374 	EXP 	word: height = 0.08
+429.4374 	EXP 	word: height = 0.08
+429.4374 	EXP 	word: height = 0.08
+429.4374 	EXP 	word: text = 'Are you?'
+430.1553 	DATA 	Keypress: t
+430.5273 	DATA 	Keypress: 3
+430.5902 	EXP 	word: font = 'Arial'
+430.5902 	EXP 	word: bold = True
+430.5902 	EXP 	word: font = 'Arial'
+430.5902 	EXP 	word: italic = True
+430.5902 	EXP 	word: height = 0.2
+430.5902 	EXP 	word: height = 0.2
+430.5902 	EXP 	word: height = 0.2
+430.5902 	EXP 	word: text = 'yes'
+431.3554 	DATA 	Keypress: t
+433.7957 	DATA 	Keypress: t
+433.7963 	DATA 	Keypress: t
+434.0372 	EXP 	word: height = 0.2
+434.0372 	EXP 	word: height = 0.2
+434.0372 	EXP 	word: height = 0.2
+434.0372 	EXP 	word: text = 'jolly'
+434.0372 	EXP 	word: font = 'Arial'
+434.0372 	EXP 	word: bold = False
+434.0372 	EXP 	word: font = 'Arial'
+434.0372 	EXP 	word: italic = False
+434.0372 	EXP 	word: font = 'Arial'
+434.0372 	EXP 	word: bold = False
+434.0372 	EXP 	word: font = 'Arial'
+434.0372 	EXP 	word: italic = False
+434.0372 	EXP 	word: height = 0.2
+434.0372 	EXP 	word: height = 0.2
+434.0372 	EXP 	word: height = 0.2
+434.0372 	EXP 	word: text = 'yes'
+434.0372 	EXP 	word: height = 0.2
+434.0372 	EXP 	word: height = 0.2
+434.0372 	EXP 	word: height = 0.2
+434.0372 	EXP 	word: text = 'no'
+434.9543 	DATA 	Keypress: t
+435.7644 	DATA 	Keypress: 3
+435.8207 	EXP 	word: font = 'Arial'
+435.8207 	EXP 	word: bold = True
+435.8207 	EXP 	word: font = 'Arial'
+435.8207 	EXP 	word: italic = True
+435.8207 	EXP 	word: height = 0.2
+435.8207 	EXP 	word: height = 0.2
+435.8207 	EXP 	word: height = 0.2
+435.8207 	EXP 	word: text = 'yes'
+436.1553 	DATA 	Keypress: t
+438.9953 	DATA 	Keypress: t
+438.9958 	DATA 	Keypress: t
+439.2705 	EXP 	word: height = 0.2
+439.2705 	EXP 	word: height = 0.2
+439.2705 	EXP 	word: height = 0.2
+439.2705 	EXP 	word: text = 'elegant'
+439.2705 	EXP 	word: font = 'Arial'
+439.2705 	EXP 	word: bold = False
+439.2705 	EXP 	word: font = 'Arial'
+439.2705 	EXP 	word: italic = False
+439.2705 	EXP 	word: font = 'Arial'
+439.2705 	EXP 	word: bold = False
+439.2705 	EXP 	word: font = 'Arial'
+439.2705 	EXP 	word: italic = False
+439.2705 	EXP 	word: height = 0.2
+439.2705 	EXP 	word: height = 0.2
+439.2705 	EXP 	word: height = 0.2
+439.2705 	EXP 	word: text = 'yes'
+439.2705 	EXP 	word: height = 0.2
+439.2705 	EXP 	word: height = 0.2
+439.2705 	EXP 	word: height = 0.2
+439.2705 	EXP 	word: text = 'no'
+439.7543 	DATA 	Keypress: t
+440.9543 	DATA 	Keypress: t
+443.3549 	DATA 	Keypress: t
+443.3555 	DATA 	Keypress: t
+443.6037 	EXP 	word: height = 0.2
+443.6037 	EXP 	word: height = 0.2
+443.6037 	EXP 	word: height = 0.2
+443.6037 	EXP 	word: text = 'flawed'
+443.6037 	EXP 	word: font = 'Arial'
+443.6037 	EXP 	word: bold = False
+443.6037 	EXP 	word: font = 'Arial'
+443.6037 	EXP 	word: italic = False
+443.6037 	EXP 	word: font = 'Arial'
+443.6037 	EXP 	word: bold = False
+443.6037 	EXP 	word: font = 'Arial'
+443.6037 	EXP 	word: italic = False
+443.6037 	EXP 	word: height = 0.2
+443.6037 	EXP 	word: height = 0.2
+443.6037 	EXP 	word: height = 0.2
+443.6037 	EXP 	word: text = 'yes'
+443.6037 	EXP 	word: height = 0.2
+443.6037 	EXP 	word: height = 0.2
+443.6037 	EXP 	word: height = 0.2
+443.6037 	EXP 	word: text = 'no'
+444.5544 	DATA 	Keypress: t
+445.3394 	DATA 	Keypress: 2
+445.4054 	EXP 	word: font = 'Arial'
+445.4054 	EXP 	word: bold = True
+445.4054 	EXP 	word: font = 'Arial'
+445.4054 	EXP 	word: italic = True
+445.4054 	EXP 	word: height = 0.2
+445.4054 	EXP 	word: height = 0.2
+445.4054 	EXP 	word: height = 0.2
+445.4054 	EXP 	word: text = 'no'
+445.7543 	DATA 	Keypress: t
+446.8037 	EXP 	word: height = 0.2
+446.8037 	EXP 	word: height = 0.2
+446.8037 	EXP 	word: height = 0.2
+446.8037 	EXP 	word: text = 'toxic'
+446.8037 	EXP 	word: font = 'Arial'
+446.8037 	EXP 	word: bold = False
+446.8037 	EXP 	word: font = 'Arial'
+446.8037 	EXP 	word: italic = False
+446.8037 	EXP 	word: font = 'Arial'
+446.8037 	EXP 	word: bold = False
+446.8037 	EXP 	word: font = 'Arial'
+446.8037 	EXP 	word: italic = False
+446.8037 	EXP 	word: height = 0.2
+446.8037 	EXP 	word: height = 0.2
+446.8037 	EXP 	word: height = 0.2
+446.8037 	EXP 	word: text = 'yes'
+446.8037 	EXP 	word: height = 0.2
+446.8037 	EXP 	word: height = 0.2
+446.8037 	EXP 	word: height = 0.2
+446.8037 	EXP 	word: text = 'no'
+446.9544 	DATA 	Keypress: t
+447.7804 	DATA 	Keypress: 2
+447.8196 	EXP 	word: font = 'Arial'
+447.8196 	EXP 	word: bold = True
+447.8196 	EXP 	word: font = 'Arial'
+447.8196 	EXP 	word: italic = True
+447.8196 	EXP 	word: height = 0.2
+447.8196 	EXP 	word: height = 0.2
+447.8196 	EXP 	word: height = 0.2
+447.8196 	EXP 	word: text = 'no'
+448.1544 	DATA 	Keypress: t
+449.8653 	DATA 	Keypress: t
+450.1201 	EXP 	word: height = 0.2
+450.1201 	EXP 	word: height = 0.2
+450.1201 	EXP 	word: height = 0.2
+450.1201 	EXP 	word: text = 'cowardly'
+450.1201 	EXP 	word: font = 'Arial'
+450.1201 	EXP 	word: bold = False
+450.1201 	EXP 	word: font = 'Arial'
+450.1201 	EXP 	word: italic = False
+450.1201 	EXP 	word: font = 'Arial'
+450.1201 	EXP 	word: bold = False
+450.1201 	EXP 	word: font = 'Arial'
+450.1201 	EXP 	word: italic = False
+450.1201 	EXP 	word: height = 0.2
+450.1201 	EXP 	word: height = 0.2
+450.1201 	EXP 	word: height = 0.2
+450.1201 	EXP 	word: text = 'yes'
+450.1201 	EXP 	word: height = 0.2
+450.1201 	EXP 	word: height = 0.2
+450.1201 	EXP 	word: height = 0.2
+450.1201 	EXP 	word: text = 'no'
+450.5543 	DATA 	Keypress: t
+451.6343 	DATA 	Keypress: 2
+451.6872 	EXP 	word: font = 'Arial'
+451.6872 	EXP 	word: bold = True
+451.6872 	EXP 	word: font = 'Arial'
+451.6872 	EXP 	word: italic = True
+451.6872 	EXP 	word: height = 0.2
+451.6872 	EXP 	word: height = 0.2
+451.6872 	EXP 	word: height = 0.2
+451.6872 	EXP 	word: text = 'no'
+451.7543 	DATA 	Keypress: t
+460.3894 	DATA 	Keypress: t
+460.3899 	DATA 	Keypress: t
+460.3903 	DATA 	Keypress: t
+460.3906 	DATA 	Keypress: t
+460.3910 	DATA 	Keypress: t
+460.3913 	DATA 	Keypress: t
+460.3917 	DATA 	Keypress: t
+460.6531 	EXP 	word: height = 0.08
+460.6531 	EXP 	word: height = 0.08
+460.6531 	EXP 	word: height = 0.08
+460.6531 	EXP 	word: text = 'Does this word describe your friend?'
+460.6531 	EXP 	word: height = 0.2
+460.6531 	EXP 	word: height = 0.2
+460.6531 	EXP 	word: height = 0.2
+460.6531 	EXP 	word: height = 0.2
+460.6531 	EXP 	word: text = 'Does this word describe your friend?'
+462.4542 	DATA 	Keypress: t
+462.5542 	DATA 	Keypress: t
+462.6862 	EXP 	word: height = 0.2
+462.6862 	EXP 	word: height = 0.2
+462.6862 	EXP 	word: height = 0.2
+462.6862 	EXP 	word: text = 'Is your friend?'
+462.6862 	EXP 	word: height = 0.08
+463.2194 	EXP 	word: height = 0.2
+463.2194 	EXP 	word: height = 0.2
+463.2194 	EXP 	word: height = 0.2
+463.2194 	EXP 	word: text = 'reasonable'
+463.2194 	EXP 	word: font = 'Arial'
+463.2194 	EXP 	word: bold = False
+463.2194 	EXP 	word: font = 'Arial'
+463.2194 	EXP 	word: italic = False
+463.2194 	EXP 	word: font = 'Arial'
+463.2194 	EXP 	word: bold = False
+463.2194 	EXP 	word: font = 'Arial'
+463.2194 	EXP 	word: italic = False
+463.2194 	EXP 	word: height = 0.2
+463.2194 	EXP 	word: height = 0.2
+463.2194 	EXP 	word: height = 0.2
+463.2194 	EXP 	word: text = 'yes'
+463.2194 	EXP 	word: height = 0.2
+463.2194 	EXP 	word: height = 0.2
+463.2194 	EXP 	word: height = 0.2
+463.2194 	EXP 	word: text = 'no'
+463.2194 	EXP 	word: height = 0.08
+463.2194 	EXP 	word: height = 0.08
+463.2194 	EXP 	word: height = 0.08
+463.2194 	EXP 	word: text = 'Is your friend?'
+463.7543 	DATA 	Keypress: t
+464.1843 	DATA 	Keypress: 3
+464.2361 	EXP 	word: font = 'Arial'
+464.2361 	EXP 	word: bold = True
+464.2361 	EXP 	word: font = 'Arial'
+464.2361 	EXP 	word: italic = True
+464.2361 	EXP 	word: height = 0.2
+464.2361 	EXP 	word: height = 0.2
+464.2361 	EXP 	word: height = 0.2
+464.2361 	EXP 	word: text = 'yes'
+464.9543 	DATA 	Keypress: t
+467.2280 	DATA 	Keypress: t
+467.3542 	DATA 	Keypress: t
+467.4861 	EXP 	word: height = 0.2
+467.4861 	EXP 	word: height = 0.2
+467.4861 	EXP 	word: height = 0.2
+467.4861 	EXP 	word: text = 'dreadful'
+467.4861 	EXP 	word: font = 'Arial'
+467.4861 	EXP 	word: bold = False
+467.4861 	EXP 	word: font = 'Arial'
+467.4861 	EXP 	word: italic = False
+467.4861 	EXP 	word: font = 'Arial'
+467.4861 	EXP 	word: bold = False
+467.4861 	EXP 	word: font = 'Arial'
+467.4861 	EXP 	word: italic = False
+467.4861 	EXP 	word: height = 0.2
+467.4861 	EXP 	word: height = 0.2
+467.4861 	EXP 	word: height = 0.2
+467.4861 	EXP 	word: text = 'yes'
+467.4861 	EXP 	word: height = 0.2
+467.4861 	EXP 	word: height = 0.2
+467.4861 	EXP 	word: height = 0.2
+467.4861 	EXP 	word: text = 'no'
+468.5543 	DATA 	Keypress: t
+469.1632 	DATA 	Keypress: 2
+469.2193 	EXP 	word: font = 'Arial'
+469.2193 	EXP 	word: bold = True
+469.2193 	EXP 	word: font = 'Arial'
+469.2193 	EXP 	word: italic = True
+469.2193 	EXP 	word: height = 0.2
+469.2193 	EXP 	word: height = 0.2
+469.2193 	EXP 	word: height = 0.2
+469.2193 	EXP 	word: text = 'no'
+469.7543 	DATA 	Keypress: t
+470.8856 	EXP 	word: height = 0.2
+470.8856 	EXP 	word: height = 0.2
+470.8856 	EXP 	word: height = 0.2
+470.8856 	EXP 	word: text = 'unkind'
+470.8856 	EXP 	word: font = 'Arial'
+470.8856 	EXP 	word: bold = False
+470.8856 	EXP 	word: font = 'Arial'
+470.8856 	EXP 	word: italic = False
+470.8856 	EXP 	word: font = 'Arial'
+470.8856 	EXP 	word: bold = False
+470.8856 	EXP 	word: font = 'Arial'
+470.8856 	EXP 	word: italic = False
+470.8856 	EXP 	word: height = 0.2
+470.8856 	EXP 	word: height = 0.2
+470.8856 	EXP 	word: height = 0.2
+470.8856 	EXP 	word: text = 'yes'
+470.8856 	EXP 	word: height = 0.2
+470.8856 	EXP 	word: height = 0.2
+470.8856 	EXP 	word: height = 0.2
+470.8856 	EXP 	word: text = 'no'
+470.9542 	DATA 	Keypress: t
+471.8804 	DATA 	Keypress: 2
+471.9385 	EXP 	word: font = 'Arial'
+471.9385 	EXP 	word: bold = True
+471.9385 	EXP 	word: font = 'Arial'
+471.9385 	EXP 	word: italic = True
+471.9385 	EXP 	word: height = 0.2
+471.9385 	EXP 	word: height = 0.2
+471.9385 	EXP 	word: height = 0.2
+471.9385 	EXP 	word: text = 'no'
+472.1542 	DATA 	Keypress: t
+474.4177 	DATA 	Keypress: t
+474.5543 	DATA 	Keypress: t
+474.6859 	EXP 	word: height = 0.2
+474.6859 	EXP 	word: height = 0.2
+474.6859 	EXP 	word: height = 0.2
+474.6859 	EXP 	word: text = 'skilled'
+474.6859 	EXP 	word: font = 'Arial'
+474.6859 	EXP 	word: bold = False
+474.6859 	EXP 	word: font = 'Arial'
+474.6859 	EXP 	word: italic = False
+474.6859 	EXP 	word: font = 'Arial'
+474.6859 	EXP 	word: bold = False
+474.6859 	EXP 	word: font = 'Arial'
+474.6859 	EXP 	word: italic = False
+474.6859 	EXP 	word: height = 0.2
+474.6859 	EXP 	word: height = 0.2
+474.6859 	EXP 	word: height = 0.2
+474.6859 	EXP 	word: text = 'yes'
+474.6859 	EXP 	word: height = 0.2
+474.6859 	EXP 	word: height = 0.2
+474.6859 	EXP 	word: height = 0.2
+474.6859 	EXP 	word: text = 'no'
+475.7543 	DATA 	Keypress: t
+476.5623 	DATA 	Keypress: 3
+476.6028 	EXP 	word: font = 'Arial'
+476.6028 	EXP 	word: bold = True
+476.6028 	EXP 	word: font = 'Arial'
+476.6028 	EXP 	word: italic = True
+476.6028 	EXP 	word: height = 0.2
+476.6028 	EXP 	word: height = 0.2
+476.6028 	EXP 	word: height = 0.2
+476.6028 	EXP 	word: text = 'yes'
+476.9542 	DATA 	Keypress: t
+478.9179 	DATA 	Keypress: t
+479.1691 	EXP 	word: height = 0.2
+479.1691 	EXP 	word: height = 0.2
+479.1691 	EXP 	word: height = 0.2
+479.1691 	EXP 	word: text = 'rotten'
+479.1691 	EXP 	word: font = 'Arial'
+479.1691 	EXP 	word: bold = False
+479.1691 	EXP 	word: font = 'Arial'
+479.1691 	EXP 	word: italic = False
+479.1691 	EXP 	word: font = 'Arial'
+479.1691 	EXP 	word: bold = False
+479.1691 	EXP 	word: font = 'Arial'
+479.1691 	EXP 	word: italic = False
+479.1691 	EXP 	word: height = 0.2
+479.1691 	EXP 	word: height = 0.2
+479.1691 	EXP 	word: height = 0.2
+479.1691 	EXP 	word: text = 'yes'
+479.1691 	EXP 	word: height = 0.2
+479.1691 	EXP 	word: height = 0.2
+479.1691 	EXP 	word: height = 0.2
+479.1691 	EXP 	word: text = 'no'
+479.3542 	DATA 	Keypress: t
+480.0683 	DATA 	Keypress: 2
+480.1199 	EXP 	word: font = 'Arial'
+480.1199 	EXP 	word: bold = True
+480.1199 	EXP 	word: font = 'Arial'
+480.1199 	EXP 	word: italic = True
+480.1199 	EXP 	word: height = 0.2
+480.1199 	EXP 	word: height = 0.2
+480.1199 	EXP 	word: height = 0.2
+480.1199 	EXP 	word: text = 'no'
+480.5543 	DATA 	Keypress: t
+482.4374 	DATA 	Keypress: t
+482.7024 	EXP 	word: height = 0.2
+482.7024 	EXP 	word: height = 0.2
+482.7024 	EXP 	word: height = 0.2
+482.7024 	EXP 	word: text = 'respectable'
+482.7024 	EXP 	word: font = 'Arial'
+482.7024 	EXP 	word: bold = False
+482.7024 	EXP 	word: font = 'Arial'
+482.7024 	EXP 	word: italic = False
+482.7024 	EXP 	word: font = 'Arial'
+482.7024 	EXP 	word: bold = False
+482.7024 	EXP 	word: font = 'Arial'
+482.7024 	EXP 	word: italic = False
+482.7024 	EXP 	word: height = 0.2
+482.7024 	EXP 	word: height = 0.2
+482.7024 	EXP 	word: height = 0.2
+482.7024 	EXP 	word: text = 'yes'
+482.7024 	EXP 	word: height = 0.2
+482.7024 	EXP 	word: height = 0.2
+482.7024 	EXP 	word: height = 0.2
+482.7024 	EXP 	word: text = 'no'
+482.9542 	DATA 	Keypress: t
+483.5942 	DATA 	Keypress: 3
+483.6356 	EXP 	word: font = 'Arial'
+483.6356 	EXP 	word: bold = True
+483.6356 	EXP 	word: font = 'Arial'
+483.6356 	EXP 	word: italic = True
+483.6356 	EXP 	word: height = 0.2
+483.6356 	EXP 	word: height = 0.2
+483.6356 	EXP 	word: height = 0.2
+483.6356 	EXP 	word: text = 'yes'
+484.1542 	DATA 	Keypress: t
+492.9541 	DATA 	Keypress: t
+492.9547 	DATA 	Keypress: t
+492.9550 	DATA 	Keypress: t
+492.9554 	DATA 	Keypress: t
+492.9557 	DATA 	Keypress: t
+492.9561 	DATA 	Keypress: t
+492.9565 	DATA 	Keypress: t
+493.2189 	EXP 	word: height = 0.08
+493.2189 	EXP 	word: height = 0.08
+493.2189 	EXP 	word: height = 0.08
+493.2189 	EXP 	word: text = 'Is the word positive?'
+493.2189 	EXP 	word: height = 0.2
+493.2189 	EXP 	word: height = 0.2
+493.2189 	EXP 	word: height = 0.2
+493.2189 	EXP 	word: height = 0.2
+493.2189 	EXP 	word: text = 'Is the word positive?'
+495.0196 	DATA 	Keypress: t
+495.0201 	DATA 	Keypress: t
+495.2525 	EXP 	word: height = 0.2
+495.2525 	EXP 	word: height = 0.2
+495.2525 	EXP 	word: height = 0.2
+495.2525 	EXP 	word: text = 'Is this word positive?'
+495.2525 	EXP 	word: height = 0.08
+495.8023 	EXP 	word: height = 0.2
+495.8023 	EXP 	word: height = 0.2
+495.8023 	EXP 	word: height = 0.2
+495.8023 	EXP 	word: text = 'sinful'
+495.8023 	EXP 	word: font = 'Arial'
+495.8023 	EXP 	word: bold = False
+495.8023 	EXP 	word: font = 'Arial'
+495.8023 	EXP 	word: italic = False
+495.8023 	EXP 	word: font = 'Arial'
+495.8023 	EXP 	word: bold = False
+495.8023 	EXP 	word: font = 'Arial'
+495.8023 	EXP 	word: italic = False
+495.8023 	EXP 	word: height = 0.2
+495.8023 	EXP 	word: height = 0.2
+495.8023 	EXP 	word: height = 0.2
+495.8023 	EXP 	word: text = 'yes'
+495.8023 	EXP 	word: height = 0.2
+495.8023 	EXP 	word: height = 0.2
+495.8023 	EXP 	word: height = 0.2
+495.8023 	EXP 	word: text = 'no'
+495.8023 	EXP 	word: height = 0.08
+495.8023 	EXP 	word: height = 0.08
+495.8023 	EXP 	word: height = 0.08
+495.8023 	EXP 	word: text = 'Is this word positive?'
+496.1542 	DATA 	Keypress: t
+496.9072 	DATA 	Keypress: 2
+496.9709 	EXP 	word: font = 'Arial'
+496.9709 	EXP 	word: bold = True
+496.9709 	EXP 	word: font = 'Arial'
+496.9709 	EXP 	word: italic = True
+496.9709 	EXP 	word: height = 0.2
+496.9709 	EXP 	word: height = 0.2
+496.9709 	EXP 	word: height = 0.2
+496.9709 	EXP 	word: text = 'no'
+497.3542 	DATA 	Keypress: t
+498.6632 	DATA 	Keypress: t
+498.9184 	EXP 	word: height = 0.2
+498.9184 	EXP 	word: height = 0.2
+498.9184 	EXP 	word: height = 0.2
+498.9184 	EXP 	word: text = 'gloomy'
+498.9184 	EXP 	word: font = 'Arial'
+498.9184 	EXP 	word: bold = False
+498.9184 	EXP 	word: font = 'Arial'
+498.9184 	EXP 	word: italic = False
+498.9184 	EXP 	word: font = 'Arial'
+498.9184 	EXP 	word: bold = False
+498.9184 	EXP 	word: font = 'Arial'
+498.9184 	EXP 	word: italic = False
+498.9184 	EXP 	word: height = 0.2
+498.9184 	EXP 	word: height = 0.2
+498.9184 	EXP 	word: height = 0.2
+498.9184 	EXP 	word: text = 'yes'
+498.9184 	EXP 	word: height = 0.2
+498.9184 	EXP 	word: height = 0.2
+498.9184 	EXP 	word: height = 0.2
+498.9184 	EXP 	word: text = 'no'
+499.7541 	DATA 	Keypress: t
+500.9542 	DATA 	Keypress: t
+500.9941 	DATA 	Keypress: 2
+501.0355 	EXP 	word: font = 'Arial'
+501.0355 	EXP 	word: bold = True
+501.0355 	EXP 	word: font = 'Arial'
+501.0355 	EXP 	word: italic = True
+501.0355 	EXP 	word: height = 0.2
+501.0355 	EXP 	word: height = 0.2
+501.0355 	EXP 	word: height = 0.2
+501.0355 	EXP 	word: text = 'no'
+503.2463 	DATA 	Keypress: t
+503.3542 	DATA 	Keypress: t
+503.5014 	EXP 	word: height = 0.2
+503.5014 	EXP 	word: height = 0.2
+503.5014 	EXP 	word: height = 0.2
+503.5014 	EXP 	word: text = 'mature'
+503.5014 	EXP 	word: font = 'Arial'
+503.5014 	EXP 	word: bold = False
+503.5014 	EXP 	word: font = 'Arial'
+503.5014 	EXP 	word: italic = False
+503.5014 	EXP 	word: font = 'Arial'
+503.5014 	EXP 	word: bold = False
+503.5014 	EXP 	word: font = 'Arial'
+503.5014 	EXP 	word: italic = False
+503.5014 	EXP 	word: height = 0.2
+503.5014 	EXP 	word: height = 0.2
+503.5014 	EXP 	word: height = 0.2
+503.5014 	EXP 	word: text = 'yes'
+503.5014 	EXP 	word: height = 0.2
+503.5014 	EXP 	word: height = 0.2
+503.5014 	EXP 	word: height = 0.2
+503.5014 	EXP 	word: text = 'no'
+504.3272 	DATA 	Keypress: 3
+504.3873 	EXP 	word: font = 'Arial'
+504.3873 	EXP 	word: bold = True
+504.3873 	EXP 	word: font = 'Arial'
+504.3873 	EXP 	word: italic = True
+504.3873 	EXP 	word: height = 0.2
+504.3873 	EXP 	word: height = 0.2
+504.3873 	EXP 	word: height = 0.2
+504.3873 	EXP 	word: text = 'yes'
+504.5542 	DATA 	Keypress: t
+505.7542 	DATA 	Keypress: t
+508.6498 	DATA 	Keypress: t
+508.6503 	DATA 	Keypress: t
+508.9180 	EXP 	word: height = 0.2
+508.9180 	EXP 	word: height = 0.2
+508.9180 	EXP 	word: height = 0.2
+508.9180 	EXP 	word: text = 'spiteful'
+508.9180 	EXP 	word: font = 'Arial'
+508.9180 	EXP 	word: bold = False
+508.9180 	EXP 	word: font = 'Arial'
+508.9180 	EXP 	word: italic = False
+508.9180 	EXP 	word: font = 'Arial'
+508.9180 	EXP 	word: bold = False
+508.9180 	EXP 	word: font = 'Arial'
+508.9180 	EXP 	word: italic = False
+508.9180 	EXP 	word: height = 0.2
+508.9180 	EXP 	word: height = 0.2
+508.9180 	EXP 	word: height = 0.2
+508.9180 	EXP 	word: text = 'yes'
+508.9180 	EXP 	word: height = 0.2
+508.9180 	EXP 	word: height = 0.2
+508.9180 	EXP 	word: height = 0.2
+508.9180 	EXP 	word: text = 'no'
+509.3541 	DATA 	Keypress: t
+510.5541 	DATA 	Keypress: t
+512.8395 	DATA 	Keypress: t
+512.9543 	DATA 	Keypress: t
+513.0849 	EXP 	word: height = 0.2
+513.0849 	EXP 	word: height = 0.2
+513.0849 	EXP 	word: height = 0.2
+513.0849 	EXP 	word: text = 'strong'
+513.0849 	EXP 	word: font = 'Arial'
+513.0849 	EXP 	word: bold = False
+513.0849 	EXP 	word: font = 'Arial'
+513.0849 	EXP 	word: italic = False
+513.0849 	EXP 	word: font = 'Arial'
+513.0849 	EXP 	word: bold = False
+513.0849 	EXP 	word: font = 'Arial'
+513.0849 	EXP 	word: italic = False
+513.0849 	EXP 	word: height = 0.2
+513.0849 	EXP 	word: height = 0.2
+513.0849 	EXP 	word: height = 0.2
+513.0849 	EXP 	word: text = 'yes'
+513.0849 	EXP 	word: height = 0.2
+513.0849 	EXP 	word: height = 0.2
+513.0849 	EXP 	word: height = 0.2
+513.0849 	EXP 	word: text = 'no'
+514.0560 	DATA 	Keypress: 3
+514.1176 	EXP 	word: font = 'Arial'
+514.1176 	EXP 	word: bold = True
+514.1176 	EXP 	word: font = 'Arial'
+514.1176 	EXP 	word: italic = True
+514.1176 	EXP 	word: height = 0.2
+514.1176 	EXP 	word: height = 0.2
+514.1176 	EXP 	word: height = 0.2
+514.1176 	EXP 	word: text = 'yes'
+514.1541 	DATA 	Keypress: t
+515.3542 	DATA 	Keypress: t
+516.5843 	EXP 	word: height = 0.2
+516.5843 	EXP 	word: height = 0.2
+516.5843 	EXP 	word: height = 0.2
+516.5843 	EXP 	word: text = 'generous'
+516.5843 	EXP 	word: font = 'Arial'
+516.5843 	EXP 	word: bold = False
+516.5843 	EXP 	word: font = 'Arial'
+516.5843 	EXP 	word: italic = False
+516.5843 	EXP 	word: font = 'Arial'
+516.5843 	EXP 	word: bold = False
+516.5843 	EXP 	word: font = 'Arial'
+516.5843 	EXP 	word: italic = False
+516.5843 	EXP 	word: height = 0.2
+516.5843 	EXP 	word: height = 0.2
+516.5843 	EXP 	word: height = 0.2
+516.5843 	EXP 	word: text = 'yes'
+516.5843 	EXP 	word: height = 0.2
+516.5843 	EXP 	word: height = 0.2
+516.5843 	EXP 	word: height = 0.2
+516.5843 	EXP 	word: text = 'no'
+516.5857 	DATA 	Keypress: t
+517.3742 	DATA 	Keypress: 3
+517.4174 	EXP 	word: font = 'Arial'
+517.4174 	EXP 	word: bold = True
+517.4174 	EXP 	word: font = 'Arial'
+517.4174 	EXP 	word: italic = True
+517.4174 	EXP 	word: height = 0.2
+517.4174 	EXP 	word: height = 0.2
+517.4174 	EXP 	word: height = 0.2
+517.4174 	EXP 	word: text = 'yes'
+517.7542 	DATA 	Keypress: t
+518.9541 	DATA 	Keypress: t
+519.0838 	EXP 	instruct_text: height = 0.08
+519.0838 	EXP 	instruct_text: height = 0.08
+519.0838 	EXP 	instruct_text: height = 0.08
+519.0838 	EXP 	instruct_text: text = 'Great job! You have finished this run'
+521.8849 	DATA 	Keypress: t
+521.8855 	DATA 	Keypress: t
+522.1467 	EXP 	window1: mouseVisible = True
