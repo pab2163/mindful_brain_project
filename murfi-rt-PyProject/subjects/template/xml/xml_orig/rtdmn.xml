@@ -14,7 +14,7 @@
   <option name="port">           15000 </option>
   <option name="saveImages">     true </option>
   <option name="receiveImages">  true </option>
-  <option name="onlyReadMoCo">  false </option>
+  <option name="onlyReadMoCo">  true </option>
 </scanner>
 
 <infoserver>

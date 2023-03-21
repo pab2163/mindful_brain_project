@@ -1,6 +1,6 @@
 
 # FEAT version number
-set fmri(version) 3.15
+set fmri(version) 6.0
 
 # Are we in MELODIC?
 set fmri(inmelodic) 1
