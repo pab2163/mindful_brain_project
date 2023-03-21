@@ -173,7 +173,7 @@ ggplot(round2, aes(x = valence, y = arousal)) +
     geom_point()
 
 # try anticlustering
-covariates = dplyr::select(round2,valence_abs, log_freq) %>% mutate_all(scale)
+covariates = dplyr::select(round2,valence_abs, log_freq, emotionality, meaning) %>% mutate_all(scale)
 
 #c = scale(round2[, c("valence", "freq_BNC")])
 
@@ -196,21 +196,25 @@ summary(lm(data = final_selection, meaning ~ condition))
 ggplot(final_selection, aes(x = condition, y = valence_abs)) +
     geom_boxplot(width = 0.1) +
     geom_jitter(width = 0.2) +
+    stat_summary(fun.data = 'mean_cl_boot', color = 'red') +
     labs(y = 'Valence\nDifference from 4 (neutral)')
 
 ggplot(final_selection, aes(x = condition, y = log_freq)) +
     geom_boxplot(width = 0.1) +
     geom_jitter(width = 0.2) +
+    stat_summary(fun.data = 'mean_cl_boot', color = 'red') +
     labs(y = 'Word frequency (per million)') 
 
 ggplot(final_selection, aes(x = condition, y = emotionality)) +
     geom_boxplot(width = 0.1) +
     geom_jitter(width = 0.2) +
-    labs(y = 'Word frequency (per million)') 
+    stat_summary(fun.data = 'mean_cl_boot', color = 'red') +
+    labs(y = 'Word emotionality (per million)') 
 
 ggplot(final_selection, aes(x = condition, y = meaning)) +
     geom_boxplot(width = 0.1) +
     geom_jitter(width = 0.2) +
+    stat_summary(fun.data = 'mean_cl_boot', color = 'red') +
     labs(y = 'Understanding of word meaning')
 ```
 

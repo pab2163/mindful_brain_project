@@ -1,0 +1,40 @@
+---
+title: "Choose Best ISI"
+author: "Paul A. Bloom"
+date: "2023-01-26"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+library(tidyverse)
+
+files = Sys.glob('stim_results/*/NSD*')
+
+b='stim_results/maxconsec-2_isimax-10_blockdur-32-seed-1/NSD_sums_maxconsec-2_isimax-10_blockdur-32'
+
+parse_isi_results = function(filepath){
+    result = read.csv(filepath, header = 0) %>%
+        mutate(, normalized_sd = as.numeric(sub(" =.*", "", V1)),
+               filename = filepath) %>%
+        tidyr::separate(col = filename, sep = '_', into = c('a', 'maxconsec', 'isimax', 'blockdur')) %>%
+        dplyr::select(normalized_sd, maxconsec, isimax, blockdur) %>%
+        mutate(maxconsec = ifelse(grepl('2', maxconsec), '2 events', '3 events'),
+               isimax = -1*parse_number(isimax))
+               #blockdur = ifelse(grepl('32', blockdur), '32s', '35s'))
+    
+    return(result)
+}
+
+
+isi_results_compiled = files %>%
+    map_dfr(.f=parse_isi_results)
+
+
+ggplot(isi_results_compiled, aes(x = maxconsec, y = normalized_sd, color = factor(isimax))) +
+    facet_grid(~blockdur) +
+    geom_boxplot()
+```

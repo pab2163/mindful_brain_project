@@ -1,5 +1,5 @@
 num_runs = 10
-run_dur = 24
+run_dur = 30
 rest_dur = 8
 rest_periods = num_runs + 1
 
