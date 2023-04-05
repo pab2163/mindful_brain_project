@@ -4,3 +4,6 @@ murfi-rt-PyProject/subjects/sub-test/
 *__pycache__/
 *.pyo 
 *.pyc
+*/data/
+self_reference/reMIND/
+*/pilot_data
