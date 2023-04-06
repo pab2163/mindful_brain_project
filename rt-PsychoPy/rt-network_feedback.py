@@ -107,6 +107,8 @@ expInfo['No_of_ROIs'] = 2
 expInfo['Level_1_2_3'] = 1
 expInfo['Run_Time'] = 120
 expInfo['pda_outlier_threshold']=2
+circles_move_with_hits=False
+circle_radius_shrink_with_hits=True
 num_pda_outliers=0
 # Baseline time before feedback (seconds)
 BaseLineTime=30 
@@ -793,8 +795,12 @@ while continueRoutine and routineTimer.getTime() > 0:
                 ball.pos = (0,0)
 
                 # for each hit, position of target circle moves away from the middle (up to a point)
-                if np.abs(target_circles[i].pos[1]) + target_circles[i].radius + 0.1 < 1:
-                    target_circles[i].pos=((target_circles[i].pos[0]*1.1), (target_circles[i].pos[1]*1.1))
+                if circles_move_with_hits:
+                    if np.abs(target_circles[i].pos[1]) + target_circles[i].radius + 0.1 < 1:
+                        target_circles[i].pos=((target_circles[i].pos[0]*1.1), (target_circles[i].pos[1]*1.1))
+                if circle_radius_shrink_with_hits:
+                    target_circles[i].radius = np.maximum(target_circles[i].radius*.9, 0.03)
+
                 target_circles[i].fillColor='white'
 
 
