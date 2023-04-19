@@ -30,6 +30,7 @@ then
     mkdir ${subject_dir}$subject/xml
     mkdir ${subject_dir}$subject/rest
     mkdir ${subject_dir}$subject/fsfs
+    mkdir ${subject_dir}$subject/qc # DP ADD 4/12/23
     #mkdir ${subject_dir}$subject/scripts76
     echo "++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++"
     echo "created all directories for "$subject

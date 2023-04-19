@@ -28,7 +28,7 @@ template_dmn='DMNax_brainmaskero2_lps.nii.gz'
 template_cen='CENa_brainmaskero2_lps.nii.gz'
 SCRIPT_PATH=$(dirname $(realpath -s $0))
 template_lps_path=${SCRIPT_PATH}/MNI152_T1_2mm_LPS_brain
-echo $template_lps_path
+#echo $template_lps_path
 
 # Set paths & check that computers are properly connected with scanner via Ethernet
 if [ ${step} = setup ]
@@ -71,7 +71,7 @@ then
     latest_ref="${latest_ref::-4}"
     echo ${latest_ref}
     bet ${latest_ref} ${latest_ref}_brain -R -f 0.4 -g 0 -m # changed from -f 0.6
-    slices ${latest_ref}_brain ${latest_ref} -o $subj_dir/xfm/2vol_skullstrip_check.gif
+    slices ${latest_ref} ${latest_ref}_brain_mask  -o $subj_dir/qc/register1_bet_2vol_skullstrip_check.gif #DP UPDATE 4/12/23
 
     # CCCB version (direct flirt from subject functional to MNI structural: step 1)
     # because the images that we get from Prisma through Vsend are in LPS orientation we need to change both our MNI mean image and our mni masks accordingly: 
@@ -87,7 +87,7 @@ then
     flirt -in MNI152_T1_2mm_LPS_brain.nii.gz -ref ${latest_ref}_brain -out $subj_dir/xfm/epi2reg/mnilps2studyref_brain -omat $subj_dir/xfm/epi2reg/mnilps2studyref.mat
 
     # make registration image for inspection, and open it
-    slices $subj_dir/xfm/epi2reg/mnilps2studyref_brain ${latest_ref}_brain -o $subj_dir/xfm/MNI2_warp_to_2vol_native_check.gif
+    slices $subj_dir/xfm/epi2reg/mnilps2studyref_brain ${latest_ref}_brain -o $subj_dir/qc/register2_flirt_MNI2_warp_to_2vol_native_check.gif #DP UPDATE name 4/12/23
 
     # If paths to personalized masks exist, then run MURFI. Otherwise, prompt user about whether to use template masks instead
     dmn_mni_thresh="../subjects/${subj}/mask/mni/dmn_mni.nii.gz"
@@ -137,7 +137,8 @@ clear
     export MURFI_SUBJECTS_DIR="${absolute_path}/subjects/"
     export MURFI_SUBJECT_NAME=$subj 
 
-    singularity exec --bind home/rt:/home/rt murfi2.sif murfi -f $subj_dir_absolute/xml/rtdmn.xml
+    singularity exec --bind home/rt:/home/rt --bind /usr/local/fsl:/usr/local/fsl murfi2.sif murfi -f $subj_dir_absolute/xml/rtdmn.xml
+    #singularity exec murfi2.sif murfi -f $subj_dir_absolute/xml/rtdmn.xml
 fi
 
 
@@ -224,7 +225,8 @@ clear
 
         # Mean of the first functional run is used as the "standard space" reference for ICA
         reference_vol_for_ica=$subj_dir_absolute/rest/func_reference_volume.nii.gz
-        fslmaths $rest_runA_filename -Tmean $reference_vol_for_ica
+        fslmaths $rest_runA_filename -Tmedian $reference_vol_for_ica #DP TEST MEDIAN? 4/12/23
+        slices ${reference_vol_for_ica} -o $subj_dir/qc/extract_mean_ref_check.gif #DP UPDATE 4/12/23
 
         # figure out how many volumes of resting state data there were to be used in ICA
         rest_runA_volumes=$(fslnvols $rest_runA_filename)
@@ -321,13 +323,13 @@ else
     echo "Error: no ICA directory found for ${subj}. Exiting now..."
     exit 0
 fi
-correlfile=$ica_directory/template_rsn_correlations_with_ICs.txt
+correlfile=${ica_directory}/template_rsn_correlations_with_ICs.txt
 touch ${correlfile}
 
 template_networks='template_networks.nii.gz'
 
 # Merge template files to 1 image
-fslmerge -tr ${template_networks} ${template_dmn} ${template_cen} 1
+#fslmerge -tr ${template_networks} ${template_dmn} ${template_cen} 1 # DP don't need to run every time?
 
 echo $ica_version
 
@@ -598,7 +600,7 @@ then
     latest_ref="${latest_ref::-4}"
     echo ${latest_ref}
     bet ${latest_ref} ${latest_ref}_brain -R -f 0.4 -g 0 -m # changed from -f 0.6
-    slices ${latest_ref}_brain ${latest_ref} -o $subj_dir/xfm/2vol_skullstrip_check.gif
+    slices ${latest_ref}_brain ${latest_ref} -o $subj_dir/qc/2vol_skullstrip_check.gif
 
     rm -r $subj_dir/xfm/epi2reg
     mkdir $subj_dir/xfm/epi2reg
@@ -629,7 +631,7 @@ then
     fi
 
     # make registration image for inspection, and open it
-    slices $subj_dir/xfm/epi2reg/rest2studyref_brain ${latest_ref}_brain -o $subj_dir/xfm/rest_warp_to_2vol_native_check.gif
+    slices $subj_dir/xfm/epi2reg/rest2studyref_brain ${latest_ref}_brain -o $subj_dir/qc/rest_warp_to_2vol_native_check.gif
 
     # If paths to personalized masks exist, then run MURFI. Otherwise, prompt user about whether to use template masks instead
     dmn_thresh="../subjects/${subj}/mask/dmn_native_rest.nii.gz"
