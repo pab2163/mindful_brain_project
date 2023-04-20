@@ -175,7 +175,6 @@ ggplot(round2, aes(x = valence, y = arousal)) +
 # try anticlustering
 covariates = dplyr::select(round2,valence_abs, log_freq, emotionality, meaning) %>% mutate_all(scale)
 
-#c = scale(round2[, c("valence", "freq_BNC")])
 
 
 round2$matches = anticlust::matching(covariates,
