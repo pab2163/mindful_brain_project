@@ -125,7 +125,6 @@ summary(lm(data = final_selection, meaning ~ condition))
 ```
 
 
-
 ```{r}
 final_selection %>%
     pivot_longer(c(valence_abs, emotionality, log_freq, meaning)) %>%
