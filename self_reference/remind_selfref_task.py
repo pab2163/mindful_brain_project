@@ -34,7 +34,7 @@ block_order = pd.DataFrame({'block': np.arange(10),
     'block_type': block_versions[0]})
 
 # Store info about the experiment session
-expName = 'task-selfref_run-01'  # from the Builder filename that created this script
+expName = 'task-selfref'  # from the Builder filename that created this script
 expInfo = {'participant':'', 'session':1, 'run':1, 'friend_name':''}
 dlg = gui.DlgFromDict(dictionary=expInfo, title=expName)
 if dlg.OK == False: core.quit()  # user pressed cancel
@@ -48,7 +48,10 @@ if not os.path.exists(f"{_thisDir}/reMIND/{expInfo['participant']}"):
     os.mkdir(f"{_thisDir}/reMIND/{expInfo['participant']}")
 
 # pull word order for the participant
-participant_number = int(expInfo['participant'][-3:])
+# remove string from participant ID to get just the #
+participant_number = int(expInfo['participant'].replace('remind', '')[3:])
+
+# pull corresponding file
 word_order_file = f"word_list_splits/word_order_{participant_number}.csv"
 word_order = pd.read_csv(word_order_file)
 word_list = word_order[word_order.run == expInfo['run']]
@@ -61,6 +64,17 @@ practice_words = ['quiet', 'loud', 'cautious', 'wild', 'ordinary', 'precise']
 
 print(negative_words)
 print(positive_words)
+
+if participant_number % 4 in [0,1]:
+    timing_templates = ['0005', '0014', '0067', '0072']
+elif participant_number % 4 in [2,3]:
+    timing_templates = ['0072', '0067', '0014', '0005']
+
+pos = np.loadtxt(f"stim_timing_template_files/stimes_pos_{timing_templates[expInfo['run']]}.1D")
+neg = np.loadtxt(f"stim_timing_template_files/stimes_neg_{timing_templates[expInfo['run']]}.1D")
+
+all_block_timings = make_run_timings(pos = pos, neg = neg)
+print(all_block_timings)
 
 # output file setm
 filename = f"{_thisDir}/reMIND/{expInfo['participant']}/reMIND_ses{expInfo['session']}_task-selfref_run_{expInfo['run']}"
@@ -240,22 +254,24 @@ def run_fixation(duration):
     # present fixation
     fix_stim.draw()
     win.flip()
+    # record info to outfile
+    write_to_tsv([expInfo['participant'],expInfo['session'], expInfo['date'], 
+                    expName, expInfo['frameRate'], time.time(), triggerClock.getTime(), 'fixation', 1, '', '','', '', ''])
     fix_time = core.StaticPeriod(screenHz=expInfo['frameRate'])
     fix_time.start(duration) 
     fix_time.complete() 
-    write_to_tsv([expInfo['participant'],expInfo['session'], expInfo['date'], 
-                    expName, expInfo['frameRate'], time.time(), triggerClock.getTime(), 'fixation', 1, '', '','', '', ''])
     event.clearEvents(eventType='keyboard')
 
 '''
 Run a single trial
 '''
 def run_trial(trial_type, fixation_duration, practice=False, block_type=''):
-    
     # fixation at beginning of trial
     run_fixation(duration=fixation_duration)
     # present word 
     trial_clock.reset()
+
+    # determine the word to display
     if not practice:
         if trial_type == 'negative':
             trial_word = negative_words.pop(0)
@@ -328,11 +344,13 @@ def run_practice():
     instruct_text.draw()
     win.flip()
     wait_for_keypress(key_list=['space'])
+    event.clearEvents(eventType='keyboard')
     instruct_text.setText('Just to make sure everything is working with the buttons.\
         \n\nPlease press your index finger to answer NO')
     instruct_text.draw()
     win.flip()
     wait_for_keypress(key_list=['2'])
+    event.clearEvents(eventType='keyboard')
     instruct_text.setText('Just to make sure everything is working with the buttons.\
         \n\nPlease press your middle finger to answer YES')
     instruct_text.draw()
@@ -370,12 +388,19 @@ run_instructions()
 # only run practice if it is run 1
 if expInfo['run'] == 1:
     run_practice()
+
+# trigger - timings are relative to this
 get_trigger()
 
+# Run each baseline fixation period & block
 for block_num in range(block_order.shape[0]):
     run_fixation(8)
     run_block(n_trials = 6, block_type = block_order.block_type[block_num], block_number = block_num)
 
+# Final fixation block at the end of the task
+run_fixation(8)
+
+# Shut down
 instruct_text.setText('Great job! You have finished this run')
 instruct_text.draw()
 win.flip()
