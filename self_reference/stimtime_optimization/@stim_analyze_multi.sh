@@ -24,9 +24,9 @@ set pattern     = 'norm. std.'  # search pattern for normalized stdev vals
 # ------------------------------------------------------------
 # recreate $outdir each time
 
-foreach max_consec ( 2 3)
-   foreach max_isi ( 6 8 10)
-      foreach run_length (32 35)
+foreach max_consec ( 2 3 )
+   foreach max_isi ( 6 8 )
+      foreach run_length (30 32 36)
          set seed  = $1       # initial random seed
          set outdir=stim_results/maxconsec-${max_consec}_isimax-${max_isi}_blockdur-${run_length}-seed-$seed
          # file to store norm. std. dev. sums in
@@ -65,7 +65,7 @@ foreach max_consec ( 2 3)
                -prefix stimes.$iter               \
                -max_consec $max_consec $max_consec                         \
                -add_timing_class ISI1 0.5 -1 $max_isi		 \
-               -add_timing_class word 2.5 \
+               -add_timing_class word 2.5 2.5 2.5 basis=GAM \
                -add_stim_class pos_${iter}  3  word  ISI1               \
                -add_stim_class neg_${iter}  3  word  ISI1               \
                -show_timing_stats \
