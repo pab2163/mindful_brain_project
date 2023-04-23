@@ -34,10 +34,21 @@ block_order = pd.DataFrame({'block': np.arange(10),
     'block_type': block_versions[0]})
 
 # Store info about the experiment session
-expName = 'task-selfref_run-01'  # from the Builder filename that created this script
-expInfo = {'participant':'', 'session':1, 'run':1, 'friend_name':''}
-dlg = gui.DlgFromDict(dictionary=expInfo, title=expName)
-if dlg.OK == False: core.quit()  # user pressed cancel
+expName = 'task-selfref' 
+
+# Make sure user fills out session field of dialog box
+expInfo = {'participant':'', 'session':['', 'loc', 'nf'], 'run':1, 'friend_name':''}
+while expInfo['session'] not in ['loc', 'nf'] or expInfo['run'] not in ['1','2']:
+    expInfo['session'] = ['', 'loc', 'nf']
+    expInfo['run'] = ['', '1', '2']
+    dlg = gui.DlgFromDict(dictionary=expInfo, title=expName,
+        labels = {'participant': 'Participant ID (remind####)', 
+                  'run': 'Run (1 or 2)', 
+                  'session': 'Session',
+                  'friend_name': 'Friend Name'},
+                  order = ['participant', 'session', 'run', 'friend_name'])
+    if dlg.OK == False: 
+        core.quit()  # user pressed cancel
 expInfo['date'] = data.getDateStr()  # add a simple timestamp
 expInfo['expName'] = expName
 
@@ -48,28 +59,61 @@ if not os.path.exists(f"{_thisDir}/reMIND/{expInfo['participant']}"):
     os.mkdir(f"{_thisDir}/reMIND/{expInfo['participant']}")
 
 # pull word order for the participant
-participant_number = int(expInfo['participant'][-3:])
+# remove string from participant ID to get just the #
+participant_number = int(expInfo['participant'].replace('remind', '')[-3:])
+print(participant_number)
+
+# pull corresponding file
 word_order_file = f"word_list_splits/word_order_{participant_number}.csv"
 word_order = pd.read_csv(word_order_file)
-word_list = word_order[word_order.run == expInfo['run']]
 
+# internal run numbers 1-4 based on session (loc vs. nf) and run within session (1 vs. 2)
+if int(expInfo['run']) == 1:
+    if expInfo['session'] == 'loc':
+        run_num = 1
+    elif expInfo['session'] == 'nf':
+        run_num = 3
+if int(expInfo['run']) == 2:
+    if expInfo['session'] == 'loc':
+        run_num = 2
+    elif expInfo['session'] == 'nf':
+        run_num = 4
+
+# Pull words specifically for this run & split into positive/negative lists
+word_list = word_order[word_order.run == run_num]
 negative_words = list(word_list.word[word_list.valence_condition == '-'])
 positive_words = list(word_list.word[word_list.valence_condition == '+']) 
+
+# Shuffle the order of positive/negative word lists within the run
 random.shuffle(positive_words)
 random.shuffle(negative_words)
+
+# for practice in very first run
 practice_words = ['quiet', 'loud', 'cautious', 'wild', 'ordinary', 'precise']
 
-print(negative_words)
-print(positive_words)
+# Counterbalanec ISI orders
+if participant_number % 4 in [0,1]:
+    timing_templates = ['0005', '0014', '0067', '0072']
+elif participant_number % 4 in [2,3]:
+    timing_templates = ['0072', '0067', '0014', '0005']
+
+# load timings for positive & negative word depending on run
+pos = np.loadtxt(f"stim_timing_template_files/stimes_pos_{timing_templates[run_num-1]}.1D")
+neg = np.loadtxt(f"stim_timing_template_files/stimes_neg_{timing_templates[run_num-1]}.1D")
+
+all_block_timings = make_run_timings(pos = pos, neg = neg)
+print(all_block_timings)
 
 # output file setm
-filename = f"{_thisDir}/reMIND/{expInfo['participant']}/reMIND_ses{expInfo['session']}_task-selfref_run_{expInfo['run']}"
+filename = f"{_thisDir}/reMIND/{expInfo['participant']}/{expInfo['participant']}_ses-{expInfo['session']}_task-selfref_run-{expInfo['run']}"
 
+# Function to write a line of data to the output file
 def write_to_tsv(row_info:list):
     with open(filename+'_events.csv', 'a') as csvfile:
         stim_writer = csv.writer(csvfile, delimiter=',', quotechar='|', quoting=csv.QUOTE_MINIMAL)
         stim_writer.writerow(row_info)
  
+# Header column (following this, very important to make sure rows are written matching this column order)
 write_to_tsv(['participant','session', 'date', 'exp_name', 'frame_rate', 'absolute_time', 'trigger_time', 'trial_type', 'trial_num', 'word', 'response_time','reponse_key', 'condition', 'word_valence'])
 
 # Data file name stem = absolute path + name; later add .psyexp, .csv, .log, etc
@@ -240,22 +284,24 @@ def run_fixation(duration):
     # present fixation
     fix_stim.draw()
     win.flip()
+    # record info to outfile
+    write_to_tsv([expInfo['participant'],expInfo['session'], expInfo['date'], 
+                    expName, expInfo['frameRate'], time.time(), triggerClock.getTime(), 'fixation', 1, '', '','', '', ''])
     fix_time = core.StaticPeriod(screenHz=expInfo['frameRate'])
     fix_time.start(duration) 
     fix_time.complete() 
-    write_to_tsv([expInfo['participant'],expInfo['session'], expInfo['date'], 
-                    expName, expInfo['frameRate'], time.time(), triggerClock.getTime(), 'fixation', 1, '', '','', '', ''])
     event.clearEvents(eventType='keyboard')
 
 '''
 Run a single trial
 '''
 def run_trial(trial_type, fixation_duration, practice=False, block_type=''):
-    
     # fixation at beginning of trial
     run_fixation(duration=fixation_duration)
     # present word 
     trial_clock.reset()
+
+    # determine the word to display
     if not practice:
         if trial_type == 'negative':
             trial_word = negative_words.pop(0)
@@ -315,6 +361,7 @@ def run_trial(trial_type, fixation_duration, practice=False, block_type=''):
                 core.quit()      
 
 
+# Run the practice (only for first run of localizer) / with instructions & checking keys
 def run_practice():
     instruct_text.setText(f'The 3 types of YES or NO questions you will see will be:\
 \n\n1) Does a word describe you?\
@@ -328,11 +375,13 @@ def run_practice():
     instruct_text.draw()
     win.flip()
     wait_for_keypress(key_list=['space'])
+    event.clearEvents(eventType='keyboard')
     instruct_text.setText('Just to make sure everything is working with the buttons.\
         \n\nPlease press your index finger to answer NO')
     instruct_text.draw()
     win.flip()
     wait_for_keypress(key_list=['2'])
+    event.clearEvents(eventType='keyboard')
     instruct_text.setText('Just to make sure everything is working with the buttons.\
         \n\nPlease press your middle finger to answer YES')
     instruct_text.draw()
@@ -344,7 +393,7 @@ def run_practice():
     win.flip()
     wait_for_keypress(key_list=['space'])
 
-    # Run actual practice trials
+    # Run actual practice trials (6 of them, 2 of each type)
     run_block(n_trials = 0, block_type = 'self', block_number = 0, practice = True)
     run_trial(trial_type = 'self', fixation_duration=1, practice = True, block_type = 'self')
     run_trial(trial_type = 'self', fixation_duration=1, practice = True, block_type = 'self')
@@ -367,15 +416,22 @@ Actually run everything!
 
 run_instructions()
 
-# only run practice if it is run 1
-if expInfo['run'] == 1:
+# only run practice if it is run 1 of localizer session
+if expInfo['run'] == '1' and expInfo['session'] == 'loc':
     run_practice()
+
+# trigger - timings are relative to this
 get_trigger()
 
+# Run each baseline fixation period & block
 for block_num in range(block_order.shape[0]):
     run_fixation(8)
     run_block(n_trials = 6, block_type = block_order.block_type[block_num], block_number = block_num)
 
+# Final fixation block at the end of the task
+run_fixation(8)
+
+# Shut down
 instruct_text.setText('Great job! You have finished this run')
 instruct_text.draw()
 win.flip()
