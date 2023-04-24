@@ -428,7 +428,7 @@ instruct_text = visual.TextStim(win=win, ori=0, name='instruct_text',
 
 # Initialize components for Routine "finish"
 finishClock = core.Clock()
-text_5 = visual.TextStim(win=win, ori=0, name='text_5',
+thank_you_end_run_text = visual.TextStim(win=win, ori=0, name='thank_you_end_run_text',
     text=u'thank you!',    font=u'Arial',
     pos=[0, 0], height=0.1, wrapWidth=None,
     color=u'white', colorSpace='rgb', opacity=1,
@@ -903,7 +903,7 @@ routineTimer.add(5.000000)
 # update component parameters for each repeat
 # keep track of which components have finished
 finishComponents = []
-finishComponents.append(text_5)
+finishComponents.append(thank_you_end_run_text)
 for thisComponent in finishComponents:
     if hasattr(thisComponent, 'status'):
         thisComponent.status = NOT_STARTED
@@ -927,14 +927,14 @@ while continueRoutine and routineTimer.getTime() > 0:
     frameN = frameN + 1  # number of completed frames (so 0 is the first frame)
     # update/draw components on each frame
     
-    # *text_5* updates
-    if t >= 0.0 and text_5.status == NOT_STARTED:
+    # *thank_you_end_run_text* updates
+    if t >= 0.0 and thank_you_end_run_text.status == NOT_STARTED:
         # keep track of start time/frame for later
-        text_5.tStart = t  # underestimates by a little under one frame
-        text_5.frameNStart = frameN  # exact frame index
-        text_5.setAutoDraw(True)
-    if text_5.status == STARTED and t >= (0.0 + (5-win.monitorFramePeriod*0.75)): #most of one frame period left
-        text_5.setAutoDraw(False)
+        thank_you_end_run_text.tStart = t  # underestimates by a little under one frame
+        thank_you_end_run_text.frameNStart = frameN  # exact frame index
+        thank_you_end_run_text.setAutoDraw(True)
+    if thank_you_end_run_text.status == STARTED and t >= (0.0 + (5-win.monitorFramePeriod*0.75)): #most of one frame period left
+        thank_you_end_run_text.setAutoDraw(False)
     
     # check if all components have finished
     if not continueRoutine:  # a component has requested a forced-end of Routine
