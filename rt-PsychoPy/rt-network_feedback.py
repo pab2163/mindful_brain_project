@@ -583,11 +583,6 @@ if key_resp_3.keys != None:  # we had a response
 thisExp.nextEntry()
 
 
-
-
-# instruct_text.setText('Relax')
-# instruct_text.pos = (0, -1)
-
 # BASELINE: wait for 30s before delivering feedback
 #------Prepare to start Routine "baseline"-------
 t = 0
@@ -899,7 +894,6 @@ for thisComponent in baselineComponents:
 t = 0
 finishClock.reset()  # clock 
 frameN = -1
-routineTimer.add(5.000000)
 # update component parameters for each repeat
 # keep track of which components have finished
 finishComponents = []
@@ -918,49 +912,11 @@ run_slider(question_text='How difficult was it to apply mental noting?',
 run_slider(question_text='How calm do you feel right now?',
                 left_label='Not at all', right_label='Very calm')
 
-
-#-------Start Routine "finish"-------
-continueRoutine = True
-while continueRoutine and routineTimer.getTime() > 0:
-    # get current time
-    t = finishClock.getTime()
-    frameN = frameN + 1  # number of completed frames (so 0 is the first frame)
-    # update/draw components on each frame
-    
-    # *thank_you_end_run_text* updates
-    if t >= 0.0 and thank_you_end_run_text.status == NOT_STARTED:
-        # keep track of start time/frame for later
-        thank_you_end_run_text.tStart = t  # underestimates by a little under one frame
-        thank_you_end_run_text.frameNStart = frameN  # exact frame index
-        thank_you_end_run_text.setAutoDraw(True)
-    if thank_you_end_run_text.status == STARTED and t >= (0.0 + (5-win.monitorFramePeriod*0.75)): #most of one frame period left
-        thank_you_end_run_text.setAutoDraw(False)
-    
-    # check if all components have finished
-    if not continueRoutine:  # a component has requested a forced-end of Routine
-        routineTimer.reset()  # if we abort early the non-slip timer needs reset
-        break
-    continueRoutine = False  # will revert to True if at least one component still running
-    for thisComponent in finishComponents:
-        if hasattr(thisComponent, "status") and thisComponent.status != FINISHED:
-            continueRoutine = True
-            break  # at least one component has not yet finished
-    
-    # check for quit (the Esc key)
-    if endExpNow or event.getKeys(keyList=["escape"]):
-        core.quit()
-    
-    # refresh the screen
-    if continueRoutine:  # don't flip if this routine is over or we'll get a blank screen
-        win.flip()
-
-#-------Ending Routine "finish"-------
-for thisComponent in finishComponents:
-    if hasattr(thisComponent, "setAutoDraw"):
-        thisComponent.setAutoDraw(False)
-
+# display ending text and close window
+thank_you_end_run_text.draw()
+win.flip()
+core.wait(3)
 win.close()
-
 
 
 # Set variables for the next run
