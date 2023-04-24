@@ -262,13 +262,13 @@ def run_slider(question_text='Default Text', left_label='left', right_label='rig
     win.flip()
     continueRoutine = True
     while continueRoutine:
-        keys = event.getKeys(keyList=['2', '3', '4'])
+        keys = event.getKeys(keyList=['1', '2', '3'])
         if len(keys):
-            if '2' in keys:
+            if '1' in keys:
                 vas.markerPos = vas.markerPos - 1
-            elif '3' in keys:
+            elif '2' in keys:
                 vas.markerPos = vas.markerPos  + 1 
-            elif '4' in keys:
+            elif '3' in keys:
                 vas.rating=vas.markerPos
                 continueRoutine=False
             vas.draw()
@@ -535,7 +535,7 @@ while continueRoutine:
         key_resp_3.clock.reset()  # now t=0
         event.clearEvents(eventType='keyboard')
     if key_resp_3.status == STARTED:
-        theseKeys = event.getKeys(keyList=['num_add', 't','+','5'])
+        theseKeys = event.getKeys(keyList=['t','+','5', 5])
         
         # check for quit:
         if "escape" in theseKeys:

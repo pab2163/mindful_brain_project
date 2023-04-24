@@ -232,7 +232,7 @@ def get_trigger():
     triggerClock.reset()
     continueRoutine = True
     while continueRoutine:
-        theseKeys = event.getKeys(keyList=['t'])
+        theseKeys = event.getKeys(keyList=['t', '5', 5])
         if len(theseKeys) > 0:  # at least one key was pressed
                 trigger_rt = triggerClock.getTime()
                 triggerClock.reset()
@@ -329,7 +329,7 @@ def run_trial(trial_type, fixation_duration, practice=False, block_type=''):
     while continueRoutine:            
         trial_time = trial_clock.getTime()
         if trial_time > 0 and trial_time < trial_duration:
-            theseKeys = event.getKeys(keyList=['2', '3', 'escape'])
+            theseKeys = event.getKeys(keyList=['1', '2', 'escape'])
             if "escape" in theseKeys:
                 endExpNow = True
 
@@ -340,10 +340,10 @@ def run_trial(trial_type, fixation_duration, practice=False, block_type=''):
                                     expName, expInfo['frameRate'], time.time(), triggerClock.getTime(), 'response', 1, 
                                     trial_word, trial_clock.getTime(), theseKeys[0], block_type, trial_type])
                 # change color of selected word
-                if '2' in theseKeys:
+                if '1' in theseKeys:
                     no.bold = True
                     no.italic = True
-                elif '3' in theseKeys:
+                elif '2' in theseKeys:
                     yes.bold = True
                     yes.italic = True
                 word.draw()
@@ -380,13 +380,13 @@ def run_practice():
         \n\nPlease press your index finger to answer NO')
     instruct_text.draw()
     win.flip()
-    wait_for_keypress(key_list=['2'])
+    wait_for_keypress(key_list=['1'])
     event.clearEvents(eventType='keyboard')
     instruct_text.setText('Just to make sure everything is working with the buttons.\
         \n\nPlease press your middle finger to answer YES')
     instruct_text.draw()
     win.flip()
-    wait_for_keypress(key_list=['3'])
+    wait_for_keypress(key_list=['2'])
     instruct_text.setText('Great! We will go through a few practice trials of each type now.\
         \n\nTry to make your decision quickly!')
     instruct_text.draw()
