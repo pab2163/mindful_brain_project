@@ -341,7 +341,7 @@ clear
         
         ica_run1_input=$subj_dir_absolute/rest/$subj'_'$ses'_task-rest_run-01_bold_mcflirt_masked.nii.gz'
         reference_vol_for_ica=$subj_dir_absolute/rest/$subj'_'$ses'_task-rest_run-01_bold_mcflirt_median_bet.nii.gz'
-        
+
         # update FEAT template with paths and # of volumes of resting state run
         cp fsl_scripts/basic_ica_template_single_run.fsf $subj_dir_absolute/rest/$subj'_'$ses'_task-rest_'$run'_bold'.fsf
         OUTPUT_dir=$subj_dir_absolute/rest/rs_network
@@ -524,51 +524,32 @@ then
 
     template_networks='template_networks.nii.gz'
 
-    # Merge template files to 1 image
-    fslmerge -tr ${template_networks} ${template_dmn} ${template_cen} 1
-
     echo $ica_version
-
-
 
     # If single-session, then ICA was done in native space, and registration is needed
     if [ $ica_version == 'single_run' ]
     then
         # ICs in native space
         infile=$ica_directory/filtered_func_data.ica/melodic_IC.nii.gz 
-        # Filepaths for registration
-        examplefunc=${ica_directory}/reg/example_func.nii.gz
-        standard=${ica_directory}/reg/standard.nii.gz
-        example_func2standard_mat=${ica_directory}/reg/example_func2standard.mat
-        standard2xample_func=${ica_directory}/reg/standard2example_func.nii.gz
-        standard2example_func_mat=${ica_directory}/reg/standard2example_func.mat
 
     else # Multi run
-        # ICs in "template" space - template is mean of first resting state run used in ICA
-        infile=$ica_directory/melodic_IC2example_func.nii.gz 
+        # ICs in "template" space - template is median of first resting state run used in ICA
         melodic_mean=$ica_directory/mean.nii.gz
-        init_melodic=$ica_directory/melodic_IC
+        infile=$ica_directory/melodic_IC
         mkdir ${ica_directory}/reg
-
-        # Filepaths for registration
-        examplefunc=${subj_dir_absolute}/rest/func_reference_volume.nii.gz
-        standard2example_func_mat=${ica_directory}/reg/standard2example_func.mat
-        example_func2standard_mat=${ica_directory}/reg/example_func2standard.mat
-        standard2xample_func=${ica_directory}/reg/standard2example_func.nii.gz
-        example_func2standard=${ica_directory}/reg/example_func2standard.nii.gz
-        melodic2example_func_mat=${ica_directory}/reg/melodic2example_func.mat
-        melodic_mean2_example_func=${ica_directory}/reg/melodic_mean2example_func.nii.gz
-
-        # Register example func to LPS MNI template, then calculate inverse
-        # This registration will be used to bring template networks to native space
-        flirt -in ${examplefunc} -ref  MNI152_T1_2mm_LPS_brain -out ${example_func2standard} -omat ${example_func2standard_mat}
-        convert_xfm -omat ${standard2example_func_mat} -inverse ${example_func2standard_mat}
-
-        # Melodic IC output SHOULD already be in native space, but warp it just in case
-        flirt -in ${melodic_mean} -ref ${examplefunc} -out ${melodic_mean2_example_func} -omat ${melodic2example_func_mat}
-        flirt -in ${init_melodic} -ref ${examplefunc} -out ${infile} -init ${melodic2example_func_mat} -applyxfm
     fi
 
+    # Register example func to LPS MNI template, then calculate inverse
+    # This registration will be used to bring template networks to native space
+    examplefunc=$subj_dir_absolute/rest/$subj'_'$ses'_task-rest_run-01_bold_mcflirt_median_bet.nii.gz'
+    standard=${ica_directory}/reg/standard.nii.gz
+    example_func2standard_mat=${ica_directory}/reg/example_func2standard.mat
+    standard2xample_func=${ica_directory}/reg/standard2example_func.nii.gz
+    standard2example_func_mat=${ica_directory}/reg/standard2example_func.mat
+    example_func2standard=${ica_directory}/reg/example_func2standard.mnii.gz
+
+    flirt -in ${examplefunc} -ref MNI152_T1_2mm_LPS_brain -out ${example_func2standard} -omat ${example_func2standard_mat}
+    convert_xfm -omat ${standard2example_func_mat} -inverse ${example_func2standard_mat}
 
 
     # Set paths for files needed for the next few steps 
@@ -642,9 +623,9 @@ then
     # Display masks with FSLEYES
     if [ $ica_version == 'single_run' ]
     then
-        fsleyes ${ica_directory}/reg/example_func.nii.gz ${standard2xample_func} ${dmn_thresh} -cm blue ${cen_thresh} -cm red
+        fsleyes $examplefunc ${standard2xample_func} ${dmn_thresh} -cm blue ${cen_thresh} -cm red
     else
-        fsleyes $subj_dir_absolute/rest/func_reference_volume ${standard2xample_func} ${dmn_thresh} -cm blue ${cen_thresh} -cm red
+        fsleyes $examplefunc ${standard2xample_func} ${dmn_thresh} -cm blue ${cen_thresh} -cm red
     fi
 
 fi
