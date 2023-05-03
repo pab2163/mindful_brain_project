@@ -217,12 +217,6 @@ clear
         fslmerge -tr $rest_runA_filename $volsA 1.2
         fslmerge -tr $rest_runB_filename $volsB 1.2
 
-        # Re-orient to neurological (will be LPS from VSend)
-        #fslswapdim $rest_runA_filename x -y z $rest_runA_filename
-        #fslswapdim $rest_runB_filename x -y z $rest_runB_filename
-        #fslorient -forceneurological $rest_runA_filename
-        #fslorient -forceneurological $rest_runB_filename
-
         # Mean of the first functional run is used as the "standard space" reference for ICA
         reference_vol_for_ica=$subj_dir_absolute/rest/func_reference_volume.nii.gz
         fslmaths $rest_runA_filename -Tmedian $reference_vol_for_ica #DP TEST MEDIAN? 4/12/23
@@ -600,7 +594,7 @@ then
     latest_ref="${latest_ref::-4}"
     echo ${latest_ref}
     bet ${latest_ref} ${latest_ref}_brain -R -f 0.4 -g 0 -m # changed from -f 0.6
-    slices ${latest_ref}_brain ${latest_ref} -o $subj_dir/qc/2vol_skullstrip_check.gif
+    slices ${latest_ref} ${latest_ref}_brain_mask -o $subj_dir/qc/2vol_skullstrip_brain_mask_check.gif
 
     rm -r $subj_dir/xfm/epi2reg
     mkdir $subj_dir/xfm/epi2reg
