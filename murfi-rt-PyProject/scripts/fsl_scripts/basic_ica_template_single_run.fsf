@@ -45,7 +45,7 @@ set fmri(ndelete) 0
 set fmri(tagfirst) 1
 
 # Number of first-level analyses
-set fmri(multiple) 2
+set fmri(multiple) 1
 
 # Higher-level input type
 # 1 : Inputs are lower-level FEAT directories
@@ -245,7 +245,7 @@ set fmri(regstandard_yn) 1
 set fmri(alternateReference_yn) 0
 
 # Standard image
-set fmri(regstandard) "TEMPLATE_LPS_PATH"
+set fmri(regstandard) "REFERENCE_VOL"
 
 # Search space for registration to standard space
 # 0   : No search
