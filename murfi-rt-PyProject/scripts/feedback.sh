@@ -483,3 +483,26 @@ then
     xdg-open $subj_dir/qc/rest_warp_to_2vol_native_check.gif
     fsleyes ${latest_ref}_brain  $subj_dir/xfm/epi2reg/rest2studyref_brain $subj_dir/mask/cen.nii -cm red $subj_dir/mask/dmn.nii -cm blue  #$subj_dir/mask/smc.nii -cm yellow $subj_dir/mask/stg.nii -cm green
 fi
+
+
+
+if [ ${step} = cleanup ]
+then
+    input_string=$(zenity --forms --title="Delete files?" \
+    --separator=" " \
+    --text="`printf "Are you sure you want to clean up the directory and delete files for ${subj}?\nThe entire img folder will be deleted, as well as raw bold data from the rest directory"`" \
+    --cancel-label "Exit" --ok-label "Delete files")
+    ret=$?
+
+    # If user selects the Exit button, then quit MURFI
+    if [[ $ret == 1 ]];
+    then
+        exit 0
+    fi
+
+    # Delete img folder and large bold files from the rest folder
+    rm -rf $subj_dir/img
+    rm -f $subj_dir/rest/*bold.nii.gz
+    rm -f $subj_dir/rest/*bold_mcflirt.nii.gz
+    rm -f $subj_dir/rest/*bold_mcflirt_masked.nii.gz
+fi
