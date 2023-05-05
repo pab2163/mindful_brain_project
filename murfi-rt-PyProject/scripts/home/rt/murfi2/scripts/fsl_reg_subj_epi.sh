@@ -1,4 +1,11 @@
 #!/bin/bash
+FSLDIR=/usr/local/fsl
+FSLPATH=$FSLDIR/bin/
+. ${FSLDIR}/etc/fslconf/fsl.sh
+
+
+$FSLPATH/flirt -version
+
 
 usage() {
     echo $0
@@ -57,17 +64,17 @@ apply_reg() {
     out=$4
 
     # set the desired datatype (short or double or float)
-    dtype=`nifti_tool -quiet -disp_hdr -fields datatype -infiles "$in" | sed "s/.* //"`;
-    if [ "$dtype" == 16 ]; then
-    otype=float
-    elif [ "$dtype" == 64 ]; then
-    otype=double
-    else
-    otype=short
-    fi
+    # dtype=`nifti_tool -quiet -disp_hdr -fields datatype -infiles "$in" | sed "s/.* //"`;
+    # if [ "$dtype" == 16 ]; then
+    # otype=float
+    # elif [ "$dtype" == 64 ]; then
+    # otype=double
+    # else
+    #otype=short
+    #fi
 
-  echo flirt $parms -applyxfm -init "$1" -in "$2" -ref "$3" -out "$4" -datatype short
-  flirt $parms -applyxfm -init "$1" -in "$2" -ref "$3" -out "$4" -datatype short
+  echo $FSLPATH/flirt $parms -applyxfm -init "$1" -in "$2" -ref "$3" -out "$4" -datatype short
+  $FSLPATH/flirt $parms -applyxfm -init "$1" -in "$2" -ref "$3" -out "$4" -datatype short
 }
 
 
@@ -119,8 +126,8 @@ default_options=""
 if [ ! -f "$xfmfile" ]; then
     of="$movedir""$newstem"
 
-    echo flirt $default_options -in "$move" -out "$of" -ref "$targ" -omat "$xfmfile" -dof 6 -datatype short -searchrx -180 180 -searchry -180 180 -searchrz -180 180
-    flirt $default_options -in "$move" -out "$of" -ref "$targ" -omat "$xfmfile" -dof 6 -datatype short -searchrx -180 180 -searchry -180 180 -searchrz -180 180
+    echo $FSLPATH/flirt $default_options -in "$move" -out "$of" -ref "$targ" -omat "$xfmfile" -dof 6 -datatype short -searchrx -180 180 -searchry -180 180 -searchrz -180 180
+    $FSLPATH/flirt $default_options -in "$move" -out "$of" -ref "$targ" -omat "$xfmfile" -dof 6 -datatype short -searchrx -180 180 -searchry -180 180 -searchrz -180 180
 
     #  echo mv "$of".mat/MAT_0000 "$xfmfile"
     # mv "$of".mat/MAT_0000 "$xfmfile"
