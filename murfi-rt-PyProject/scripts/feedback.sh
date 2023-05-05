@@ -110,7 +110,7 @@ clear
         --separator=" " --width 600 --height 600 \
         --add-entry="First Input Run #" \
         --add-entry="Second Input Run #" --text="`printf "${runstring}"`"\
-        --add-combo="`printf "How many resting runs to use for ICA?\nOnly use runs that have 200+ volumes for ICA?"`" --combo-values "2 (default) |1 (only to be used if there aren't 2 viable runs to use)")
+        --add-combo="`printf "How many resting runs to use for ICA?\nOnly use runs that have 200+ volumes for ICA"`" --combo-values "2 (default) |1 (only to be used if there aren't 2 viable runs to use)")
 
     # check that exit button hasn't been clicked
     if [[ $? == 1 ]];

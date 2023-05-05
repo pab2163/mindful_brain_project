@@ -47,8 +47,8 @@ cen_info = fslcc_info.loc[fslcc_info[1] == 2, :].values
 roi1 = int(dmn_info[0, 0]-1)
 roi2  = int(cen_info[0, 0]-1)
 
-print(f'CEN: {roi1}')
-print(f'DMN: {roi2}')
+print(f'IC# for CEN: {roi1}')
+print(f'IC# for DMN: {roi2}')
 
 # Pull the correct IC
 dmnfuncfile=split_outfile+'%0.4d.nii.gz' % roi1
