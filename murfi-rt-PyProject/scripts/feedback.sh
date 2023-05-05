@@ -288,12 +288,8 @@ then
         
 
     # Set up file paths needed for mask creation
-
-    ## File to contain spatial correlations between ICs & template networks
-
     # first look for ICA feat directory based on multiple runs (.gica directory)
     ica_directory=$subj_dir/rest/rs_network.gica/groupmelodic.ica/
-
     if [ -d $ica_directory ]
     then
         ica_version='multi_run'
@@ -307,12 +303,14 @@ then
         echo "Error: no ICA directory found for ${subj}. Exiting now..."
         exit 0
     fi
+    echo $ica_version
+
+
+    # Make output file to store correlations with template networks
     correlfile=$ica_directory/template_rsn_correlations_with_ICs.txt
     touch ${correlfile}
-
     template_networks='template_networks.nii.gz'
 
-    echo $ica_version
 
     # If single-session, then ICA was done in native space, and registration is needed
     if [ $ica_version == 'single_run' ]
@@ -322,20 +320,21 @@ then
 
     else # Multi run
         # ICs in "template" space - template is median of first resting state run used in ICA
-        melodic_mean=$ica_directory/mean.nii.gz
         infile=$ica_directory/melodic_IC
-        mkdir ${ica_directory}/reg
+        mkdir -p ${ica_directory}/reg
     fi
 
-    # Register example func to LPS MNI template, then calculate inverse
-    # This registration will be used to bring template networks to native space
+    # Create filepaths for registration files
     examplefunc=$subj_dir_absolute/rest/$subj'_'$ses'_task-rest_run-01_bold_mcflirt_median_bet.nii.gz'
-    standard=${ica_directory}/reg/standard.nii.gz
+    #standard=${ica_directory}/reg/standard.nii.gz
     example_func2standard_mat=${ica_directory}/reg/example_func2standard.mat
     standard2xample_func=${ica_directory}/reg/standard2example_func.nii.gz
     standard2example_func_mat=${ica_directory}/reg/standard2example_func.mat
     example_func2standard=${ica_directory}/reg/example_func2standard.mnii.gz
 
+
+    # Register example func to LPS MNI template, then calculate inverse
+    # This registration will be used to bring template networks to native space
     flirt -in ${examplefunc} -ref MNI152_T1_2mm_LPS_brain -out ${example_func2standard} -omat ${example_func2standard_mat}
     convert_xfm -omat ${standard2example_func_mat} -inverse ${example_func2standard_mat}
 
@@ -394,8 +393,6 @@ then
     dmn_thresh_value=$(fslstats ${dmn_uthresh} -P ${percentile_dmn})
     cen_thresh_value=$(fslstats ${cen_uthresh} -P ${percentile_cen})
 
-    echo $dmn_thresh_value
-
     # threshold masks 
     fslmaths ${dmn_uthresh} -thr ${dmn_thresh_value} -bin ${dmn_thresh} -odt short
     fslmaths ${cen_uthresh} -thr ${cen_thresh_value} -bin ${cen_thresh} -odt short
@@ -418,8 +415,6 @@ then
 
 fi
 
-
-
 # For registering masks in resting state space to 2vol space
 if [ ${step} = register_native ]
 then
@@ -434,7 +429,7 @@ then
     slices ${latest_ref} ${latest_ref}_brain_mask -o $subj_dir/qc/2vol_skullstrip_brain_mask_check.gif
 
     rm -r $subj_dir/xfm/epi2reg
-    mkdir $subj_dir/xfm/epi2reg
+    mkdir -p $subj_dir/xfm/epi2reg
 
     # first look for ICA feat directory based on multiple runs (.gica directory)
     ica_directory=$subj_dir/rest/rs_network.gica/groupmelodic.ica/
@@ -453,13 +448,9 @@ then
         exit 0
     fi
     
-    # warp masks in RESTING STATE ICA SPACE into 2VOL native space (studyref)
-    if [ $ica_version = 'single_run' ]
-    then
-        flirt -in $subj_dir/rest/rs_network.ica/example_func.nii.gz -ref ${latest_ref}_brain -out $subj_dir/xfm/epi2reg/rest2studyref_brain -omat $subj_dir/xfm/epi2reg/rest2studyref.mat
-    else
-        flirt -in $subj_dir/rest/func_reference_volume.nii.gz -ref ${latest_ref}_brain -out $subj_dir/xfm/epi2reg/rest2studyref_brain -omat $subj_dir/xfm/epi2reg/rest2studyref.mat
-    fi
+    # # warp masks in RESTING STATE ICA SPACE (median of rest run1) into 2VOL native space (studyref)
+    examplefunc=$subj_dir_absolute/rest/$subj'_'$ses'_task-rest_run-01_bold_mcflirt_median_bet.nii.gz'
+    flirt -in $examplefunc -ref ${latest_ref}_brain -out $subj_dir/xfm/epi2reg/rest2studyref_brain -omat $subj_dir/xfm/epi2reg/rest2studyref.mat
 
     # make registration image for inspection, and open it
     slices $subj_dir/xfm/epi2reg/rest2studyref_brain ${latest_ref}_brain -o $subj_dir/qc/rest_warp_to_2vol_native_check.gif
@@ -489,6 +480,6 @@ then
 
     echo "+ INSPECT"
     echo "++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++"
-    xdg-open $subj_dir/xfm/rest_warp_to_2vol_native_check.gif
+    xdg-open $subj_dir/qc/rest_warp_to_2vol_native_check.gif
     fsleyes ${latest_ref}_brain  $subj_dir/xfm/epi2reg/rest2studyref_brain $subj_dir/mask/cen.nii -cm red $subj_dir/mask/dmn.nii -cm blue  #$subj_dir/mask/smc.nii -cm yellow $subj_dir/mask/stg.nii -cm green
 fi
