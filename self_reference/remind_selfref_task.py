@@ -22,6 +22,9 @@ import time
 _thisDir = os.path.dirname(os.path.abspath(__file__))
 os.chdir(_thisDir)
 
+yes_button_number='1'
+no_button_number='3'
+
 
 b1=['semantic', 'self', 'other',  'other', 'self',  'other', 'self',  'self', 'other','semantic']
 b2=['self', 'other',  'other', 'semantic', 'self',  'other', 'semantic', 'self',  'self', 'other']
@@ -329,7 +332,7 @@ def run_trial(trial_type, fixation_duration, practice=False, block_type=''):
     while continueRoutine:            
         trial_time = trial_clock.getTime()
         if trial_time > 0 and trial_time < trial_duration:
-            theseKeys = event.getKeys(keyList=['1', '2', 'escape'])
+            theseKeys = event.getKeys(keyList=[yes_button_number, no_button_number, 'escape'])
             if "escape" in theseKeys:
                 endExpNow = True
 
@@ -340,10 +343,10 @@ def run_trial(trial_type, fixation_duration, practice=False, block_type=''):
                                     expName, expInfo['frameRate'], time.time(), triggerClock.getTime(), 'response', 1, 
                                     trial_word, trial_clock.getTime(), theseKeys[0], block_type, trial_type])
                 # change color of selected word
-                if '1' in theseKeys:
+                if no_button_number in theseKeys:
                     no.bold = True
                     no.italic = True
-                elif '2' in theseKeys:
+                elif yes_button_number in theseKeys:
                     yes.bold = True
                     yes.italic = True
                 word.draw()
@@ -371,22 +374,22 @@ def run_practice():
     win.flip()
     wait_for_keypress(key_list=['space'])
     instruct_text.setText('Each time you answer a question:\
-        \n\n\npress with your index finger to answer NO\n\npress with your middle finger to answer YES')
+        \n\n\npress with your left finger to answer NO\n\npress with your right finger to answer YES')
     instruct_text.draw()
     win.flip()
     wait_for_keypress(key_list=['space'])
     event.clearEvents(eventType='keyboard')
     instruct_text.setText('Just to make sure everything is working with the buttons.\
-        \n\nPlease press your index finger to answer NO')
+        \n\nPlease press your left finger to answer NO')
     instruct_text.draw()
     win.flip()
-    wait_for_keypress(key_list=['1'])
+    wait_for_keypress(key_list=[no_button_number])
     event.clearEvents(eventType='keyboard')
     instruct_text.setText('Just to make sure everything is working with the buttons.\
-        \n\nPlease press your middle finger to answer YES')
+        \n\nPlease press your right finger to answer YES')
     instruct_text.draw()
     win.flip()
-    wait_for_keypress(key_list=['2'])
+    wait_for_keypress(key_list=[yes_button_number])
     instruct_text.setText('Great! We will go through a few practice trials of each type now.\
         \n\nTry to make your decision quickly!')
     instruct_text.draw()
