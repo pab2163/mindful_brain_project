@@ -370,15 +370,16 @@ def run_practice():
     instruct_text.setText(f'The 3 types of YES or NO questions you will see will be:\
 \n\n1) Does a word describe you?\
 \n\n2) Does a word describe {expInfo["friend_name"]} (who you mentioned earlier)?\
-\n\n3) Is a word positive?')
+\n\n3) Is a word positive?\
+\n\nPress any button to continue')
     instruct_text.draw()
     win.flip()
-    wait_for_keypress(key_list=['space'])
+    wait_for_keypress(key_list=['space',yes_button_number, no_button_number])
     instruct_text.setText('Each time you answer a question:\
         \n\n\npress with your left finger to answer NO\n\npress with your right finger to answer YES')
     instruct_text.draw()
     win.flip()
-    wait_for_keypress(key_list=['space'])
+    wait_for_keypress(key_list=['space',yes_button_number, no_button_number])
     event.clearEvents(eventType='keyboard')
     instruct_text.setText('Just to make sure everything is working with the buttons.\
         \n\nPlease press your left finger to answer NO')
@@ -395,7 +396,7 @@ def run_practice():
         \n\nTry to make your decision quickly!')
     instruct_text.draw()
     win.flip()
-    wait_for_keypress(key_list=['space'])
+    wait_for_keypress(key_list=['space',yes_button_number, no_button_number])
 
     # Run actual practice trials (6 of them, 2 of each type)
     run_block(n_trials = 0, block_type = 'self', block_number = 0, practice = True)
