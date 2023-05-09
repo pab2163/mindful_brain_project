@@ -28,6 +28,11 @@ import subprocess
 import shlex
 import locale
 
+# button box
+left_button='3'
+right_button='1'
+enter_button='4'
+
 # Ensure that relative paths start from the same directory as this script
 _thisDir = os.path.dirname(os.path.abspath(__file__))
 os.chdir(_thisDir)
@@ -239,6 +244,13 @@ with open(run_questions_file, 'a') as csvfile:
     stim_writer = csv.writer(csvfile, delimiter=',', quotechar='|', quoting=csv.QUOTE_MINIMAL)
     stim_writer.writerow(["id", "run", 'feedback_on', "question_text", "reponse", "rt"])  
 
+slider_instruction = visual.TextStim(win=win, ori=0, name='text',
+        text="You'll see a few slider questions next\nPress the left and right buttons to move the slider\nAnd the top button to enter your reponse\nPress any button to continue", font=u'Arial',
+        pos=[0, 0.2], height=0.06, wrapWidth=1.2,
+        color=u'white', colorSpace='rgb', opacity=1,
+        depth=0.0)
+
+
 def run_slider(question_text='Default Text', left_label='left', right_label='right'):
     slider_question = visual.TextStim(win=win, ori=0, name='text',
         text=question_text, font=u'Arial',
@@ -262,13 +274,13 @@ def run_slider(question_text='Default Text', left_label='left', right_label='rig
     win.flip()
     continueRoutine = True
     while continueRoutine:
-        keys = event.getKeys(keyList=['1', '2', '3'])
+        keys = event.getKeys(keyList=[left_button, right_button, enter_button])
         if len(keys):
-            if '1' in keys:
+            if left_button in keys:
                 vas.markerPos = vas.markerPos - 1
-            elif '2' in keys:
+            elif right_button in keys:
                 vas.markerPos = vas.markerPos  + 1 
-            elif '3' in keys:
+            elif enter_button in keys:
                 vas.rating=vas.markerPos
                 continueRoutine=False
             vas.draw()
@@ -903,6 +915,10 @@ for thisComponent in finishComponents:
         thisComponent.status = NOT_STARTED
 
 # Ask slider questions
+slider_instruction.draw()
+win.flip()
+wait_for_keypress(key_list=[right_button, left_button, enter_button])
+
 run_slider(question_text='How often were you using the mental noting practice?',
                 left_label='Never', right_label='Always')
 run_slider(question_text='How often did you check the position of the ball',
