@@ -22,6 +22,7 @@ import time
 _thisDir = os.path.dirname(os.path.abspath(__file__))
 os.chdir(_thisDir)
 
+# which buttons on the button box correspond to left & right choices (DIAMOND 4-button)
 yes_button_number='1'
 no_button_number='3'
 
