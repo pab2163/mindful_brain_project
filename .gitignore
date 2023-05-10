@@ -1,6 +1,8 @@
-murfi-rt-PyProject/subjects/sub-R61MBNFD999/
-murfi-rt-PyProject/subjects/sub-test/
+murfi-rt-PyProject/subjects/sub-*
+murfi-rt-PyProject/scripts/murfi2.sif
 *DS_Store
+murfi-rt-PyProject/subjects/remind*
+murfi-rt-PyProject/subjects/REMIND*
 self_reference/stimtime_generation/
 *__pycache__/
 *.pyo 

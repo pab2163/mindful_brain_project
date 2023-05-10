@@ -1,6 +1,6 @@
 
 # FEAT version number
-set fmri(version) 6.0
+set fmri(version) 3.15
 
 # Are we in MELODIC?
 set fmri(inmelodic) 1
@@ -36,7 +36,7 @@ set fmri(outputdir) "OUTPUT"
 set fmri(tr) 1.200000
 
 # Total volumes
-set fmri(npts) 250
+set fmri(npts) 249
 
 # Delete volumes
 set fmri(ndelete) 0
@@ -45,7 +45,7 @@ set fmri(ndelete) 0
 set fmri(tagfirst) 1
 
 # Number of first-level analyses
-set fmri(multiple) 2
+set fmri(multiple) 1
 
 # Higher-level input type
 # 1 : Inputs are lower-level FEAT directories
@@ -70,7 +70,7 @@ set fmri(noisear) 0.34
 # Motion correction
 # 0 : None
 # 1 : MCFLIRT
-set fmri(mc) 1
+set fmri(mc) 0
 
 # Spin-history (currently obsolete)
 set fmri(sh_yn) 0
@@ -106,7 +106,7 @@ set fmri(st) 0
 set fmri(st_file) ""
 
 # BET brain extraction
-set fmri(bet_yn) 1
+set fmri(bet_yn) 0
 
 # Spatial smoothing FWHM (mm)
 set fmri(smooth) 5
@@ -212,7 +212,7 @@ set fmri(rendertype) 1
 set fmri(bgimage) 1
 
 # Create time series plots
-set fmri(tsplot_yn) 0
+set fmri(tsplot_yn) 1
 
 # Registration to initial structural
 set fmri(reginitial_highres_yn) 0
@@ -245,16 +245,16 @@ set fmri(regstandard_yn) 1
 set fmri(alternateReference_yn) 0
 
 # Standard image
-set fmri(regstandard) "TEMPLATE_LPS_PATH"
+set fmri(regstandard) "REFERENCE_VOL"
 
 # Search space for registration to standard space
 # 0   : No search
 # 90  : Normal search
 # 180 : Full search
-set fmri(regstandard_search) 90
+set fmri(regstandard_search) 0
 
 # Degrees of Freedom for registration to standard space
-set fmri(regstandard_dof) 12
+set fmri(regstandard_dof) 3
 
 # Do nonlinear registration from structural to standard space?
 set fmri(regstandard_nonlinear_yn) 0
@@ -273,16 +273,13 @@ set fmri(totalVoxels) 277413888
 set fmri(ncopeinputs) 0
 
 # 4D AVW data or FEAT directory (1)
-set feat_files(1) "DATA1"
-
-# 4D AVW data or FEAT directory (2)
-set feat_files(2) "DATA2"
+set feat_files(1) "DATA"
 
 # Add confound EVs text file
 set fmri(confoundevs) 0
 
 # Resampling resolution
-set fmri(regstandard_res) 2
+set fmri(regstandard_res) 2.0
 
 # Variance-normalise timecourses
 set fmri(varnorm) 1
@@ -296,13 +293,13 @@ set fmri(dim) 35
 # 1 : Single-session ICA
 # 2 : Multi-session temporal concatenation
 # 3 : Multi-session tensor TICA
-set fmri(icaopt) 2
+set fmri(icaopt) 1
 
 # Threshold IC maps
-set fmri(thresh_yn) 1
+set fmri(thresh_yn) 0
 
 # Mixture model threshold
-set fmri(mmthresh) 0.5
+set fmri(mmthresh) 0
 
 # Output full stats folder
 set fmri(ostats) 0
