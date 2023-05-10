@@ -1,0 +1,74 @@
+---
+title: "Choose Best ISI"
+author: "Paul A. Bloom"
+date: "2023-01-26"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+library(tidyverse)
+
+files = Sys.glob('stim_results/*seed-2/NSD*')
+
+#b='stim_results/maxconsec-2_isimax-10_blockdur-32-seed-1/NSD_sums_maxconsec-2_isimax-10_blockdur-32'
+
+parse_isi_results = function(filepath){
+    result = read.csv(filepath, header = 0) %>%
+        mutate(, normalized_sd = as.numeric(sub(" =.*", "", V1)),
+               filename = filepath) %>%
+        tidyr::separate(col = filename, sep = '_', into = c('a', 'maxconsec', 'isimax', 'blockdur')) %>%
+       # dplyr::select(normalized_sd, maxconsec, isimax, blockdur) %>%
+        mutate(maxconsec = ifelse(grepl('2', maxconsec), '2 events', '3 events'),
+               isimax = -1*parse_number(isimax))
+               #blockdur = ifelse(grepl('32', blockdur), '32s', '35s'))
+    
+    return(result)
+}
+
+
+isi_results_compiled = files %>%
+    map_dfr(.f=parse_isi_results)
+
+
+ggplot(isi_results_compiled, aes(x = maxconsec, y = normalized_sd, color = factor(isimax))) +
+    facet_grid(~blockdur) +
+    stat_summary(fun.data = mean_cl_boot)
+
+
+best_isi_list = isi_results_compiled %>%
+    dplyr::filter(maxconsec == '2 events', blockdur == "blockdur-36-seed-2/NSD", isimax == 8) %>%
+    top_n(n = 4, wt = -1*normalized_sd) %>%
+    mutate(iter = sub(".*iteration ", "", V1))
+
+
+for (iter in best_isi_list$iter){
+    print(iter)
+    filename_pos = paste0('stim_results/maxconsec-2_isimax-8_blockdur-36-seed-2/stimes.', iter, '_01_pos_', iter, '.1D')
+    filename_neg = paste0('stim_results/maxconsec-2_isimax-8_blockdur-36-seed-2/stimes.', iter, '_02_neg_', iter, '.1D')
+    
+    system(paste0('cp ', filename_pos, ' ../stim_timing_template_files/stimes_pos_', iter, '.1D'))
+    system(paste0('cp ', filename_neg, ' ../stim_timing_template_files/stimes_neg_', iter, '.1D'))
+}
+
+
+b = read.table('stim_results/maxconsec-2_isimax-8_blockdur-36-seed-2/X.stimes.0005.xmat.1D')
+
+
+cor(b$V21, b$V22)
+
+b %>%
+    mutate(tr = 1:nrow(.)) %>%
+    dplyr::select(tr, Positive=V21, Negative=V22) %>%
+    pivot_longer(c(Positive, Negative)) %>%
+    ggplot(aes(x = tr, y = value, color = name)) +
+    geom_line() +
+    geom_vline(xintercept = seq(0:9)*30, lty=1) +
+    geom_vline(xintercept = seq(0:9)*30 - (8/1.2), lty=2) +
+    geom_vline(xintercept = 1) + 
+    labs(x = 'TR (1.2s)', y = 'Regressor Value', color = 'Regressor') +
+    theme_bw()
+```

@@ -1,0 +1,236 @@
+---
+title: "select_emote_words"
+output: html_document
+date: "2022-10-28"
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+
+```{r}
+library(splitstackshape)
+library(tidyverse)
+library(corrplot)
+library(naniar)
+library(anticlust)
+
+```
+
+
+```{r}
+emote = read_csv('EMOTE_raw.csv')
+
+freq_data = emote %>%
+    dplyr::filter(adjective == 1, adim1 != -99) %>%
+    dplyr::select(contains('freq'))
+
+freq_data[freq_data == -99] <- NA
+
+freq_data %>%
+    cor(use = 'pairwise.complete.obs')
+
+emote %>%
+    dplyr::filter(adim1!=-99, adim7!=-99) %>%
+    ggplot(data = ., aes(x = adim1, y = adim7)) +
+    geom_point() +
+    labs(x = 'Valence', y = 'Emotionality') +
+    geom_smooth(method = 'lm')
+
+
+emote %>%
+    dplyr::filter(adim1!=-99, adim7!=-99) %>%
+    ggplot(data = ., aes(x = adim1, y = adim2)) +
+    geom_point() +
+    labs(x = 'Valence', y = 'Arousal') +
+    geom_smooth(method = 'lm')
+
+
+emote %>%
+    dplyr::filter(adim1!=-99, adim7!=-99) %>%
+    dplyr::select(contains('adim')) %>%
+    cor()
+```
+
+
+# Pull in vetted words
+
+
+```{r}
+# first group of words
+selections_set1 = readxl::read_excel('emote_top_200_positive_negative_marked_RPA_DP.xlsx') %>%
+    dplyr::filter(is.na(researcher_remove)) %>%
+    # absolute value for how "valenced" each word is
+    mutate(valence_abs = abs(valence - 4), round = '1') 
+
+# smaller, second group of words
+selections_set2 = readxl::read_excel('emote_second_pass_paul_mia_selections.xls') %>%
+    dplyr::filter(researcher_remove=='NA') %>%
+    mutate(round = '2') %>%
+    dplyr::select(-...1, -...7)
+
+# combine both sets of words
+selected_words_combined = selections_set1 %>%
+    dplyr:::select(condition = ...1, word, freq_BNC, valence, researcher_remove, round) %>%
+    rbind(., selections_set2) %>%
+    mutate(valence_abs = abs(valence - 4),
+           log_freq = log10(freq_BNC)) %>%
+    # remove missing words and ones that aren't sufficiently valenced (less than 1 unit away from midpoint of the scale)
+    dplyr::filter(!is.na(word), !valence_abs < 1)
+
+# pull in a few columns from original emote database
+selected_words_combined = dplyr::left_join(selected_words_combined, dplyr::select(emote, word, arousal =adim2, emotionality=adim7, meaning=adim5), by= 'word') %>%
+    mutate(arousal_abs = abs(arousal-4))
+
+# how many words in each condition?
+table(selected_words_combined$condition)
+```
+
+
+# Plots before anticlust
+
+```{r}
+selected_words_combined %>%
+    pivot_longer(c(valence_abs, emotionality, log_freq, meaning)) %>%
+    ggplot(data = ., aes(x = condition, y = value)) +
+    geom_boxplot() + 
+    facet_grid(~name)
+```
+# Anticlust to get a set of 120 each positive/negative words that are as similar as possible in valence, log frequency, emotionality, and meaningfulness (how well participants understood the meaning)
+
+```{r}
+# covariates are the variables we want to be as similar as possible across clusters
+# valence, log frequency, emotionality, meaning
+covariates = dplyr::select(selected_words_combined,valence_abs, log_freq, emotionality, meaning) %>% mutate_all(scale)
+
+# run anticlust 
+selected_words_combined$matches = anticlust::matching(covariates,
+                                     match_between = selected_words_combined$condition == '+',
+                                     match_extreme_first=FALSE)
+# pull top 120 matches (120 each positive and negative)
+final_selection = dplyr::filter(selected_words_combined, matches <= 120)
+```
+
+# Test for differences in the stratified sets
+
+Looks like emotionality is significantly higher in the negative words, but no other significant differences
+
+```{r}
+summary(lm(data = final_selection, valence_abs ~ condition))
+summary(lm(data = final_selection, freq_BNC ~ condition))
+summary(lm(data = final_selection, emotionality ~ condition))
+summary(lm(data = final_selection, meaning ~ condition))
+```
+
+
+```{r}
+final_selection %>%
+    pivot_longer(c(valence_abs, emotionality, log_freq, meaning)) %>%
+    mutate(name = dplyr::recode(name, 
+                                emotionality = 'Word emotionality',
+                                log_freq = 'Log Frequency (per million)',
+                                meaning = 'Understanding of word meaning',
+                                valence_abs = 'Absolute value of word valence')) %>%
+    ggplot(data = ., aes(x = condition, y = value)) +
+    geom_boxplot() + 
+    facet_grid(~name) +
+    theme_bw()
+```
+
+# Stratify based on valence (condition - positive vs. negative), valence (within-condition), arousal, freq_BNC into 2 separate sets of words (for pre vs. post mbNF)
+
+```{r}
+# create bins out of continous variables for stratification
+top_240 = final_selection %>%
+    dplyr::select(word, valence_condition=condition) %>%
+    left_join(emote) %>%
+    group_by(valence_condition) %>%
+    mutate(freq_BNC_strat = ntile(freq_BNC, n = 3)) %>%
+    group_by(valence_condition, freq_BNC_strat) %>%
+    mutate(valence_strat = ntile(adim1, n = 2)) %>%
+    group_by(valence_condition, freq_BNC_strat, valence_strat) %>%
+    mutate(arousal_strat = ntile(adim2, n = 2))
+
+
+set.seed(11291993)
+
+# stratify 20 times, pick the one with the smallest statistical differences between bins
+for (i in 1:20){
+    strast = stratified(indt = top_240,
+                    group = c('valence_condition', 'valence_strat', 'freq_BNC_strat', 'arousal_strat'), size = 5, bothSets = TRUE)
+
+    stratified_sets = rbind(dplyr::mutate(strast$SAMP1, set = 1), dplyr::mutate(strast$SAMP2, set = 2)) %>%
+        mutate(iter = i)
+
+    difference_summary = stratified_sets %>%
+        pivot_longer(cols = c(freq_BNC, adim1, adim2)) %>%
+        group_by(valence_condition, name) %>%
+        nest() %>%
+        mutate(diff_model = purrr::map(data, ~lm(data = ., value ~ set) %>% broom::tidy())) %>%
+        unnest(diff_model) %>%
+        dplyr::filter(term == 'set') %>%
+        mutate(iter = i)
+
+    if (i == 1){
+        many_stratifications = stratified_sets
+        many_summaries = difference_summary
+    }else{
+        many_stratifications = rbind(many_stratifications, stratified_sets)
+        many_summaries = rbind(many_summaries, difference_summary)
+    }
+}
+
+# choose iteration with smallest differences
+best_iter = many_summaries %>%
+    group_by(iter) %>%
+    summarise(mean_pval = mean(p.value)) %>%
+    top_n(n = 1, wt = mean_pval)
+
+# choose the best stratification (lowest p. values for differences between sets 1 & 2)
+best_stratification = many_stratifications %>%
+    dplyr::filter(iter == best_iter$iter[1])
+
+best_stratification = mutate(best_stratification,
+                             valence_abs = abs(adim1-4))
+
+# wrute out the stratification to csv
+write.csv(best_stratification, file = 'emote_240_words_stratified.csv', row.names = FALSE)
+```
+
+# Make many orders across the 4 runs
+
+* Participants with even ID #s will see set1 pre (runs 1-2), set2 post (runs 3-4). Vice versa for participants with odd ID #s
+```{r}
+run_groups = c(rep(1, 30), rep(2, 30))
+
+for (seed in 1:200){
+    set.seed(seed)
+    word_shuffle = best_stratification %>%
+        dplyr::select(word, valence_condition, set) %>%
+        group_by(valence_condition, set) %>%
+        mutate(run = sample(run_groups, size = n(), replace = FALSE),
+               seed = seed) %>%
+        dplyr::mutate(run = case_when(
+            seed %% 2 == 0 & run == 1 & set == 1 ~ 1,
+            seed %% 2 == 0 & run == 2 & set == 1 ~ 2,
+            seed %% 2 == 0 & run == 1 & set == 2 ~ 3,
+            seed %% 2 == 0 & run == 2 & set == 2 ~ 4,
+            seed %% 2 != 0 & run == 1 & set == 2 ~ 1,
+            seed %% 2 != 0 & run == 2 & set == 2 ~  2,
+            seed %% 2 != 0 & run == 1 & set == 1 ~ 3,
+            seed %% 2 != 0 & run == 2 & set == 1 ~ 4,
+        )) %>%
+        ungroup() %>%
+        dplyr::arrange(run)
+
+    # check that there are 30 words of each valence in each run
+    b = table(word_shuffle$run, word_shuffle$valence_condition)
+    sum(b == 30)
+    assertthat::assert_that(sum(b == 30) == 8, msg = 'Word valence not split evenly across all runs!')
+
+    write.csv(word_shuffle, paste0('word_list_splits/word_order_', seed, '.csv'), row.names = FALSE)
+}
+```
+
