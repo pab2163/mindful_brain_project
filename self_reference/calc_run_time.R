@@ -1,5 +1,6 @@
 num_runs = 10
-run_dur = 24
+block_intro_time = 2
+run_dur = 28 + block_intro_time
 rest_dur = 8
 rest_periods = num_runs + 1
 
