@@ -281,7 +281,7 @@ def run_block(n_trials, block_type, block_number, practice=False):
         for trial_num in range(n_trials):
             run_trial(trial_type = block_timing_frame.stim_type[trial_num], 
                       fixation_duration= block_timing_frame.fix_duration[trial_num],
-                      practice=False, block_type=block_type, block_number)
+                      practice=False, block_type=block_type, block_number=block_number)
 
 '''
 Show a fixation cross 
@@ -301,7 +301,7 @@ def run_fixation(duration):
 '''
 Run a single trial
 '''
-def run_trial(trial_type, fixation_duration, practice=False, block_type='', block_number):
+def run_trial(trial_type, fixation_duration, practice=False, block_type='', block_number=''):
     # fixation at beginning of trial
     run_fixation(duration=fixation_duration)
     # present word 
