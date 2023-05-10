@@ -14,7 +14,7 @@
   <option name="port">           15000 </option>
   <option name="saveImages">     true </option>
   <option name="receiveImages">  true </option>
-  <option name="onlyReadMoCo">  false </option>
+  <option name="onlyReadMoCo">  true </option>
 </scanner>
 
 <infoserver>
@@ -127,7 +127,7 @@
            only one cycle's worth needs to be specified, the program
            will repeat that pattern until the end of the scan. -->
       <option name="condition" conditionName="Regulation">
-        0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
+        1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1
         1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1
         1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1
         1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1
