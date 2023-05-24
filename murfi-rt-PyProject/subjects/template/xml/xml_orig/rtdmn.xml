@@ -10,7 +10,7 @@
 <scanner>
   <option name="disabled">     false </option>
   <option name="tr">             1.2 </option>
-  <option name="measurements">   125 </option>
+  <option name="measurements">   150 </option>
   <option name="port">           15000 </option>
   <option name="saveImages">     true </option>
   <option name="receiveImages">  true </option>
@@ -119,7 +119,8 @@
 	<!-- design matrix -->
     <design>
       <option name="disabled"> false </option>
-
+      <option name="modelMotionParameters"> true </option>
+      <option name="maxTrendOrder"> 2 </option>
      <!-- parameters specifying neural conditions of interest -->
 
       <!-- each condition should have its own vector of "on" trs as 1s
@@ -127,6 +128,7 @@
            only one cycle's worth needs to be specified, the program
            will repeat that pattern until the end of the scan. -->
       <option name="condition" conditionName="Regulation">
+        1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1
         1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1
         1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1
         1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1
