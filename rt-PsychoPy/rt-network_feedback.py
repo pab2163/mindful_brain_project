@@ -149,15 +149,15 @@ while os.path.exists(filename + '_roi_outputs.csv'):
     warning_box = gui.Dlg(title = 'WARNING')
     warning_box.addText(f'Already have data for {expInfo["participant"]} run {expInfo["run"]}!\nClick OK to write to run  {int(expInfo["run"]) + 1} instead \
         Or, click Cancel to exit')
-    warning_box.addField(run_label = [f"Run {int(expInfo['run']) + 1}", 
-                                      "Overwrite run {int(expInfo['run']) + 1}"])
-    warning_box.show()
+    warning_box.addField(label='run_label',choices = [f"Run {int(expInfo['run']) + 1}", 
+                                      f"Overwrite run {int(expInfo['run']) + 1}"])
+    warning_box_data=warning_box.show()
     if not warning_box.OK:
         core.quit()
     # If not overwriting, go on to next run
     # Set filename
     else:
-        if 'Overwrite' not in warning_box.run_label:
+        if 'Overwrite' not in warning_box_data.run_label:
             expInfo['run'] = int(expInfo['run']) +1 
         filename = 'data' + os.path.sep + '%s_DMN_Feedback_%s' %(expInfo['participant'],expInfo['run'])
 
