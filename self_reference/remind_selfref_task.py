@@ -22,6 +22,10 @@ import time
 _thisDir = os.path.dirname(os.path.abspath(__file__))
 os.chdir(_thisDir)
 
+# which buttons on the button box correspond to left & right choices (DIAMOND 4-button)
+yes_button_number='1'
+no_button_number='3'
+
 
 b1=['semantic', 'self', 'other',  'other', 'self',  'other', 'self',  'self', 'other','semantic']
 b2=['self', 'other',  'other', 'semantic', 'self',  'other', 'semantic', 'self',  'self', 'other']
@@ -52,11 +56,11 @@ while expInfo['session'] not in ['loc', 'nf'] or expInfo['run'] not in ['1','2']
 expInfo['date'] = data.getDateStr()  # add a simple timestamp
 expInfo['expName'] = expName
 
-if not os.path.exists(f'{_thisDir}/reMIND/'):
-    os.mkdir(f'{_thisDir}/reMIND/')
+if not os.path.exists(f'{_thisDir}/data/'):
+    os.mkdir(f'{_thisDir}/data/')
 
-if not os.path.exists(f"{_thisDir}/reMIND/{expInfo['participant']}"):
-    os.mkdir(f"{_thisDir}/reMIND/{expInfo['participant']}")
+if not os.path.exists(f"{_thisDir}/data/{expInfo['participant']}"):
+    os.mkdir(f"{_thisDir}/data/{expInfo['participant']}")
 
 # pull word order for the participant
 # remove string from participant ID to get just the #
@@ -105,7 +109,7 @@ all_block_timings = make_run_timings(pos = pos, neg = neg)
 print(all_block_timings)
 
 # output file setm
-filename = f"{_thisDir}/reMIND/{expInfo['participant']}/{expInfo['participant']}_ses-{expInfo['session']}_task-selfref_run-{expInfo['run']}"
+filename = f"{_thisDir}/data/{expInfo['participant']}/{expInfo['participant']}_ses-{expInfo['session']}_task-selfref_run-{expInfo['run']}"
 
 # Function to write a line of data to the output file
 def write_to_tsv(row_info:list):
@@ -114,7 +118,7 @@ def write_to_tsv(row_info:list):
         stim_writer.writerow(row_info)
  
 # Header column (following this, very important to make sure rows are written matching this column order)
-write_to_tsv(['participant','session', 'date', 'exp_name', 'frame_rate', 'absolute_time', 'trigger_time', 'trial_type', 'trial_num', 'word', 'response_time','reponse_key', 'condition', 'word_valence'])
+write_to_tsv(['participant','session', 'date', 'exp_name', 'frame_rate', 'absolute_time', 'trigger_time', 'trial_type', 'trial_num', 'word', 'response_time','reponse_key', 'condition', 'word_valence', 'block_number'])
 
 # Data file name stem = absolute path + name; later add .psyexp, .csv, .log, etc
 logFile = logging.LogFile(filename+'.log', level=logging.EXP)
@@ -208,7 +212,7 @@ def run_instructions():
     win.flip()
     wait_for_keypress(['space'])
     write_to_tsv([expInfo['participant'],expInfo['session'], expInfo['date'], 
-                    expName, expInfo['frameRate'], time.time(), '', 'instructions', '', '', '','', '', ''])
+                    expName, expInfo['frameRate'], time.time(), '', 'instructions', '', '', '','', '', '', ''])
 
 
 def wait_for_keypress(key_list:list):
@@ -232,7 +236,7 @@ def get_trigger():
     triggerClock.reset()
     continueRoutine = True
     while continueRoutine:
-        theseKeys = event.getKeys(keyList=['t'])
+        theseKeys = event.getKeys(keyList=['t', '5', 5])
         if len(theseKeys) > 0:  # at least one key was pressed
                 trigger_rt = triggerClock.getTime()
                 triggerClock.reset()
@@ -240,7 +244,7 @@ def get_trigger():
                 # a response ends the routine
                 continueRoutine = False
                 write_to_tsv([expInfo['participant'],expInfo['session'], expInfo['date'], 
-                    expName, expInfo['frameRate'], time.time(), 0, 'trigger', '', '', '','', '', ''])
+                    expName, expInfo['frameRate'], time.time(), 0, 'trigger', '', '', '','', '', '', ''])
 
 '''
 Run a block of trials
@@ -275,7 +279,9 @@ def run_block(n_trials, block_type, block_number, practice=False):
 
         # run each trial in the block, pulling the word type (positive vs. negative) and fixation duration (ISI) from the block_timing_frame
         for trial_num in range(n_trials):
-            run_trial(trial_type = block_timing_frame.stim_type[trial_num], fixation_duration= block_timing_frame.fix_duration[trial_num],practice=False, block_type=block_type)
+            run_trial(trial_type = block_timing_frame.stim_type[trial_num], 
+                      fixation_duration= block_timing_frame.fix_duration[trial_num],
+                      practice=False, block_type=block_type, block_number=block_number)
 
 '''
 Show a fixation cross 
@@ -286,7 +292,7 @@ def run_fixation(duration):
     win.flip()
     # record info to outfile
     write_to_tsv([expInfo['participant'],expInfo['session'], expInfo['date'], 
-                    expName, expInfo['frameRate'], time.time(), triggerClock.getTime(), 'fixation', 1, '', '','', '', ''])
+                    expName, expInfo['frameRate'], time.time(), triggerClock.getTime(), 'fixation', 1, '', '','', '', '', ''])
     fix_time = core.StaticPeriod(screenHz=expInfo['frameRate'])
     fix_time.start(duration) 
     fix_time.complete() 
@@ -295,7 +301,7 @@ def run_fixation(duration):
 '''
 Run a single trial
 '''
-def run_trial(trial_type, fixation_duration, practice=False, block_type=''):
+def run_trial(trial_type, fixation_duration, practice=False, block_type='', block_number=''):
     # fixation at beginning of trial
     run_fixation(duration=fixation_duration)
     # present word 
@@ -322,14 +328,15 @@ def run_trial(trial_type, fixation_duration, practice=False, block_type=''):
     win.flip()
     if not practice:
         write_to_tsv([expInfo['participant'],expInfo['session'], expInfo['date'], 
-                        expName, expInfo['frameRate'], time.time(), triggerClock.getTime(), 'word_presentation', 1, trial_word, '', '', block_type, trial_type])
+                      expName, expInfo['frameRate'], time.time(), triggerClock.getTime(), 
+                      'word_presentation', 1, trial_word, '', '', block_type, trial_type, block_number])
     
     # get participant button press response for word
     continueRoutine = True
     while continueRoutine:            
         trial_time = trial_clock.getTime()
         if trial_time > 0 and trial_time < trial_duration:
-            theseKeys = event.getKeys(keyList=['2', '3', 'escape'])
+            theseKeys = event.getKeys(keyList=[yes_button_number, no_button_number, 'escape'])
             if "escape" in theseKeys:
                 endExpNow = True
 
@@ -338,12 +345,12 @@ def run_trial(trial_type, fixation_duration, practice=False, block_type=''):
                 if not practice:  
                     write_to_tsv([expInfo['participant'],expInfo['session'], expInfo['date'], 
                                     expName, expInfo['frameRate'], time.time(), triggerClock.getTime(), 'response', 1, 
-                                    trial_word, trial_clock.getTime(), theseKeys[0], block_type, trial_type])
+                                    trial_word, trial_clock.getTime(), theseKeys[0], block_type, trial_type, block_number])
                 # change color of selected word
-                if '2' in theseKeys:
+                if no_button_number in theseKeys:
                     no.bold = True
                     no.italic = True
-                elif '3' in theseKeys:
+                elif yes_button_number in theseKeys:
                     yes.bold = True
                     yes.italic = True
                 word.draw()
@@ -363,35 +370,39 @@ def run_trial(trial_type, fixation_duration, practice=False, block_type=''):
 
 # Run the practice (only for first run of localizer) / with instructions & checking keys
 def run_practice():
+    event.clearEvents(eventType='keyboard')
     instruct_text.setText(f'The 3 types of YES or NO questions you will see will be:\
 \n\n1) Does a word describe you?\
 \n\n2) Does a word describe {expInfo["friend_name"]} (who you mentioned earlier)?\
-\n\n3) Is a word positive?')
+\n\n3) Is a word positive?\
+\n\n\nPress either button to continue')
     instruct_text.draw()
     win.flip()
-    wait_for_keypress(key_list=['space'])
+    wait_for_keypress(key_list=['space',yes_button_number, no_button_number])
     instruct_text.setText('Each time you answer a question:\
-        \n\n\npress with your index finger to answer NO\n\npress with your middle finger to answer YES')
+        \n\n\npress with your left finger to answer NO\n\npress with your right finger to answer YES')
     instruct_text.draw()
     win.flip()
-    wait_for_keypress(key_list=['space'])
+    wait_for_keypress(key_list=['space',yes_button_number, no_button_number])
     event.clearEvents(eventType='keyboard')
     instruct_text.setText('Just to make sure everything is working with the buttons.\
-        \n\nPlease press your index finger to answer NO')
+        \n\nPlease press your left finger to answer NO')
     instruct_text.draw()
     win.flip()
-    wait_for_keypress(key_list=['2'])
+    wait_for_keypress(key_list=[no_button_number])
     event.clearEvents(eventType='keyboard')
     instruct_text.setText('Just to make sure everything is working with the buttons.\
-        \n\nPlease press your middle finger to answer YES')
+        \n\nPlease press your right finger to answer YES')
     instruct_text.draw()
     win.flip()
-    wait_for_keypress(key_list=['3'])
+    wait_for_keypress(key_list=[yes_button_number])
+    event.clearEvents(eventType='keyboard')
     instruct_text.setText('Great! We will go through a few practice trials of each type now.\
-        \n\nTry to make your decision quickly!')
+        \n\nTry to make your decision quickly!\
+\n\n\nPress either button to continue')
     instruct_text.draw()
     win.flip()
-    wait_for_keypress(key_list=['space'])
+    wait_for_keypress(key_list=['space',yes_button_number, no_button_number])
 
     # Run actual practice trials (6 of them, 2 of each type)
     run_block(n_trials = 0, block_type = 'self', block_number = 0, practice = True)

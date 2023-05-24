@@ -1,12 +1,4 @@
 % Updated for scanning 9/17/10
-% updated for resize mse, 9/20/10
-% updated for larger resize, 32-channel projector 1/12/12 mse
-%new code: lines 21-22  152-155  173-176  191-199  249-252  266-274
-
-clear all; ClockRandSeed;
-
-%%%%%%%%%%%%%%response codes
-
 r1=98; % ' ' for response key 1 (cat2)     male\city
 
 r2=29;  % '.' for response key 2 (cat1)     female\mountain
@@ -52,23 +44,23 @@ x_size=300;  %rows/height
 % Task=str2num(Task); %1=go-nogo face gender %2=go-nogo scene type %3=2AFC face gender %4=2AFC scene type
 % framesper=str2num(framesper);
 
-% LIMITED DIALOGUE BOX FOR R33 USE
-prompt = {'Enter subject name','Session (nf15, nf30)','Run (01)'};
-def={'XXX','nfXX','01'};
+% LIMITED DIALOGUE BOX FOR R61 REMIND USE
+prompt = {'Enter subject name','Run (01 02)'};
+def={'XXXX','XX'};
 answer = inputdlg(prompt, 'Experimental setup information',1,def);
 [subName, sesName, runNo] = deal(answer{:});
 
 % ORIGINALLY INCLUDED BUT NOW ONLY MODIFIABLE IN THE SCRIPT
 Rate =.05;
-duration = 30; % seconds (e.g., 240 for 4 minutes)
-fMRI = 0; % 0: for debugging; 1: for in-scanner
-Prac = 1;
+duration = 240; % seconds 
+fMRI = 0; % always set to 0; do not enter 1 here!
+Prac = 0;
 FHR = 0;
 Prob = .9;
 HoldTime = .05;
 Scram = 0;
 Task = 2; % 1=go-nogo face gender %2=go-nogo scene type %3=2AFC face gender %4=2AFC scene type
-framesper = 20; % modified specifically for NUBIC 
+framesper = 16; 
 
 norm=1;
 luminance=110;
@@ -87,6 +79,18 @@ facey=FHR;
 housey=1-FHR;
 
 %framesper=25;
+
+%%%%%%%%%%%% JZ 01/2022 ADD: OVERWRITE WARNING %%%%%%%%%%%%%
+txt_name = strcat('sub-remind', subName,'_task-cpt_run-',num2str(runNo),'.txt');
+output_path = strcat('data/',subName,'/',txt_name);
+if exist(output_path, 'file')
+    promptMessage = sprintf('The output already exists:\n%s\nDo you want to overwrite it?',txt_name);
+    titleBarCaption = 'Overwrite?';
+    buttonText = questdlg(promptMessage, titleBarCaption, 'Yes, proceed', 'No, exit program','No, exit program');
+    if strcmpi(buttonText, 'No, exit program')
+        Screen('CloseAll');
+    end    
+end
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%% get all the picture dirs and names
 
@@ -355,7 +359,7 @@ end;
 
 list.pics=data(:,1:8);
 
-%diff_M=double(jpeg_M2)-double(jpeg_M1);  %diff_M between trial n and n+1
+%diff_M=double(jpeg_M2)-double(jpeg_M1);  %diff between trial n and n+1
 
   data(numberoftrials,10)=0;
 % % 
@@ -547,15 +551,15 @@ C=clock;
 mkdir(strcat('data/',subName));
 cd(strcat('data/',subName))
 'saving data- wait!'
-save(['sub-remind' subName '_ses-' sesName '_task-cpt_run-' num2str(runNo) '_prac.mat'],'data', 'response','ttt','FHR','Rate','Prob','Task','Scram', 'framesper', 'numberoftrials', 'subName','starttime','endtime','x_size','y_size');
+save(['sub-remind' subName '_task-cpt_run-' num2str(runNo) '_events.mat'],'data', 'response','ttt','FHR','Rate','Prob','Task','Scram', 'framesper', 'numberoftrials', 'subName','starttime','endtime','x_size','y_size');
 
 %%%%%%%%%% save bids-formatted tsv file (JZ) %%%%%%%%%%%%%%%%
 nTrials = size(data,1);
-Onset = data(:,9)-data(1,9);
+onset = data(:,9)-data(1,9);
 
-Duration = diff(data(:,9));
-meanDuration = mean(Duration);
-Duration(nTrials)=meanDuration; % approximation
+duration = diff(data(:,9));
+meanDuration = mean(duration);
+duration(nTrials)=meanDuration; % approximation
 
 TrialType = data(:,7); % 0 = mask, 1 = mountain, 2 = city
 Response = response(:,3)~=0; % get from column 3; 0 = response absent, 1 = response present
@@ -583,12 +587,14 @@ end
 CoherenceAtResponse = response(:,4);
 % ZScore = zscore(
 
-tsv_table = table(Onset, Duration, TrialType, Response, ResponseTime, ResponseType, CoherenceAtResponse);
-tsv_name = strcat('sub-remind', subName, '_ses-', sesName,'_task-cpt_run-', num2str(runNo), '_prac.txt'); % check sesName and runNo
-writetable(tsv_table,tsv_name,'Delimiter','\t')
+tsv_table = table(onset, duration, TrialType, Response, ResponseTime, ResponseType, CoherenceAtResponse);
+txt_name = strcat('sub-remind', subName, '_task-cpt_run-',num2str(runNo),'_events.txt');
+% txt_name = strcat('sub-R33rtsz', subName, '_ses-', sesName,'_task-CPT_run-',num2str(runNo),'.tsv');
+writetable(tsv_table,txt_name,'Delimiter','\t')
+% movefile(txt_name,tsv_name);
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-cd ../../
+cd ..
 WaitSecs(1);
 
 %Kbwait;

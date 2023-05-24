@@ -28,6 +28,11 @@ import subprocess
 import shlex
 import locale
 
+# button box
+left_button='3'
+right_button='1'
+enter_button='4'
+
 # Ensure that relative paths start from the same directory as this script
 _thisDir = os.path.dirname(os.path.abspath(__file__))
 os.chdir(_thisDir)
@@ -139,15 +144,21 @@ elif expInfo['feedback_on']=='No Feedback':
 
 
 # if filepath already exists, stop run and check with user
+# Allow choice of moving to next run or overwriting the current one
 while os.path.exists(filename + '_roi_outputs.csv'):
     warning_box = gui.Dlg(title = 'WARNING')
     warning_box.addText(f'Already have data for {expInfo["participant"]} run {expInfo["run"]}!\nClick OK to write to run  {int(expInfo["run"]) + 1} instead \
         Or, click Cancel to exit')
+    warning_box.addField(run_label = [f"Run {int(expInfo['run']) + 1}", 
+                                      "Overwrite run {int(expInfo['run']) + 1}"])
     warning_box.show()
     if not warning_box.OK:
         core.quit()
+    # If not overwriting, go on to next run
+    # Set filename
     else:
-        expInfo['run'] = int(expInfo['run']) +1 
+        if 'Overwrite' not in warning_box.run_label:
+            expInfo['run'] = int(expInfo['run']) +1 
         filename = 'data' + os.path.sep + '%s_DMN_Feedback_%s' %(expInfo['participant'],expInfo['run'])
 
 # If first run, use default scale factor
@@ -239,6 +250,13 @@ with open(run_questions_file, 'a') as csvfile:
     stim_writer = csv.writer(csvfile, delimiter=',', quotechar='|', quoting=csv.QUOTE_MINIMAL)
     stim_writer.writerow(["id", "run", 'feedback_on', "question_text", "reponse", "rt"])  
 
+slider_instruction = visual.TextStim(win=win, ori=0, name='text',
+        text="You'll see a few slider questions next\nPress the left and right buttons to move the slider\nAnd the top button to enter your reponse\nPress any button to continue", font=u'Arial',
+        pos=[0, 0.2], height=0.06, wrapWidth=1.2,
+        color=u'white', colorSpace='rgb', opacity=1,
+        depth=0.0)
+
+
 def run_slider(question_text='Default Text', left_label='left', right_label='right'):
     slider_question = visual.TextStim(win=win, ori=0, name='text',
         text=question_text, font=u'Arial',
@@ -262,13 +280,13 @@ def run_slider(question_text='Default Text', left_label='left', right_label='rig
     win.flip()
     continueRoutine = True
     while continueRoutine:
-        keys = event.getKeys(keyList=['2', '3', '4'])
+        keys = event.getKeys(keyList=[left_button, right_button, enter_button])
         if len(keys):
-            if '2' in keys:
+            if left_button in keys:
                 vas.markerPos = vas.markerPos - 1
-            elif '3' in keys:
+            elif right_button in keys:
                 vas.markerPos = vas.markerPos  + 1 
-            elif '4' in keys:
+            elif enter_button in keys:
                 vas.rating=vas.markerPos
                 continueRoutine=False
             vas.draw()
@@ -428,7 +446,7 @@ instruct_text = visual.TextStim(win=win, ori=0, name='instruct_text',
 
 # Initialize components for Routine "finish"
 finishClock = core.Clock()
-text_5 = visual.TextStim(win=win, ori=0, name='text_5',
+thank_you_end_run_text = visual.TextStim(win=win, ori=0, name='thank_you_end_run_text',
     text=u'thank you!',    font=u'Arial',
     pos=[0, 0], height=0.1, wrapWidth=None,
     color=u'white', colorSpace='rgb', opacity=1,
@@ -535,7 +553,7 @@ while continueRoutine:
         key_resp_3.clock.reset()  # now t=0
         event.clearEvents(eventType='keyboard')
     if key_resp_3.status == STARTED:
-        theseKeys = event.getKeys(keyList=['num_add', 't','+','5'])
+        theseKeys = event.getKeys(keyList=['t','+','5', 5])
         
         # check for quit:
         if "escape" in theseKeys:
@@ -582,11 +600,6 @@ if key_resp_3.keys != None:  # we had a response
     thisExp.addData('key_resp_3.rt', key_resp_3.rt)
 thisExp.nextEntry()
 
-
-
-
-# instruct_text.setText('Relax')
-# instruct_text.pos = (0, -1)
 
 # BASELINE: wait for 30s before delivering feedback
 #------Prepare to start Routine "baseline"-------
@@ -899,16 +912,19 @@ for thisComponent in baselineComponents:
 t = 0
 finishClock.reset()  # clock 
 frameN = -1
-routineTimer.add(5.000000)
 # update component parameters for each repeat
 # keep track of which components have finished
 finishComponents = []
-finishComponents.append(text_5)
+finishComponents.append(thank_you_end_run_text)
 for thisComponent in finishComponents:
     if hasattr(thisComponent, 'status'):
         thisComponent.status = NOT_STARTED
 
 # Ask slider questions
+slider_instruction.draw()
+win.flip()
+wait_for_keypress(key_list=[right_button, left_button, enter_button])
+
 run_slider(question_text='How often were you using the mental noting practice?',
                 left_label='Never', right_label='Always')
 run_slider(question_text='How often did you check the position of the ball',
@@ -918,49 +934,11 @@ run_slider(question_text='How difficult was it to apply mental noting?',
 run_slider(question_text='How calm do you feel right now?',
                 left_label='Not at all', right_label='Very calm')
 
-
-#-------Start Routine "finish"-------
-continueRoutine = True
-while continueRoutine and routineTimer.getTime() > 0:
-    # get current time
-    t = finishClock.getTime()
-    frameN = frameN + 1  # number of completed frames (so 0 is the first frame)
-    # update/draw components on each frame
-    
-    # *text_5* updates
-    if t >= 0.0 and text_5.status == NOT_STARTED:
-        # keep track of start time/frame for later
-        text_5.tStart = t  # underestimates by a little under one frame
-        text_5.frameNStart = frameN  # exact frame index
-        text_5.setAutoDraw(True)
-    if text_5.status == STARTED and t >= (0.0 + (5-win.monitorFramePeriod*0.75)): #most of one frame period left
-        text_5.setAutoDraw(False)
-    
-    # check if all components have finished
-    if not continueRoutine:  # a component has requested a forced-end of Routine
-        routineTimer.reset()  # if we abort early the non-slip timer needs reset
-        break
-    continueRoutine = False  # will revert to True if at least one component still running
-    for thisComponent in finishComponents:
-        if hasattr(thisComponent, "status") and thisComponent.status != FINISHED:
-            continueRoutine = True
-            break  # at least one component has not yet finished
-    
-    # check for quit (the Esc key)
-    if endExpNow or event.getKeys(keyList=["escape"]):
-        core.quit()
-    
-    # refresh the screen
-    if continueRoutine:  # don't flip if this routine is over or we'll get a blank screen
-        win.flip()
-
-#-------Ending Routine "finish"-------
-for thisComponent in finishComponents:
-    if hasattr(thisComponent, "setAutoDraw"):
-        thisComponent.setAutoDraw(False)
-
+# display ending text and close window
+thank_you_end_run_text.draw()
+win.flip()
+core.wait(3)
 win.close()
-
 
 
 # Set variables for the next run
