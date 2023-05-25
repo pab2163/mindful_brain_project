@@ -93,7 +93,7 @@ murfi_FAKE=False
 while expInfo['feedback_on'] not in ['Feedback', 'No Feedback']:
     expInfo['feedback_on'] =  input_feedback
     dlg = gui.DlgFromDict(dictionary=expInfo, title=expName, 
-        labels = {'participant': 'Participant ID', 
+        labels = {'participant': 'Participant ID (remind####)', 
                   'run': 'Run', 
                   'feedback_on': 'Display Feedback?',
                   'anchor': 'Participant Anchor',
