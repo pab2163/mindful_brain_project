@@ -147,19 +147,24 @@ elif expInfo['feedback_on']=='No Feedback':
 # Allow choice of moving to next run or overwriting the current one
 while os.path.exists(filename + '_roi_outputs.csv'):
     warning_box = gui.Dlg(title = 'WARNING')
-    warning_box.addText(f'Already have data for {expInfo["participant"]} run {expInfo["run"]}!\nClick OK to write to run  {int(expInfo["run"]) + 1} instead \
-        Or, click Cancel to exit')
-    warning_box.addField(label='run_label',choices = [f"Run {int(expInfo['run']) + 1}", 
-                                      f"Overwrite run {int(expInfo['run']) + 1}"])
+    warning_box.addText(f'Already have data for {expInfo["participant"]} run {expInfo["run"]}!\nClick OK to write to Run {int(expInfo["run"]) + 1} instead \
+        \nTo overwrite run {expInfo["run"]}, select this option from the dropdown menu \
+        \nOr, click Cancel to exit')
+    warning_box.addField(label='Choose Run #',choices = [f"Run {int(expInfo['run']) + 1}", 
+                                      f"Overwrite Run {int(expInfo['run'])}"])
     warning_box_data=warning_box.show()
     if not warning_box.OK:
         core.quit()
-    # If not overwriting, go on to next run
-    # Set filename
+
+    # If not canceling, set filename
     else:
-        if 'Overwrite' not in warning_box_data.run_label:
+        # If not overwriting, set filename to next run
+        if f"Overwrite Run {int(expInfo['run'])}" not in warning_box_data:
             expInfo['run'] = int(expInfo['run']) +1 
-        filename = 'data' + os.path.sep + '%s_DMN_Feedback_%s' %(expInfo['participant'],expInfo['run'])
+            filename = 'data' + os.path.sep + '%s_DMN_Feedback_%s' %(expInfo['participant'],expInfo['run'])
+        # If overwriting, keep current filename
+        elif f"Overwrite Run {int(expInfo['run'])}" in warning_box_data:
+            break
 
 # If first run, use default scale factor
 # Otherwise, adjust scale factor up/down if needed
