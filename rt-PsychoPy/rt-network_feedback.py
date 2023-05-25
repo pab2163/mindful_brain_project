@@ -110,7 +110,7 @@ expInfo['date'] = data.getDateStr()
 expInfo['expName'] = expName
 expInfo['No_of_ROIs'] = 2
 expInfo['Level_1_2_3'] = 1
-expInfo['Run_Time'] = 120
+expInfo['Run_Time'] = 150
 expInfo['pda_outlier_threshold']=2
 circles_move_with_hits=False
 circle_radius_shrink_with_hits=True
@@ -121,13 +121,19 @@ BaseLineTime=30
 # TR (seconds)
 expInfo['tr']=1.2
 
-
 roi_number= str('%s') %(expInfo['No_of_ROIs'])
 roi_number=int(roi_number)
 
+'''
+Minimum and maximum number of "hits" to targets for which scale factor won't be adjusted
+Fewer hits than min_hits --> scale factor goes up and ball moves faster
+More hits than max_hits (in either direction) --> scale factor goes down and ball moves more slowly
+'''
+min_hits=3
+max_hits=5
 
 # default scale factor (higher means ball moves up/down faster)
-default_scale_factor = 25
+default_scale_factor = 10
 
 # another interal scale factor to make sure scaling of feedback is appropriate (higher means ball moves up/down more SLOWLY)
 internal_scaler=10
@@ -164,6 +170,9 @@ while os.path.exists(filename + '_roi_outputs.csv'):
             filename = 'data' + os.path.sep + '%s_DMN_Feedback_%s' %(expInfo['participant'],expInfo['run'])
         # If overwriting, keep current filename
         elif f"Overwrite Run {int(expInfo['run'])}" in warning_box_data:
+            os.system(f'rm {filename}_roi_outputs.csv')
+            os.system(f'rm {filename}.csv')
+            os.system(f'rm {filename}.psydat')
             break
 
 # If first run, use default scale factor
@@ -186,11 +195,11 @@ else:
         last_run_scale_factor = last_run_info.scale_factor[0]
 
         # if 5+ hits in either direction, decrease scale factor
-        if last_run_dmn_hits >= 5 or last_run_cen_hits >= 5:
+        if last_run_dmn_hits > max_hits or last_run_cen_hits > max_hits:
             expInfo['scale_factor'] = last_run_scale_factor * 0.75
         
-        # if 0 or 1 total hits, increase scale factor
-        elif last_run_cen_hits + last_run_dmn_hits <= 1:
+        # if not enough hits, increase scale factor
+        elif last_run_cen_hits + last_run_dmn_hits < min_hits:
             expInfo['scale_factor'] = last_run_scale_factor * 1.25
 
         # otherwise, keep scale factor the same
