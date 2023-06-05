@@ -57,7 +57,7 @@ if [ ${step} = 2vol ]
 then
     clear
     echo "ready to receive 2 volume scan"
-    singularity exec murfi2.sif murfi -f $subj_dir/xml/2vol.xml
+    singularity exec murfi2.1.sif murfi -f $subj_dir/xml/2vol.xml
 fi
 
 
@@ -69,8 +69,8 @@ clear
     export MURFI_SUBJECTS_DIR="${absolute_path}/subjects/"
     export MURFI_SUBJECT_NAME=$subj 
 
-    singularity exec --bind home/rt:/home/rt --bind /usr/local/fsl:/usr/local/fsl murfi2.sif murfi -f $subj_dir_absolute/xml/rtdmn.xml
-    #singularity exec murfi2.sif murfi -f $subj_dir_absolute/xml/rtdmn.xml
+    singularity exec --bind home/rt:/home/rt murfi2.1.sif murfi -f $subj_dir_absolute/xml/rtdmn.xml
+    #singularity exec murfi2.1.sif murfi -f $subj_dir_absolute/xml/rtdmn.xml
 fi
 
 
@@ -81,7 +81,7 @@ clear
     echo "ready to receive resting state scan"
     export MURFI_SUBJECTS_DIR="${absolute_path}/subjects/"
     export MURFI_SUBJECT_NAME=$subj
-    singularity exec murfi2.sif murfi -f $subj_dir/xml/rest.xml
+    singularity exec murfi2.1.sif murfi -f $subj_dir/xml/rest.xml
 
 fi
 
@@ -424,6 +424,10 @@ then
     #echo "Ignore Flipping WARNINGS we need LPS/NEUROLOGICAL orientation for murfi feedback!!"
     latest_ref=$(ls -t $subj_dir/xfm/*.nii | head -n1)
     latest_ref="${latest_ref::-4}"
+    study_ref=${subj_dir}/xfm/study_ref.nii
+    mv $study_ref ${subj_dir}/xfm/localizer_ref.nii
+    cp ${latest_ref} ${study_ref}
+
     echo ${latest_ref}
     bet ${latest_ref} ${latest_ref}_brain -R -f 0.4 -g 0 -m # changed from -f 0.6
     slices ${latest_ref} ${latest_ref}_brain_mask -o $subj_dir/qc/2vol_skullstrip_brain_mask_check.gif
