@@ -97,8 +97,8 @@ clear
     runstring="Resting state runs should have ${expected_volumes} volumes\n"
     for i in {0..10};
     do
-        # Because of MURFI file-naming conventions, do not use the first volume!
-        run_volumes=$(find ${subj_dir_absolute}/img/ -type f \( -iname "img-0000${i}*" ! -iname "*00001.nii" \) | wc -l)
+        # Find # of volumes in each run
+        run_volumes=$(find ${subj_dir_absolute}/img/ -type f \( -iname "img-0000${i}*" \) | wc -l)
         if [ ${run_volumes} -ne 0 ]
         then
             runstring="${runstring}\nRun ${i}: ${run_volumes} volumes"
@@ -134,9 +134,9 @@ clear
         rest_runA_filename=$subj_dir_absolute/rest/$subj'_'$ses'_task-rest_run-01_bold.nii.gz'
         rest_runB_filename=$subj_dir_absolute/rest/$subj'_'$ses'_task-rest_run-02_bold.nii.gz' 
 
-        # Merge all volumes in each run except for the first one -- this is because of the MURFI labeling issue where this first volume often is actually mislabeled and from a different run 
-        volsA=$(find ${subj_dir_absolute}/img/ -type f \( -iname "img-0000${rest_runA_num}*" ! -iname "*00001.nii" \))
-        volsB=$(find ${subj_dir_absolute}/img/ -type f \( -iname "img-0000${rest_runB_num}*" ! -iname "*00001.nii" \)) 
+        # Merge all volumes in each run 
+        volsA=$(find ${subj_dir_absolute}/img/ -type f \( -iname "img-0000${rest_runA_num}*" \))
+        volsB=$(find ${subj_dir_absolute}/img/ -type f \( -iname "img-0000${rest_runB_num}*" \)) 
         fslmerge -tr $rest_runA_filename $volsA 1.2
         fslmerge -tr $rest_runB_filename $volsB 1.2
 
@@ -230,9 +230,9 @@ clear
         # Use just a single run for ICA (only to be used when 2 isn't viable)
         echo "Using run ${rest_runA_num} for single-run ICA"
 
-        # merge individual volumes (except volume 1, see note above!) to make 1 file for each resting state run
+        # merge individual volumes to make 1 file for each resting state run
         rest_runA_filename=$subj_dir_absolute/rest/$subj'_'$ses'_task-rest_run-01_bold'.nii.gz
-        volsA=$(find ${subj_dir_absolute}/img/ -type f \( -iname "img-0000${rest_runA_num}*" ! -iname "*00001.nii" \))
+        volsA=$(find ${subj_dir_absolute}/img/ -type f \( -iname "img-0000${rest_runA_num}*" \))
         fslmerge -tr $rest_runA_filename $volsA 1.2
 
         # figure out how many volumes of resting state data there were to be used in ICA
