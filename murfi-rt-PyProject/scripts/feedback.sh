@@ -93,7 +93,7 @@ clear
     echo "+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++"
     echo "+ compiling resting state run into analysis folder"
 
-    expected_volumes=249
+    expected_volumes=250
     runstring="Resting state runs should have ${expected_volumes} volumes\n"
     for i in {0..10};
     do
@@ -421,14 +421,23 @@ then
     clear
     echo "++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++"
     echo "Registering masks to study_ref"
-    #echo "Ignore Flipping WARNINGS we need LPS/NEUROLOGICAL orientation for murfi feedback!!"
-    latest_ref=$(ls -t $subj_dir/xfm/*.nii | head -n1)
+    latest_ref=$(ls -t $subj_dir/xfm/series*.nii | head -n1)
     latest_ref="${latest_ref::-4}"
     study_ref=${subj_dir}/xfm/study_ref.nii
-    mv $study_ref ${subj_dir}/xfm/localizer_ref.nii
-    cp ${latest_ref} ${study_ref}
 
-    echo ${latest_ref}
+    # if localizer_ref images doesn't exist yet, make it
+    if [ ! -f ${subj_dir}/xfm/localizer_ref.nii ]
+    then
+        mv ${study_ref} ${subj_dir}/xfm/localizer_ref.nii
+    fi
+    echo "Registering masks to reference image from most recent series: ${latest_ref}"
+    echo "study_ref.nii is now ${latest_ref}"
+
+    # Move the latest reference image to be study_ref
+    # study_ref.nii is used by MURFI to register to 1st volume of feedback runs
+    # So ROI masks need to be in the same space as study_ref.nii
+    cp ${latest_ref}.nii ${study_ref}
+
     bet ${latest_ref} ${latest_ref}_brain -R -f 0.4 -g 0 -m # changed from -f 0.6
     slices ${latest_ref} ${latest_ref}_brain_mask -o $subj_dir/qc/2vol_skullstrip_brain_mask_check.gif
 
