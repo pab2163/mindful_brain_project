@@ -120,7 +120,7 @@
     <design>
       <option name="disabled"> false </option>
       <option name="modelMotionParameters"> true </option>
-      <option name="maxTrendOrder"> 2 </option>
+      <option name="maxTrendOrder"> 1 </option>
      <!-- parameters specifying neural conditions of interest -->
 
       <!-- each condition should have its own vector of "on" trs as 1s
