@@ -614,7 +614,6 @@ if key_resp_3.keys != None:  # we had a response
     thisExp.addData('key_resp_3.rt', key_resp_3.rt)
 thisExp.nextEntry()
 
-
 # BASELINE: wait for 30s before delivering feedback
 #------Prepare to start Routine "baseline"-------
 t = 0
@@ -865,7 +864,7 @@ while continueRoutine and routineTimer.getTime() > 0:
         core.quit()
     
 
-# END OF FEEDBACK LOOP
+#END OF FEEDBACK LOOP
       
 #------Prepare to start Routine "baseline"-------
 t = 0
@@ -999,13 +998,15 @@ def quit_psychopy():
 # Shut down psychopy before starting next run
 quit_psychopy()
 
-# Start next run!
+
+# Start next run using subprocess (should run detached)!
 if expInfo['feedback_condition']=='15min':
     if next_run < 6:
-        os.system(f"python rt-network_feedback.py {next_participant} {next_run} {next_feedback} {next_feedback_condition} {anchor}")
+        subprocess.Popen(["reopen_ball_task_columbia.bat", str(next_participant), str(next_run), 
+            str(next_feedback), str(next_feedback_condition), str(anchor)])
 elif expInfo['feedback_condition']=='30min':
-    if not (expInfo['feedback_on'] == 'No Feedback' and int(expInfo['run'])==3):
-        os.system(f"python rt-network_feedback.py {next_participant} {next_run} {next_feedback} {next_feedback_condition} {anchor}")
+        subprocess.Popen(["reopen_ball_task_columbia.bat", str(next_participant), str(next_run), 
+            str(next_feedback), str(next_feedback_condition), str(anchor)])
 
-
-
+# Quit python
+sys.exit('Done with run')
