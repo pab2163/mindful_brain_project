@@ -57,7 +57,7 @@ if [ ${step} = 2vol ]
 then
     clear
     echo "ready to receive 2 volume scan"
-    singularity exec murfi2.sif murfi -f $subj_dir/xml/2vol.xml
+    singularity exec murfi2.1.sif murfi -f $subj_dir/xml/2vol.xml
 fi
 
 
@@ -69,8 +69,8 @@ clear
     export MURFI_SUBJECTS_DIR="${absolute_path}/subjects/"
     export MURFI_SUBJECT_NAME=$subj 
 
-    singularity exec --bind home/rt:/home/rt --bind /usr/local/fsl:/usr/local/fsl murfi2.sif murfi -f $subj_dir_absolute/xml/rtdmn.xml
-    #singularity exec murfi2.sif murfi -f $subj_dir_absolute/xml/rtdmn.xml
+    singularity exec --bind home/rt:/home/rt murfi2.1.sif murfi -f $subj_dir_absolute/xml/rtdmn.xml
+    #singularity exec murfi2.1.sif murfi -f $subj_dir_absolute/xml/rtdmn.xml
 fi
 
 
@@ -81,7 +81,7 @@ clear
     echo "ready to receive resting state scan"
     export MURFI_SUBJECTS_DIR="${absolute_path}/subjects/"
     export MURFI_SUBJECT_NAME=$subj
-    singularity exec murfi2.sif murfi -f $subj_dir/xml/rest.xml
+    singularity exec murfi2.1.sif murfi -f $subj_dir/xml/rest.xml
 
 fi
 
@@ -93,12 +93,12 @@ clear
     echo "+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++"
     echo "+ compiling resting state run into analysis folder"
 
-    expected_volumes=249
+    expected_volumes=250
     runstring="Resting state runs should have ${expected_volumes} volumes\n"
     for i in {0..10};
     do
-        # Because of MURFI file-naming conventions, do not use the first volume!
-        run_volumes=$(find ${subj_dir_absolute}/img/ -type f \( -iname "img-0000${i}*" ! -iname "*00001.nii" \) | wc -l)
+        # Find # of volumes in each run
+        run_volumes=$(find ${subj_dir_absolute}/img/ -type f \( -iname "img-0000${i}*" \) | wc -l)
         if [ ${run_volumes} -ne 0 ]
         then
             runstring="${runstring}\nRun ${i}: ${run_volumes} volumes"
@@ -134,9 +134,9 @@ clear
         rest_runA_filename=$subj_dir_absolute/rest/$subj'_'$ses'_task-rest_run-01_bold.nii.gz'
         rest_runB_filename=$subj_dir_absolute/rest/$subj'_'$ses'_task-rest_run-02_bold.nii.gz' 
 
-        # Merge all volumes in each run except for the first one -- this is because of the MURFI labeling issue where this first volume often is actually mislabeled and from a different run 
-        volsA=$(find ${subj_dir_absolute}/img/ -type f \( -iname "img-0000${rest_runA_num}*" ! -iname "*00001.nii" \))
-        volsB=$(find ${subj_dir_absolute}/img/ -type f \( -iname "img-0000${rest_runB_num}*" ! -iname "*00001.nii" \)) 
+        # Merge all volumes in each run 
+        volsA=$(find ${subj_dir_absolute}/img/ -type f \( -iname "img-0000${rest_runA_num}*" \))
+        volsB=$(find ${subj_dir_absolute}/img/ -type f \( -iname "img-0000${rest_runB_num}*" \)) 
         fslmerge -tr $rest_runA_filename $volsA 1.2
         fslmerge -tr $rest_runB_filename $volsB 1.2
 
@@ -230,9 +230,9 @@ clear
         # Use just a single run for ICA (only to be used when 2 isn't viable)
         echo "Using run ${rest_runA_num} for single-run ICA"
 
-        # merge individual volumes (except volume 1, see note above!) to make 1 file for each resting state run
+        # merge individual volumes to make 1 file for each resting state run
         rest_runA_filename=$subj_dir_absolute/rest/$subj'_'$ses'_task-rest_run-01_bold'.nii.gz
-        volsA=$(find ${subj_dir_absolute}/img/ -type f \( -iname "img-0000${rest_runA_num}*" ! -iname "*00001.nii" \))
+        volsA=$(find ${subj_dir_absolute}/img/ -type f \( -iname "img-0000${rest_runA_num}*" \))
         fslmerge -tr $rest_runA_filename $volsA 1.2
 
         # figure out how many volumes of resting state data there were to be used in ICA
@@ -421,10 +421,23 @@ then
     clear
     echo "++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++"
     echo "Registering masks to study_ref"
-    #echo "Ignore Flipping WARNINGS we need LPS/NEUROLOGICAL orientation for murfi feedback!!"
-    latest_ref=$(ls -t $subj_dir/xfm/*.nii | head -n1)
+    latest_ref=$(ls -t $subj_dir/xfm/series*.nii | head -n1)
     latest_ref="${latest_ref::-4}"
-    echo ${latest_ref}
+    study_ref=${subj_dir}/xfm/study_ref.nii
+
+    # if localizer_ref images doesn't exist yet, make it
+    if [ ! -f ${subj_dir}/xfm/localizer_ref.nii ]
+    then
+        mv ${study_ref} ${subj_dir}/xfm/localizer_ref.nii
+    fi
+    echo "Registering masks to reference image from most recent series: ${latest_ref}"
+    echo "study_ref.nii is now ${latest_ref}"
+
+    # Move the latest reference image to be study_ref
+    # study_ref.nii is used by MURFI to register to 1st volume of feedback runs
+    # So ROI masks need to be in the same space as study_ref.nii
+    cp ${latest_ref}.nii ${study_ref}
+
     bet ${latest_ref} ${latest_ref}_brain -R -f 0.4 -g 0 -m # changed from -f 0.6
     slices ${latest_ref} ${latest_ref}_brain_mask -o $subj_dir/qc/2vol_skullstrip_brain_mask_check.gif
 
