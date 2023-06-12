@@ -48,7 +48,7 @@ x_size=300;  %rows/height
 prompt = {'Enter subject name','Run (01 02)'};
 def={'XXXX','XX'};
 answer = inputdlg(prompt, 'Experimental setup information',1,def);
-[subName, sesName, runNo] = deal(answer{:});
+[subName, runNo] = deal(answer{:});
 
 % ORIGINALLY INCLUDED BUT NOW ONLY MODIFIABLE IN THE SCRIPT
 Rate =.05;
