@@ -327,16 +327,15 @@ then
     # Create filepaths for registration files
     examplefunc=$subj_dir_absolute/rest/$subj'_'$ses'_task-rest_run-01_bold_mcflirt_median_bet.nii.gz'
     #standard=${ica_directory}/reg/standard.nii.gz
-    example_func2standard_mat=${ica_directory}/reg/example_func2standard.mat
-    standard2xample_func=${ica_directory}/reg/standard2example_func.nii.gz
-    standard2example_func_mat=${ica_directory}/reg/standard2example_func.mat
-    example_func2standard=${ica_directory}/reg/example_func2standard.mnii.gz
-
+    example_func2mni_lps_mat=${ica_directory}/reg/example_func2mni_lps.mat
+    example_func2mni_lps=${ica_directory}/reg/example_func2mni_lps
+    mni_lps2xample_func=${ica_directory}/reg/mni_lps2example_func.nii.gz
+    mni_lps2example_func_mat=${ica_directory}/reg/mni_lps2example_func.mat
 
     # Register example func to LPS MNI template, then calculate inverse
     # This registration will be used to bring template networks to native space
-    flirt -in ${examplefunc} -ref MNI152_T1_2mm_LPS_brain -out ${example_func2standard} -omat ${example_func2standard_mat}
-    convert_xfm -omat ${standard2example_func_mat} -inverse ${example_func2standard_mat}
+    flirt -in ${examplefunc} -ref MNI152_T1_2mm_LPS_brain -out ${example_func2mni_lps} -omat ${example_func2mni_lps_mat}
+    convert_xfm -omat ${mni_lps2example_func_mat} -inverse ${example_func2mni_lps_mat}
 
 
     # Set paths for files needed for the next few steps 
@@ -351,12 +350,12 @@ then
 
 
     # WARP LPS MNI brain template to resting-state run native space
-    flirt -in MNI152_T1_2mm_LPS_brain -ref ${examplefunc} -out ${standard2xample_func} -init ${standard2example_func_mat} -applyxfm
+    flirt -in MNI152_T1_2mm_LPS_brain -ref ${examplefunc} -out ${mni_lps2xample_func} -init ${mni_lps2example_func_mat} -applyxfm
     
     # Register the networks from template (MNI LPS) space into resting-state run native space
-    flirt -in ${template_networks} -ref ${examplefunc} -out ${template2example_func} -init ${standard2example_func_mat} -applyxfm
-    flirt -in ${template_dmn} -ref ${examplefunc} -out ${dmn2example_func} -init ${standard2example_func_mat} -applyxfm
-    flirt -in ${template_cen} -ref ${examplefunc} -out ${cen2example_func} -init ${standard2example_func_mat} -applyxfm
+    flirt -in ${template_networks} -ref ${examplefunc} -out ${template2example_func} -init ${mni_lps2example_func_mat} -applyxfm
+    flirt -in ${template_dmn} -ref ${examplefunc} -out ${dmn2example_func} -init ${mni_lps2example_func_mat} -applyxfm
+    flirt -in ${template_cen} -ref ${examplefunc} -out ${cen2example_func} -init ${mni_lps2example_func_mat} -applyxfm
 
 
     # Correlate (spatially) ICA components (not thresholded) with DMN & CEN template files
@@ -408,9 +407,9 @@ then
     # Display masks with FSLEYES
     if [ $ica_version == 'single_run' ]
     then
-        fsleyes $examplefunc ${standard2xample_func} ${dmn_thresh} -cm blue ${cen_thresh} -cm red
+        fsleyes $examplefunc ${mni_lps2xample_func} ${dmn_thresh} -cm blue ${cen_thresh} -cm red
     else
-        fsleyes $examplefunc ${standard2xample_func} ${dmn_thresh} -cm blue ${cen_thresh} -cm red
+        fsleyes $examplefunc ${mni_lps2xample_func} ${dmn_thresh} -cm blue ${cen_thresh} -cm red
     fi
 
 fi
