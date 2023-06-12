@@ -1002,10 +1002,10 @@ quit_psychopy()
 # Start next run using subprocess (should run detached)!
 if expInfo['feedback_condition']=='15min':
     if next_run < 6:
-        subprocess.Popen(["reopen_ball_task_columbia.bat", str(next_participant), str(next_run), 
+        subprocess.Popen(["reopen_balltask.bat", str(next_participant), str(next_run), 
             str(next_feedback), str(next_feedback_condition), str(anchor)])
 elif expInfo['feedback_condition']=='30min':
-        subprocess.Popen(["reopen_ball_task_columbia.bat", str(next_participant), str(next_run), 
+        subprocess.Popen(["reopen_balltask.bat", str(next_participant), str(next_run), 
             str(next_feedback), str(next_feedback_condition), str(anchor)])
 
 # Quit python

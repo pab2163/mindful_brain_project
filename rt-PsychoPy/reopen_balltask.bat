@@ -1,4 +1,4 @@
-call C:\Users\auerbachMRI\anaconda3\Library\bin\conda.bat activate psychopy
+call %HOMEPATH%\anaconda3\Library\bin\conda.bat activate psychopy
 set participant=%1
 set run=%2
 set feedback_on=%3
