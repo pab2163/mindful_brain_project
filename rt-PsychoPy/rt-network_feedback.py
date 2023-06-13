@@ -142,11 +142,15 @@ internal_scaler=10
 if not os.path.isdir('data'):
     os.makedirs('data')  # if this fails (e.g. permissions) we will get error
 
+if not os.path.exists(f"data/{expInfo['participant']}"):
+    os.mkdir(f"data/{expInfo['participant']}")
+
+
 # output file string (different depending on if feedback is being offered)
 if expInfo['feedback_on']=='Feedback':
-    filename = 'data' + os.path.sep + '%s_DMN_Feedback_%s' %(expInfo['participant'],expInfo['run'])
+    filename = f"data/{expInfo['participant']}" + os.path.sep + '%s_DMN_Feedback_%s' %(expInfo['participant'],expInfo['run'])
 elif expInfo['feedback_on']=='No Feedback':
-    filename = 'data' + os.path.sep + '%s_DMN_No_Feedback_%s' %(expInfo['participant'],expInfo['run'])
+    filename = f"data/{expInfo['participant']}" + os.path.sep + '%s_DMN_No_Feedback_%s' %(expInfo['participant'],expInfo['run'])
 
 
 # if filepath already exists, stop run and check with user
@@ -167,12 +171,15 @@ while os.path.exists(filename + '_roi_outputs.csv'):
         # If not overwriting, set filename to next run
         if f"Overwrite Run {int(expInfo['run'])}" not in warning_box_data:
             expInfo['run'] = int(expInfo['run']) +1 
-            filename = 'data' + os.path.sep + '%s_DMN_Feedback_%s' %(expInfo['participant'],expInfo['run'])
+            filename = f"data/{expInfo['participant']}" + os.path.sep + '%s_DMN_Feedback_%s' %(expInfo['participant'],expInfo['run'])
         # If overwriting, keep current filename
         elif f"Overwrite Run {int(expInfo['run'])}" in warning_box_data:
-            os.system(f'rm {filename}_roi_outputs.csv')
-            os.system(f'rm {filename}.csv')
-            os.system(f'rm {filename}.psydat')
+            print('OVERWRITE')
+            print(filename)
+            os.remove(f'{filename}_slider_questions.csv')
+            os.remove(f'{filename}_roi_outputs.csv')
+            os.remove(f'{filename}.csv')
+            os.remove(f'{filename}.psydat')
             break
 
 # If first run, use default scale factor
