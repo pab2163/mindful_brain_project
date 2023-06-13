@@ -3,6 +3,6 @@
 This repo contains scripts for:
 
 * Running MURFI: [murfi-rt-PyProject](murfi-rt-PyProject)
-* Running ball task for real-time feedback: [rt-PsychoPy](rt-PsychoPy)
+* Running ball task for real-time feedback: [balltask](balltask)
 * Running the self-reference task: [self_reference](self_reference)
-* Running the Continuous Performance Task (CPT): [CPT](R33_gradCPT)
+* Running the Continuous Performance Task (gradCPT): [CPT](gradCPT)
