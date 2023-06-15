@@ -31,12 +31,11 @@ then
     mkdir ${subject_dir}$subject/rest
     mkdir ${subject_dir}$subject/fsfs
     mkdir ${subject_dir}$subject/qc # DP ADD 4/12/23
-    #mkdir ${subject_dir}$subject/scripts76
     echo "++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++"
     echo "created all directories for "$subject
     echo "++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++"
     cp ${subject_dir}template/xml/xml_orig/* ${subject_dir}$subject/xml/
 
     ##### This copies template cen.dmn.smc and stg masks to the test mask folder, please uncomment this line and copy the subjects own masks to this folder 
-    cp -r ${subject_dir}template/mask/* ${subject_dir}$subject/mask/
+    #cp -r ${subject_dir}template/mask/* ${subject_dir}$subject/mask/
 fi
