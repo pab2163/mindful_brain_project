@@ -4,7 +4,7 @@ if [[ -z $MURFI_SUBJECT_NAME ]];
 then
 	input_string=$(zenity --forms --title="MURFI GUI" \
 	--separator=" " \
-	--add-entry="Participant ID" \
+	--add-entry="Participant ID (####)" \
 	--add-combo="Step" --combo-values "create|setup" \
 	--cancel-label "Exit" --ok-label "Run Selected Step")
 	ret=$?

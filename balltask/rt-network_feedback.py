@@ -93,7 +93,7 @@ murfi_FAKE=False
 while expInfo['feedback_on'] not in ['Feedback', 'No Feedback']:
     expInfo['feedback_on'] =  input_feedback
     dlg = gui.DlgFromDict(dictionary=expInfo, title=expName, 
-        labels = {'participant': 'Participant ID', 
+        labels = {'participant': 'Participant ID (remind####)', 
                   'run': 'Run', 
                   'feedback_on': 'Display Feedback?',
                   'anchor': 'Participant Anchor',
@@ -110,7 +110,7 @@ expInfo['date'] = data.getDateStr()
 expInfo['expName'] = expName
 expInfo['No_of_ROIs'] = 2
 expInfo['Level_1_2_3'] = 1
-expInfo['Run_Time'] = 120
+expInfo['Run_Time'] = 150
 expInfo['pda_outlier_threshold']=2
 circles_move_with_hits=False
 circle_radius_shrink_with_hits=True
@@ -121,13 +121,19 @@ BaseLineTime=30
 # TR (seconds)
 expInfo['tr']=1.2
 
-
 roi_number= str('%s') %(expInfo['No_of_ROIs'])
 roi_number=int(roi_number)
 
+'''
+Minimum and maximum number of "hits" to targets for which scale factor won't be adjusted
+Fewer hits than min_hits --> scale factor goes up and ball moves faster
+More hits than max_hits (in either direction) --> scale factor goes down and ball moves more slowly
+'''
+min_hits=3
+max_hits=5
 
 # default scale factor (higher means ball moves up/down faster)
-default_scale_factor = 25
+default_scale_factor = 10
 
 # another interal scale factor to make sure scaling of feedback is appropriate (higher means ball moves up/down more SLOWLY)
 internal_scaler=10
@@ -136,30 +142,45 @@ internal_scaler=10
 if not os.path.isdir('data'):
     os.makedirs('data')  # if this fails (e.g. permissions) we will get error
 
+if not os.path.exists(f"data/{expInfo['participant']}"):
+    os.mkdir(f"data/{expInfo['participant']}")
+
+
 # output file string (different depending on if feedback is being offered)
 if expInfo['feedback_on']=='Feedback':
-    filename = 'data' + os.path.sep + '%s_DMN_Feedback_%s' %(expInfo['participant'],expInfo['run'])
+    filename = f"data/{expInfo['participant']}" + os.path.sep + '%s_DMN_Feedback_%s' %(expInfo['participant'],expInfo['run'])
 elif expInfo['feedback_on']=='No Feedback':
-    filename = 'data' + os.path.sep + '%s_DMN_No_Feedback_%s' %(expInfo['participant'],expInfo['run'])
+    filename = f"data/{expInfo['participant']}" + os.path.sep + '%s_DMN_No_Feedback_%s' %(expInfo['participant'],expInfo['run'])
 
 
 # if filepath already exists, stop run and check with user
 # Allow choice of moving to next run or overwriting the current one
 while os.path.exists(filename + '_roi_outputs.csv'):
     warning_box = gui.Dlg(title = 'WARNING')
-    warning_box.addText(f'Already have data for {expInfo["participant"]} run {expInfo["run"]}!\nClick OK to write to run  {int(expInfo["run"]) + 1} instead \
-        Or, click Cancel to exit')
-    warning_box.addField(run_label = [f"Run {int(expInfo['run']) + 1}", 
-                                      "Overwrite run {int(expInfo['run']) + 1}"])
-    warning_box.show()
+    warning_box.addText(f'Already have data for {expInfo["participant"]} run {expInfo["run"]}!\nClick OK to write to Run {int(expInfo["run"]) + 1} instead \
+        \nTo overwrite run {expInfo["run"]}, select this option from the dropdown menu \
+        \nOr, click Cancel to exit')
+    warning_box.addField(label='Choose Run #',choices = [f"Run {int(expInfo['run']) + 1}", 
+                                      f"Overwrite Run {int(expInfo['run'])}"])
+    warning_box_data=warning_box.show()
     if not warning_box.OK:
         core.quit()
-    # If not overwriting, go on to next run
-    # Set filename
+
+    # If not canceling, set filename
     else:
-        if 'Overwrite' not in warning_box.run_label:
+        # If not overwriting, set filename to next run
+        if f"Overwrite Run {int(expInfo['run'])}" not in warning_box_data:
             expInfo['run'] = int(expInfo['run']) +1 
-        filename = 'data' + os.path.sep + '%s_DMN_Feedback_%s' %(expInfo['participant'],expInfo['run'])
+            filename = f"data/{expInfo['participant']}" + os.path.sep + '%s_DMN_Feedback_%s' %(expInfo['participant'],expInfo['run'])
+        # If overwriting, keep current filename
+        elif f"Overwrite Run {int(expInfo['run'])}" in warning_box_data:
+            print('OVERWRITE')
+            print(filename)
+            os.remove(f'{filename}_slider_questions.csv')
+            os.remove(f'{filename}_roi_outputs.csv')
+            os.remove(f'{filename}.csv')
+            os.remove(f'{filename}.psydat')
+            break
 
 # If first run, use default scale factor
 # Otherwise, adjust scale factor up/down if needed
@@ -181,11 +202,11 @@ else:
         last_run_scale_factor = last_run_info.scale_factor[0]
 
         # if 5+ hits in either direction, decrease scale factor
-        if last_run_dmn_hits >= 5 or last_run_cen_hits >= 5:
+        if last_run_dmn_hits > max_hits or last_run_cen_hits > max_hits:
             expInfo['scale_factor'] = last_run_scale_factor * 0.75
         
-        # if 0 or 1 total hits, increase scale factor
-        elif last_run_cen_hits + last_run_dmn_hits <= 1:
+        # if not enough hits, increase scale factor
+        elif last_run_cen_hits + last_run_dmn_hits < min_hits:
             expInfo['scale_factor'] = last_run_scale_factor * 1.25
 
         # otherwise, keep scale factor the same
@@ -600,7 +621,6 @@ if key_resp_3.keys != None:  # we had a response
     thisExp.addData('key_resp_3.rt', key_resp_3.rt)
 thisExp.nextEntry()
 
-
 # BASELINE: wait for 30s before delivering feedback
 #------Prepare to start Routine "baseline"-------
 t = 0
@@ -851,7 +871,7 @@ while continueRoutine and routineTimer.getTime() > 0:
         core.quit()
     
 
-# END OF FEEDBACK LOOP
+#END OF FEEDBACK LOOP
       
 #------Prepare to start Routine "baseline"-------
 t = 0
@@ -985,13 +1005,15 @@ def quit_psychopy():
 # Shut down psychopy before starting next run
 quit_psychopy()
 
-# Start next run!
+
+# Start next run using subprocess (should run detached)!
 if expInfo['feedback_condition']=='15min':
     if next_run < 6:
-        os.system(f"python rt-network_feedback.py {next_participant} {next_run} {next_feedback} {next_feedback_condition} {anchor}")
+        subprocess.Popen(["reopen_balltask.bat", str(next_participant), str(next_run), 
+            str(next_feedback), str(next_feedback_condition), str(anchor)])
 elif expInfo['feedback_condition']=='30min':
-    if not (expInfo['feedback_on'] == 'No Feedback' and int(expInfo['run'])==3):
-        os.system(f"python rt-network_feedback.py {next_participant} {next_run} {next_feedback} {next_feedback_condition} {anchor}")
+        subprocess.Popen(["reopen_balltask.bat", str(next_participant), str(next_run), 
+            str(next_feedback), str(next_feedback_condition), str(anchor)])
 
-
-
+# Quit python
+sys.exit('Done with run')
