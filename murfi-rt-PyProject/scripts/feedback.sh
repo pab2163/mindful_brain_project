@@ -279,7 +279,7 @@ clear
 fi
 
 
-if [ ${step} = process_roi_masks_native ]
+if [ ${step} = process_roi_masks ]
 then
     clear
         echo "++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++"
@@ -415,7 +415,7 @@ then
 fi
 
 # For registering masks in resting state space to 2vol space
-if [ ${step} = register_native ]
+if [ ${step} = register ]
 then
     clear
     echo "++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++"
