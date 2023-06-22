@@ -380,19 +380,19 @@ def run_practice():
     win.flip()
     wait_for_keypress(key_list=['space',yes_button_number, no_button_number])
     instruct_text.setText('Each time you answer a question:\
-        \n\n\npress with your left finger to answer NO\n\npress with your right finger to answer YES')
+        \n\n\npress the left button to answer NO\n\npress the right button to answer YES')
     instruct_text.draw()
     win.flip()
     wait_for_keypress(key_list=['space',yes_button_number, no_button_number])
     event.clearEvents(eventType='keyboard')
     instruct_text.setText('Just to make sure everything is working with the buttons.\
-        \n\nPlease press your left finger to answer NO')
+        \n\nPlease press the left button to answer NO')
     instruct_text.draw()
     win.flip()
     wait_for_keypress(key_list=[no_button_number])
     event.clearEvents(eventType='keyboard')
     instruct_text.setText('Just to make sure everything is working with the buttons.\
-        \n\nPlease press your right finger to answer YES')
+        \n\nPlease press the right button to answer YES')
     instruct_text.draw()
     win.flip()
     wait_for_keypress(key_list=[yes_button_number])
@@ -430,6 +430,20 @@ run_instructions()
 # only run practice if it is run 1 of localizer session
 if expInfo['run'] == '1' and expInfo['session'] == 'loc':
     run_practice()
+elif expInfo['run'] == '1' and expInfo['session'] == 'nf':
+    event.clearEvents(eventType='keyboard')
+    instruct_text.setText('Just to make sure everything is working with the buttons.\
+        \n\nPlease press the left button to answer NO')
+    instruct_text.draw()
+    win.flip()
+    wait_for_keypress(key_list=[no_button_number])
+    event.clearEvents(eventType='keyboard')
+    instruct_text.setText('Just to make sure everything is working with the buttons.\
+        \n\nPlease press the right button to answer YES')
+    instruct_text.draw()
+    win.flip()
+    wait_for_keypress(key_list=[yes_button_number])
+    event.clearEvents(eventType='keyboard')
 
 # trigger - timings are relative to this
 get_trigger()
