@@ -119,7 +119,7 @@
 	<!-- design matrix -->
     <design>
       <option name="disabled"> false </option>
-      <option name="modelMotionParameters"> true </option>
+      <option name="modelMotionDerivatives"> true </option>
       <option name="maxTrendOrder"> 1 </option>
      <!-- parameters specifying neural conditions of interest -->
 
