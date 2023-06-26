@@ -303,7 +303,7 @@ then
         echo "Error: no ICA directory found for ${subj}. Exiting now..."
         exit 0
     fi
-    echo $ica_version
+    echo "ICA is: ${ica_version}"
 
 
     # Make output file to store correlations with template networks
@@ -326,6 +326,7 @@ then
 
     # Create filepaths for registration files
     examplefunc=$subj_dir_absolute/rest/$subj'_'$ses'_task-rest_run-01_bold_mcflirt_median_bet.nii.gz'
+    examplefunc_mask=$subj_dir_absolute/rest/$subj'_'$ses'_task-rest_run-01_bold_mcflirt_median_bet_mask.nii.gz'
     #standard=${ica_directory}/reg/standard.nii.gz
     example_func2mni_lps_mat=${ica_directory}/reg/example_func2mni_lps.mat
     example_func2mni_lps=${ica_directory}/reg/example_func2mni_lps
@@ -359,7 +360,8 @@ then
 
 
     # Correlate (spatially) ICA components (not thresholded) with DMN & CEN template files
-    fslcc --noabs -p 3 -t -1 ${infile} ${template2example_func} >>${correlfile}
+    rm -f ${correlfile}
+    fslcc --noabs -p 8 -t -1 -m ${examplefunc_mask} ${infile} ${template2example_func}>>${correlfile}
 
     # Split ICs to separate files
     split_outfile=$ica_directory/melodic_IC_
@@ -396,8 +398,8 @@ then
     fslmaths ${dmn_uthresh} -thr ${dmn_thresh_value} -bin ${dmn_thresh} -odt short
     fslmaths ${cen_uthresh} -thr ${cen_thresh_value} -bin ${cen_thresh} -odt short
 
-    echo "Number of voxels in dmn mask: $(fslstats ${dmn_thresh} -V)"
-    echo "Number of voxels in cen mask: $(fslstats ${cen_thresh} -V)"
+    echo "Number of voxels in dmn mask: $(fslstats ${dmn_thresh} -V | head -c 5)"
+    echo "Number of voxels in cen mask: $(fslstats ${cen_thresh} -V | head -c 5)"
 
     # copy masks to participant's mask directory
     cp ${dmn_thresh} ${subj_dir}/mask/dmn_native_rest.nii.gz
