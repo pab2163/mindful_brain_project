@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <study name="rtDMN">
-  <option name="subjectsDir"> /home/rt/rtDMN/subjects </option>
+  <option name="subjectsDir"> ../subjects </option>
   <subject>
-    <option name="name"> test_rtdmn </option>
+    <option name="name"> 2vol </option>
   </subject>
-    <option name="softwareDir"> /home/rt/murfi2/ </option>
+    <option name="softwareDir"> /opt/murfi/ </option>
 </study>
 
 <scanner>
