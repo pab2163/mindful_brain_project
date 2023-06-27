@@ -140,6 +140,26 @@ clear
         fslmerge -tr $rest_runA_filename $volsA 1.2
         fslmerge -tr $rest_runB_filename $volsB 1.2
 
+        # figure out how many volumes of resting state data there were to be used in ICA
+        rest_runA_volumes=$(fslnvols $rest_runA_filename)
+        rest_runB_volumes=$(fslnvols $rest_runB_filename)
+        if [ ${rest_runA_volumes} -ne ${expected_volumes} ] || [ ${rest_runB_volumes} -ne ${expected_volumes} ]; 
+        then
+            echo "WARNING! ${rest_runA_volumes} volumes of resting-state data found for run 1."
+            echo "${rest_runB_volumes} volumes of resting-state data found for run 2. ${expected_volumes} expected?"
+
+            # calculate minimum volumes (which run has fewer, then use fslroi to cut both runs to this minimum)
+            minvols=$(( rest_runA_volumes < rest_runB_volumes ? rest_runA_volumes : rest_runB_volumes ))
+            echo "Clipping runs so that both have ${minvols} volumes"
+            fslroi $rest_runA_filename $rest_runA_filename 0 $minvols
+            fslroi $rest_runB_filename $rest_runB_filename 0 $minvols
+        else
+            minvols=$expected_volumes
+        fi
+
+        echo "+ computing resting state networks this will take about 25 minutes"
+        echo "+ started at: $(date)"
+
         # realign volumes pre-FEAT
         mcflirt -in $rest_runA_filename -out $subj_dir_absolute/rest/$subj'_'$ses'_task-rest_run-01_bold_mcflirt.nii.gz'
         mcflirt -in $rest_runB_filename -out $subj_dir_absolute/rest/$subj'_'$ses'_task-rest_run-02_bold_mcflirt.nii.gz'
@@ -191,25 +211,7 @@ clear
             -mas $subj_dir_absolute/rest/$subj'_'$ses'_task-rest_run-01_bold_mcflirt_median_bet_mask.nii.gz' \
             $subj_dir_absolute/rest/$subj'_'$ses'_task-rest_run-02_bold_mcflirt_run1space_masked.nii.gz'
 
-        # figure out how many volumes of resting state data there were to be used in ICA
-        rest_runA_volumes=$(fslnvols $rest_runA_filename)
-        rest_runB_volumes=$(fslnvols $rest_runB_filename)
-        if [ ${rest_runA_volumes} -ne ${expected_volumes} ] || [ ${rest_runB_volumes} -ne ${expected_volumes} ]; 
-        then
-            echo "WARNING! ${rest_runA_volumes} volumes of resting-state data found for run 1."
-            echo "${rest_runB_volumes} volumes of resting-state data found for run 2. ${expected_volumes} expected?"
 
-            # calculate minimum volumes (which run has fewer, then use fslroi to cut both runs to this minimum)
-            minvols=$(( rest_runA_volumes < rest_runB_volumes ? rest_runA_volumes : rest_runB_volumes ))
-            echo "Clipping runs so that both have ${minvols} volumes"
-            fslroi $rest_runA_filename $rest_runA_filename 0 $minvols
-            fslroi $rest_runB_filename $rest_runB_filename 0 $minvols
-        else
-            minvols=$expected_volumes
-        fi
-
-        echo "+ computing resting state networks this will take about 25 minutes"
-        echo "+ started at: $(date)"
         
         ica_run1_input=$subj_dir_absolute/rest/$subj'_'$ses'_task-rest_run-01_bold_mcflirt_masked.nii.gz'
         ica_run2_input=$subj_dir_absolute/rest/$subj'_'$ses'_task-rest_run-02_bold_mcflirt_run1space_masked.nii.gz'
