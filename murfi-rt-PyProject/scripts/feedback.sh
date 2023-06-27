@@ -68,9 +68,7 @@ clear
     echo "ready to receive rtdmn feedback scan"
     export MURFI_SUBJECTS_DIR="${absolute_path}/subjects/"
     export MURFI_SUBJECT_NAME=$subj 
-
-    singularity exec --bind home/rt:/home/rt murfi2.1.sif murfi -f $subj_dir_absolute/xml/rtdmn.xml
-    #singularity exec murfi2.1.sif murfi -f $subj_dir_absolute/xml/rtdmn.xml
+    singularity exec murfi2.1.sif murfi -f $subj_dir_absolute/xml/rtdmn.xml
 fi
 
 
