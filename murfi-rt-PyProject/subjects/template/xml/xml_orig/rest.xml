@@ -2,9 +2,9 @@
 <study name="remind">
   <option name="subjectsDir"> ../subjects </option>
   <subject>
-    <option name="name"> test_rtdmn </option>
+    <option name="name"> rest </option>
   </subject>
-    <option name="softwareDir"> ./ </option>
+    <option name="softwareDir"> /opt/murfi/ </option>
 </study>
 
 <scanner>
