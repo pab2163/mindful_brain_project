@@ -68,9 +68,7 @@ clear
     echo "ready to receive rtdmn feedback scan"
     export MURFI_SUBJECTS_DIR="${absolute_path}/subjects/"
     export MURFI_SUBJECT_NAME=$subj 
-
-    singularity exec --bind home/rt:/home/rt murfi2.1.sif murfi -f $subj_dir_absolute/xml/rtdmn.xml
-    #singularity exec murfi2.1.sif murfi -f $subj_dir_absolute/xml/rtdmn.xml
+    singularity exec murfi2.1.sif murfi -f $subj_dir_absolute/xml/rtdmn.xml
 fi
 
 
@@ -140,6 +138,26 @@ clear
         fslmerge -tr $rest_runA_filename $volsA 1.2
         fslmerge -tr $rest_runB_filename $volsB 1.2
 
+        # figure out how many volumes of resting state data there were to be used in ICA
+        rest_runA_volumes=$(fslnvols $rest_runA_filename)
+        rest_runB_volumes=$(fslnvols $rest_runB_filename)
+        if [ ${rest_runA_volumes} -ne ${expected_volumes} ] || [ ${rest_runB_volumes} -ne ${expected_volumes} ]; 
+        then
+            echo "WARNING! ${rest_runA_volumes} volumes of resting-state data found for run 1."
+            echo "${rest_runB_volumes} volumes of resting-state data found for run 2. ${expected_volumes} expected?"
+
+            # calculate minimum volumes (which run has fewer, then use fslroi to cut both runs to this minimum)
+            minvols=$(( rest_runA_volumes < rest_runB_volumes ? rest_runA_volumes : rest_runB_volumes ))
+            echo "Clipping runs so that both have ${minvols} volumes"
+            fslroi $rest_runA_filename $rest_runA_filename 0 $minvols
+            fslroi $rest_runB_filename $rest_runB_filename 0 $minvols
+        else
+            minvols=$expected_volumes
+        fi
+
+        echo "+ computing resting state networks this will take about 25 minutes"
+        echo "+ started at: $(date)"
+
         # realign volumes pre-FEAT
         mcflirt -in $rest_runA_filename -out $subj_dir_absolute/rest/$subj'_'$ses'_task-rest_run-01_bold_mcflirt.nii.gz'
         mcflirt -in $rest_runB_filename -out $subj_dir_absolute/rest/$subj'_'$ses'_task-rest_run-02_bold_mcflirt.nii.gz'
@@ -191,25 +209,7 @@ clear
             -mas $subj_dir_absolute/rest/$subj'_'$ses'_task-rest_run-01_bold_mcflirt_median_bet_mask.nii.gz' \
             $subj_dir_absolute/rest/$subj'_'$ses'_task-rest_run-02_bold_mcflirt_run1space_masked.nii.gz'
 
-        # figure out how many volumes of resting state data there were to be used in ICA
-        rest_runA_volumes=$(fslnvols $rest_runA_filename)
-        rest_runB_volumes=$(fslnvols $rest_runB_filename)
-        if [ ${rest_runA_volumes} -ne ${expected_volumes} ] || [ ${rest_runB_volumes} -ne ${expected_volumes} ]; 
-        then
-            echo "WARNING! ${rest_runA_volumes} volumes of resting-state data found for run 1."
-            echo "${rest_runB_volumes} volumes of resting-state data found for run 2. ${expected_volumes} expected?"
 
-            # calculate minimum volumes (which run has fewer, then use fslroi to cut both runs to this minimum)
-            minvols=$(( rest_runA_volumes < rest_runB_volumes ? rest_runA_volumes : rest_runB_volumes ))
-            echo "Clipping runs so that both have ${minvols} volumes"
-            fslroi $rest_runA_filename $rest_runA_filename 0 $minvols
-            fslroi $rest_runB_filename $rest_runB_filename 0 $minvols
-        else
-            minvols=$expected_volumes
-        fi
-
-        echo "+ computing resting state networks this will take about 25 minutes"
-        echo "+ started at: $(date)"
         
         ica_run1_input=$subj_dir_absolute/rest/$subj'_'$ses'_task-rest_run-01_bold_mcflirt_masked.nii.gz'
         ica_run2_input=$subj_dir_absolute/rest/$subj'_'$ses'_task-rest_run-02_bold_mcflirt_run1space_masked.nii.gz'
@@ -279,7 +279,7 @@ clear
 fi
 
 
-if [ ${step} = process_roi_masks_native ]
+if [ ${step} = process_roi_masks ]
 then
     clear
         echo "++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++"
@@ -303,7 +303,7 @@ then
         echo "Error: no ICA directory found for ${subj}. Exiting now..."
         exit 0
     fi
-    echo $ica_version
+    echo "ICA is: ${ica_version}"
 
 
     # Make output file to store correlations with template networks
@@ -326,6 +326,7 @@ then
 
     # Create filepaths for registration files
     examplefunc=$subj_dir_absolute/rest/$subj'_'$ses'_task-rest_run-01_bold_mcflirt_median_bet.nii.gz'
+    examplefunc_mask=$subj_dir_absolute/rest/$subj'_'$ses'_task-rest_run-01_bold_mcflirt_median_bet_mask.nii.gz'
     #standard=${ica_directory}/reg/standard.nii.gz
     example_func2mni_lps_mat=${ica_directory}/reg/example_func2mni_lps.mat
     example_func2mni_lps=${ica_directory}/reg/example_func2mni_lps
@@ -359,7 +360,8 @@ then
 
 
     # Correlate (spatially) ICA components (not thresholded) with DMN & CEN template files
-    fslcc --noabs -p 3 -t -1 ${infile} ${template2example_func} >>${correlfile}
+    rm -f ${correlfile}
+    fslcc --noabs -p 8 -t -1 -m ${examplefunc_mask} ${infile} ${template2example_func}>>${correlfile}
 
     # Split ICs to separate files
     split_outfile=$ica_directory/melodic_IC_
@@ -396,8 +398,8 @@ then
     fslmaths ${dmn_uthresh} -thr ${dmn_thresh_value} -bin ${dmn_thresh} -odt short
     fslmaths ${cen_uthresh} -thr ${cen_thresh_value} -bin ${cen_thresh} -odt short
 
-    echo "Number of voxels in dmn mask: $(fslstats ${dmn_thresh} -V)"
-    echo "Number of voxels in cen mask: $(fslstats ${cen_thresh} -V)"
+    echo "Number of voxels in dmn mask: $(fslstats ${dmn_thresh} -V | head -c 5)"
+    echo "Number of voxels in cen mask: $(fslstats ${cen_thresh} -V | head -c 5)"
 
     # copy masks to participant's mask directory
     cp ${dmn_thresh} ${subj_dir}/mask/dmn_native_rest.nii.gz
@@ -415,7 +417,7 @@ then
 fi
 
 # For registering masks in resting state space to 2vol space
-if [ ${step} = register_native ]
+if [ ${step} = register ]
 then
     clear
     echo "++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++"
