@@ -23,8 +23,9 @@ _thisDir = os.path.dirname(os.path.abspath(__file__))
 os.chdir(_thisDir)
 
 # which buttons on the button box correspond to left & right choices (DIAMOND 4-button)
-yes_button_number='1'
-no_button_number='3'
+# YES=LEFT, NO=RIGHT
+yes_button_number='3'
+no_button_number='1'
 
 
 b1=['semantic', 'self', 'other',  'other', 'self',  'other', 'self',  'self', 'other','semantic']
@@ -176,13 +177,13 @@ word = visual.TextStim(win=win, ori=0, name='word',
 
 yes = visual.TextStim(win=win, ori=0, name='word',
     text='YES',    font=u'Arial',
-    pos=[0.7, -.8], height=0.2, wrapWidth=None,
+    pos=[-0.7, -.8], height=0.2, wrapWidth=None,
     color=u'white', colorSpace='rgb', opacity=1,
     depth=-1.0)
 
 no = visual.TextStim(win=win, ori=0, name='word',
     text='NO',    font=u'Arial',
-    pos=[-0.7, -.8], height=0.2, wrapWidth=None,
+    pos=[0.7, -.8], height=0.2, wrapWidth=None,
     color=u'white', colorSpace='rgb', opacity=1,
     depth=-1.0)
     
@@ -374,16 +375,15 @@ def run_practice():
     instruct_text.setText(f'The 3 types of YES or NO questions you will see will be:\
 \n\n1) Does a word describe you?\
 \n\n2) Does a word describe {expInfo["friend_name"]} (who you mentioned earlier)?\
-\n\n3) Is a word positive?\
-\n\n\nPress either button to continue')
+\n\n3) Is a word positive?')
     instruct_text.draw()
     win.flip()
-    wait_for_keypress(key_list=['space',yes_button_number, no_button_number])
+    wait_for_keypress(key_list=['space'])
     instruct_text.setText('Each time you answer a question:\
         \n\n\npress the left button to answer NO\n\npress the right button to answer YES')
     instruct_text.draw()
     win.flip()
-    wait_for_keypress(key_list=['space',yes_button_number, no_button_number])
+    wait_for_keypress(key_list=['space'])
     event.clearEvents(eventType='keyboard')
     instruct_text.setText('Just to make sure everything is working with the buttons.\
         \n\nPlease press the left button to answer NO')
@@ -398,11 +398,10 @@ def run_practice():
     wait_for_keypress(key_list=[yes_button_number])
     event.clearEvents(eventType='keyboard')
     instruct_text.setText('Great! We will go through a few practice trials of each type now.\
-        \n\nTry to make your decision quickly!\
-\n\n\nPress either button to continue')
+        \n\nTry to make your decision quickly!')
     instruct_text.draw()
     win.flip()
-    wait_for_keypress(key_list=['space',yes_button_number, no_button_number])
+    wait_for_keypress(key_list=['space'])
 
     # Run actual practice trials (6 of them, 2 of each type)
     run_block(n_trials = 0, block_type = 'self', block_number = 0, practice = True)
