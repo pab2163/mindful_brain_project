@@ -27,6 +27,7 @@ import threading
 import subprocess
 import shlex
 import locale
+from bids_tsv_convert_balltask import *
 
 # button box
 left_button='3'
@@ -269,10 +270,10 @@ tr_to_frame_ratio = expInfo['tr']/frameDur
 run_questions_file = filename + '_slider_questions.csv'
 with open(run_questions_file, 'a') as csvfile:
     stim_writer = csv.writer(csvfile, delimiter=',', quotechar='|', quoting=csv.QUOTE_MINIMAL)
-    stim_writer.writerow(["id", "run", 'feedback_on', "question_text", "reponse", "rt"])  
+    stim_writer.writerow(["id", "run", 'feedback_on', "question_text", "response", "rt"])  
 
 slider_instruction = visual.TextStim(win=win, ori=0, name='text',
-        text="You'll see a few slider questions next\nPress the left and right buttons to move the slider\nAnd the top button to enter your reponse\nPress any button to continue", font=u'Arial',
+        text="You'll see a few slider questions next\nPress the left and right buttons to move the slider\nAnd the top button to enter your response\nPress any button to continue", font=u'Arial',
         pos=[0, 0.2], height=0.06, wrapWidth=1.2,
         color=u'white', colorSpace='rgb', opacity=1,
         depth=0.0)
@@ -948,6 +949,9 @@ run_slider(question_text='How difficult was it to apply mental noting?',
                 left_label='Not at all', right_label='Very Difficult')
 run_slider(question_text='How calm do you feel right now?',
                 left_label='Not at all', right_label='Very calm')
+
+# Convert csv output to BIDS-format tsv
+convert_balltask_csv_to_bids(infile = f'{filename}_roi_outputs.csv')
 
 # display ending text and close window
 thank_you_end_run_text.draw()
