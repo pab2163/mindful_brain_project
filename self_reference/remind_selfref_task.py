@@ -144,7 +144,7 @@ instruct_text = visual.TextStim(win=win, ori=0, name='instruct_text',
 # Initialize components for Routine "trigger"
 triggerClock = core.Clock()
 trial_clock = core.Clock()
-text_3 = visual.TextStim(win=win, ori=0, name='text_3',
+trigger_text = visual.TextStim(win=win, ori=0, name='trigger_text',
     text=u'waiting for scanner to begin...',    font=u'Arial',
     pos=[0, 0], height=0.1, wrapWidth=2,
     color=u'white', colorSpace='rgb', opacity=1,
@@ -231,7 +231,7 @@ def get_trigger():
     #trigger_resp = event.BuilderKeyResponse()
     #trigger_resp = NOT_STARTED
     event.clearEvents(eventType='keyboard')
-    text_3.draw()
+    trigger_text.draw()
     win.flip()
     triggerClock.reset()
     continueRoutine = True
@@ -271,7 +271,7 @@ def run_block(n_trials, block_type, block_number, practice=False):
         block_type_text.setText(f'Are you?')
     elif block_type == 'other':
         block_type_text.setText(f'Is {expInfo["friend_name"]}?')
-    block_type_text.height = 0.08
+    block_type_text.height = 0.2
     if not practice:
         # get timings just for the current block
         block_timing_frame = all_block_timings[all_block_timings.block == block_number]
