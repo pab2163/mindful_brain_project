@@ -947,7 +947,7 @@ wait_for_keypress(key_list=[right_button, left_button, enter_button])
 
 run_slider(question_text='How often were you using the mental noting practice?',
                 left_label='Never', right_label='Always')
-run_slider(question_text='How often did you check the position of the ball',
+run_slider(question_text='How often did you check the position of the ball?',
                 left_label='Never', right_label='All the time')
 run_slider(question_text='How difficult was it to apply mental noting?',
                 left_label='Not at all', right_label='Very Difficult')
