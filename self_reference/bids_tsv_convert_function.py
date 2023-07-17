@@ -13,7 +13,7 @@ def convert_sret_csv_to_bids(infile):
     
     # Durations of events hard-coded based on task design
     block_duration=28
-    response_duration=1
+    response_duration=0 # will indicate a delta "impulse response" function
     presentation_duration=2.5
     block_type_instruction_duration=2
 
