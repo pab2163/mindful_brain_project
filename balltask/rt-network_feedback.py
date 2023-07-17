@@ -327,16 +327,14 @@ def run_slider(question_text='Default Text', left_label='left', right_label='rig
 # Initialize components for Routine "instructions"
 instructionsClock = core.Clock()
 text = visual.TextStim(win=win, ori=0, name='text',
-    text=u'Noting Practice\n\nIn this run you will see %s circles.\n\nThe upper yellow circle represents the brain process that corresponds to the Noting Practice.\
- \n\nTry to move the central dot into that circle!!\n\nTry to keep it there for 5 sec.\n\nIf you succeed, the circle will shrink and the dot will move back to the center.\
-\n\nHow much can you shrink the circle?\n\nThis experiment will last 2 min.\n\n Press any button to start.' %int(roi_number),font=u'Arial',
+    text=u'' %int(roi_number),font=u'Arial',
     pos=[0, 0], height=0.06, wrapWidth=1.2,
     color=u'white', colorSpace='rgb', opacity=1,
     depth=0.0)
 
 # Initialize components for Routine "trigger"
 triggerClock = core.Clock()
-text_3 = visual.TextStim(win=win, ori=0, name='text_3',
+waiting_for_trigger_text = visual.TextStim(win=win, ori=0, name='waiting_for_trigger_text',
     text=u'waiting for scanner',    font=u'Arial',
     pos=[0, 0], height=0.1, wrapWidth=2,
     color=u'white', colorSpace='rgb', opacity=1,
@@ -477,31 +475,28 @@ thank_you_end_run_text = visual.TextStim(win=win, ori=0, name='thank_you_end_run
 globalClock = core.Clock()  # to track the time since experiment started
 routineTimer = core.CountdownTimer()  # to track time remaining of each (non-slip) routine 
 
-no_feedback_run1_text = f"Next, you will get to continue the Mental Noting practice you just learned about.\
+no_feedback_run1_text = f"Next, you will get to continue the Mental Noting practice you just learned.\
     \n\nBefore, you mentioned using your {expInfo['anchor']} as an anchor for your Noting Practice. \
-Try to continue using this as your anchor but it is also okay to switch to a different part of your body.\
-\n\nYou’ll see 2 circles and a white ball in the middle on the screen, but they won’t move around for now."
+Try to continue using this as your anchor, but it is also okay to switch anytime.\
+\n\nYou will see 2 circles with a white ball in the middle, but they won’t move for now."
 
-ready_text="You’ll see the cross (+) on the screen for 30 seconds at the start. \
-Whenever you see the cross, please don’t practice Noting – just relax.\
-\n\nOnce you see the circles appear, please start the Noting practice. \
-This practice will last 2 min. Press any button to start." 
+ready_text="You will see the plus sign (+) for 30 seconds at the start. \
+Whenever you see the plus +,  please don’t practice Noting – just relax.\
+\n\nOnce the circles appear, please start the Noting practice. \
+This practice will last 2.5 min. Press any button to start." 
 
-feedback_run1_text1 = "Great job! Now, you’ll get to continue your Mental Noting with some feedback based on your brain to help your practice. \
-\n\nIn this run, you’ll see 2 circles and a white ball in the middle. \
-When the white ball moves up towards the top circle, this corresponds to the Noting practice.\
-\nIf the ball gets into either of the circles, it will move back to the center. \
-\n\nTry to keep the ball moving up towards the top circle! How many times can you get to the top?"
+feedback_run1_text1 = "Great job! Now, you’ll get to continue your Mental Noting with some feedback based on your actual brain activity to help your practice! \
+\n\nYou will see the 2 circles and white ball again. \
+When the white ball moves up towards the top yellow circle, this means you are in a mindful brain state with your Noting practice. \
+\nIf the ball reaches either of the circles, it will move back to the center."
 
-feedback_run1_text2 = "Try not focusing or paying too much attention on the ball movement since this can be distracting from the actual Noting Practice.\
-\n\nRather, really try focusing on your sensations from moment to moment, noting them silently in your mind \
-and just check in on the screen from time to time to see where the ball is going." 
+feedback_run1_text2 = "Try to focus mostly on the Noting Practice by being aware of your sensations from moment to moment and silently making a note in your mind. \
+\n\nYou can check the screen every once in a while to see where the ball is going." 
 
-feedback_later_runs_text = "Great job! Next, you’ll get to practice Noting for another two minutes with more feedback from the ball. \
-\n\nRemember to relax when the cross (+) is on the screen and once the circles appear try to keep the ball moving up towards the top circle! \
-\n\nThis practice will last 2 min. Press any button to start."
+feedback_later_runs_text = "Great job! Next, you’ll get to practice Noting for another 2.5min with more brain feedback from the ball. \
+\n\nWhen the ball moves upwards, that corresponds to the Noting Practice."
 
-no_feedback_later_runs_text = "Great job! Next, you’ll get to practice Noting for another two minutes. \
+no_feedback_later_runs_text = "Great job! Next, you’ll get to practice Noting for another 2.5min. \
 \nThis time the ball and circles will not move, so you don’t need to check them."
 
 # Depending on whether feedback is offered/which run it is -- show different instruction slides
@@ -543,7 +538,7 @@ key_resp_3 = event.BuilderKeyResponse()  # create an object of type KeyResponse
 key_resp_3.status = NOT_STARTED
 # keep track of which components have finished
 triggerComponents = []
-triggerComponents.append(text_3)
+triggerComponents.append(waiting_for_trigger_text)
 triggerComponents.append(key_resp_3)
 for thisComponent in triggerComponents:
     if hasattr(thisComponent, 'status'):
@@ -557,12 +552,12 @@ while continueRoutine:
     frameN = frameN + 1  # number of completed frames (so 0 is the first frame)
     # update/draw components on each frame
     
-    # *text_3* updates
-    if t >= 0.0 and text_3.status == NOT_STARTED:
+    # *waiting_for_trigger_text* updates
+    if t >= 0.0 and waiting_for_trigger_text.status == NOT_STARTED:
         # keep track of start time/frame for later
-        text_3.tStart = t  # underestimates by a little under one frame
-        text_3.frameNStart = frameN  # exact frame index
-        text_3.setAutoDraw(True)
+        waiting_for_trigger_text.tStart = t  # underestimates by a little under one frame
+        waiting_for_trigger_text.frameNStart = frameN  # exact frame index
+        waiting_for_trigger_text.setAutoDraw(True)
     
     # *key_resp_3* updates
     if t >= 0.0 and key_resp_3.status == NOT_STARTED:
