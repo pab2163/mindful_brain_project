@@ -60,6 +60,6 @@ def convert_balltask_csv_to_bids(infile):
             run_num=2
             
     # put together bids tsv filename
-    outfile = '/'.join(path[:-1]) + '/sub-' + path[-1] + '_ses-nf_task-' + run_type + '_run-' + "{:02d}".format(run_num) + '.tsv'
+    outfile = 'data/' + str(slider_outputs['id'][0]) +  '/sub-' + str(slider_outputs['id'][0]) + '_ses-nf_task-' + run_type + '_run-' + "{:02d}".format(run_num) + '.tsv'
     out_df.to_csv(outfile, sep ='\t', index=False)
     return(out_df)
