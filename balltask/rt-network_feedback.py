@@ -328,7 +328,7 @@ def run_slider(question_text='Default Text', left_label='left', right_label='rig
 # Initialize components for Routine "instructions"
 instructionsClock = core.Clock()
 text = visual.TextStim(win=win, ori=0, name='text',
-    text=u'' %int(roi_number),font=u'Arial',
+    text='',font=u'Arial',
     pos=[0, 0], height=0.06, wrapWidth=1.2,
     color=u'white', colorSpace='rgb', opacity=1,
     depth=0.0)
