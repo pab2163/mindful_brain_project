@@ -520,3 +520,44 @@ then
     rm -f $subj_dir/rest/*bold_mcflirt.nii.gz
     rm -f $subj_dir/rest/*bold_mcflirt_masked.nii.gz
 fi
+
+
+# ONLY if regular mask generation isn't possible
+# As a backup, we can register the template masks to 2vol space
+if [ ${step} = backup_reg_mni_masks_to_2vol ]
+then
+    clear
+    mni_template=MNI152_T1_2mm_LPS_brain.nii.gz
+    dmn_mni=DMNax_brainmaskero2_lps.nii.gz
+    cen_mni=CENa_brainmaskero2_lps.nii.gz
+
+    two_vol_ref=$(ls -t $subj_dir/xfm/series*.nii | head -n1)
+    two_vol_ref="${two_vol_ref::-4}"
+
+
+    two_vol_ref_bet=${subj_dir}/xfm/two_vol_ref_bet.nii.gz
+    two_vol_ref2mni=${subj_dir}/xfm/two_vol_ref2mni.nii.gz
+    two_vol_ref2mni_mat=${subj_dir}/xfm/two_vol_ref2mni.mat
+    mni2_two_vol_ref_mat=${subj_dir}/xfm/mni2_two_vol_ref.mat
+
+
+    # skullstrip 2vol before registration
+    bet ${two_vol_ref} ${two_vol_ref_bet} -R -f 0.4 -g 0 -m # changed from -f 0.6
+
+
+    # first, register the 2vol to mni
+    # then calculate the inverse of the registration
+    flirt -in ${two_vol_ref_bet} -ref ${mni_template} -out ${two_vol_ref2mni} -omat ${two_vol_ref2mni_mat}
+    convert_xfm -omat ${mni2_two_vol_ref_mat} -inverse ${two_vol_ref2mni_mat}
+
+
+    # "apply" the inverse of the registration to dmn/cen masks
+    #put them in the participant mask folder
+
+    #DMN
+    flirt -in ${dmn_mni} -ref ${two_vol_ref_bet} -out $subj_dir/mask/dmn.nii -init ${mni2_two_vol_ref_mat} -applyxfm -interp nearestneighbour -datatype short
+
+    #CEN
+    flirt -in ${cen_mni} -ref ${two_vol_ref_bet} -out $subj_dir/mask/cen.nii -init ${mni2_two_vol_ref_mat} -applyxfm -interp nearestneighbour -datatype short
+
+fi
