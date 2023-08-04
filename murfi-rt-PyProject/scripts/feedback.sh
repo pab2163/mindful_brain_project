@@ -534,11 +534,24 @@ then
     two_vol_ref=$(ls -t $subj_dir/xfm/series*.nii | head -n1)
     two_vol_ref="${two_vol_ref::-4}"
 
-
     two_vol_ref_bet=${subj_dir}/xfm/two_vol_ref_bet.nii.gz
     two_vol_ref2mni=${subj_dir}/xfm/two_vol_ref2mni.nii.gz
     two_vol_ref2mni_mat=${subj_dir}/xfm/two_vol_ref2mni.mat
     mni2_two_vol_ref_mat=${subj_dir}/xfm/mni2_two_vol_ref.mat
+
+    study_ref=${subj_dir}/xfm/study_ref.nii
+    # if localizer_ref images doesn't exist yet, make it
+    if [ ! -f ${subj_dir}/xfm/localizer_ref.nii ]
+    then
+        mv ${study_ref} ${subj_dir}/xfm/localizer_ref.nii
+    fi
+    echo "Registering masks to reference image from most recent series: ${two_vol_ref}"
+    echo "study_ref.nii is now ${two_vol_ref}"
+
+    # Move the latest reference image to be study_ref
+    # study_ref.nii is used by MURFI to register to 1st volume of feedback runs
+    # So ROI masks need to be in the same space as study_ref.nii
+    cp ${two_vol_ref}.nii ${study_ref}
 
 
     # skullstrip 2vol before registration
