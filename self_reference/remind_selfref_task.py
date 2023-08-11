@@ -28,19 +28,6 @@ os.chdir(_thisDir)
 yes_button_number='3'
 no_button_number='1'
 
-
-b1=['semantic', 'self', 'other',  'other', 'self',  'other', 'self',  'self', 'other','semantic']
-b2=['self', 'other',  'other', 'semantic', 'self',  'other', 'semantic', 'self',  'self', 'other']
-b3=['other', 'self', 'semantic',  'self', 'other',  'self', 'other',  'semantic', 'other','self']
-b4=['self', 'self', 'other',  'other', 'semantic',  'semantic', 'other',  'other', 'self','self']
-
-
-block_versions = [b1, b2, b3, b4]
-random.shuffle(block_versions)
-
-block_order = pd.DataFrame({'block': np.arange(10), 
-    'block_type': block_versions[0]})
-
 # Store info about the experiment session
 expName = 'task-selfref' 
 
@@ -99,7 +86,7 @@ random.shuffle(negative_words)
 # for practice in very first run
 practice_words = ['quiet', 'loud', 'cautious', 'wild', 'ordinary', 'precise']
 
-# Counterbalanec ISI orders
+# Counterbalence ISI orders
 if participant_number % 4 in [0,1]:
     timing_templates = ['0005', '0014', '0067', '0072']
 elif participant_number % 4 in [2,3]:
@@ -109,10 +96,52 @@ elif participant_number % 4 in [2,3]:
 pos = np.loadtxt(f"stim_timing_template_files/stimes_pos_{timing_templates[run_num-1]}.1D")
 neg = np.loadtxt(f"stim_timing_template_files/stimes_neg_{timing_templates[run_num-1]}.1D")
 
+
+# Counterbalance block orders
+block_order1=['self', 'other',  'other', 'semantic', 'self',  'other', 'semantic', 'self',  'self', 'other']
+block_order2=['other', 'self',  'self', 'semantic', 'other',  'self', 'semantic', 'other',  'other', 'self']
+block_order3=['other', 'self', 'semantic',  'self', 'other',  'self', 'other',  'semantic', 'other','self']
+block_order4=['self', 'other', 'semantic',  'other', 'self',  'other', 'self',  'semantic', 'self','other']
+
+block_versions = [b1, b2, b3, b4]
+random.shuffle(block_versions)
+
+if participant_number % 3 ==0:
+    if run_num==1:
+      block_order = block_order1
+    elif run_num==2:
+      block_order = block_order2
+    elif run_num==3:
+      block_order = block_order3
+    elif run_num==4:
+      block_order = block_order4
+elif participant_number % 3 == 1:
+    if run_num==1:
+      block_order = block_order4
+    elif run_num==2:
+      block_order = block_order3
+    elif run_num==3:
+      block_order = block_order2
+    elif run_num==4:
+      block_order = block_order1
+elif participant_number % 3 ==2:
+    if run_num==1:
+      block_order = block_order2
+    elif run_num==2:
+      block_order = block_order3
+    elif run_num==3:
+      block_order = block_order1
+    elif run_num==4:
+      block_order = block_order4
+
+block_order = pd.DataFrame({'block': np.arange(10), 
+    'block_type': block_versions[0]})
+
 all_block_timings = make_run_timings(pos = pos, neg = neg)
 print(all_block_timings)
 
-# output file setm
+
+# output file stem
 filename = f"{_thisDir}/data/{expInfo['participant']}/{expInfo['participant']}_ses-{expInfo['session']}_task-selfref_run-{expInfo['run']}"
 
 # Function to write a line of data to the output file
