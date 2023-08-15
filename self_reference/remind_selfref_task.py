@@ -126,13 +126,13 @@ elif participant_number % 3 == 1:
       block_order = block_order1
 elif participant_number % 3 ==2:
     if run_num==1:
-      block_order = block_order1
-    elif run_num==2:
-      block_order = block_order3
-    elif run_num==3:
       block_order = block_order2
-    elif run_num==4:
+    elif run_num==2:
+      block_order = block_order1
+    elif run_num==3:
       block_order = block_order4
+    elif run_num==4:
+      block_order = block_order3
 
 block_order = pd.DataFrame({'block': np.arange(10), 
     'block_type': block_versions[0]})
