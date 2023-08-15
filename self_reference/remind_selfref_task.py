@@ -103,39 +103,36 @@ block_order2=['other', 'self',  'self', 'semantic', 'other',  'self', 'semantic'
 block_order3=['other', 'self', 'semantic',  'self', 'other',  'self', 'other',  'semantic', 'other','self']
 block_order4=['self', 'other', 'semantic',  'other', 'self',  'other', 'self',  'semantic', 'self','other']
 
-block_versions = [b1, b2, b3, b4]
-random.shuffle(block_versions)
-
 if participant_number % 3 ==0:
     if run_num==1:
-      block_order = block_order1
+      cur_block_order = block_order1
     elif run_num==2:
-      block_order = block_order2
+      cur_block_order = block_order2
     elif run_num==3:
-      block_order = block_order3
+      cur_block_order = block_order3
     elif run_num==4:
-      block_order = block_order4
+      cur_block_order = block_order4
 elif participant_number % 3 == 1:
     if run_num==1:
-      block_order = block_order4
+      cur_block_order = block_order4
     elif run_num==2:
-      block_order = block_order3
+      cur_block_order = block_order3
     elif run_num==3:
-      block_order = block_order2
+      cur_block_order = block_order2
     elif run_num==4:
-      block_order = block_order1
+      cur_block_order = block_order1
 elif participant_number % 3 ==2:
     if run_num==1:
-      block_order = block_order2
+      cur_block_order = block_order2
     elif run_num==2:
-      block_order = block_order1
+      cur_block_order = block_order1
     elif run_num==3:
-      block_order = block_order4
+      cur_block_order = block_order4
     elif run_num==4:
-      block_order = block_order3
+      cur_block_order = block_order3
 
 block_order = pd.DataFrame({'block': np.arange(10), 
-    'block_type': block_versions[0]})
+    'block_type': cur_block_order})
 
 all_block_timings = make_run_timings(pos = pos, neg = neg)
 print(all_block_timings)
