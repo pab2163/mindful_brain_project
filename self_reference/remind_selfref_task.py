@@ -46,6 +46,7 @@ while expInfo['session'] not in ['loc', 'nf'] or expInfo['run'] not in ['1','2']
         core.quit()  # user pressed cancel
 expInfo['date'] = data.getDateStr()  # add a simple timestamp
 expInfo['expName'] = expName
+expInfo['participant'] = f"sub-{expInfo['participant']}" 
 
 if not os.path.exists(f'{_thisDir}/data/'):
     os.mkdir(f'{_thisDir}/data/')
@@ -55,7 +56,7 @@ if not os.path.exists(f"{_thisDir}/data/{expInfo['participant']}"):
 
 # pull word order for the participant
 # remove string from participant ID to get just the #
-participant_number = int(expInfo['participant'].replace('remind', '')[-3:])
+participant_number = int(expInfo['participant'].replace('sub-remind', '')[-3:])
 print(participant_number)
 
 # pull corresponding file
@@ -504,6 +505,7 @@ for block_num in range(block_order.shape[0]):
 # Final fixation block at the end of the task
 run_fixation(8)
 
+# At end, convert csv to bids-compliant tsv file
 convert_sret_csv_to_bids(infile = filename+'_events.csv')
 
 
