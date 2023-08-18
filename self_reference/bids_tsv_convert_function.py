@@ -32,7 +32,7 @@ def convert_sret_csv_to_bids(infile):
     df.response_endorse.replace({1:'endorse_y', 0:'endorse_n'}, inplace=True)
 
     # BIDS compliant subid
-    df.participant = "sub-" + df.participant
+    df.participant = "sub-" + df.participant.astype(str)
 
     # Recode trial type to be informative for various potential designs
     df['trial_type'] = np.where(df.trial_type=='block_start', df.condition, 
