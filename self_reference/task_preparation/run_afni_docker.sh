@@ -5,5 +5,5 @@ docker run --rm -ti                    \
     --platform linux/amd64             \
     -v /tmp/.X11-unix:/tmp/.X11-unix   \
     -e DISPLAY=host.docker.internal:0  \
-    -v /Volumes/AUERBACHLAB/:/opt/home               \
+    -v /Volumes/columbia/:/opt/home               \
     afni/afni_make_build
