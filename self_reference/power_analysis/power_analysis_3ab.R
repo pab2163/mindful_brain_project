@@ -35,7 +35,7 @@ res = 1
 model_selfref_change <- makeLmer(y ~ selfrefchange*time + group + (1|id), fixef=fixed_selfref_change, VarCorr=rand_selfref_change, sigma=res, data=df)
 
 # Correct for 8 comparisons
-n_tests = 8
+n_tests = 4
 alpha_level = .05/n_tests
 
 # Dose --------------------------------------------------------------------
