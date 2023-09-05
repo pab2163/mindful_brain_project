@@ -39,7 +39,7 @@ res = 1
 model_dose <- makeLmer(y ~ group*time + (time|id), fixef=fixed_dose, VarCorr=rand_dose, sigma=res, data=df)
 model_main_effect <- makeLmer(y ~ time + (time|id), fixef=fixed_main, VarCorr=rand_main, sigma=res, data=df)
 
-n_tests = 3
+n_tests = 2
 alpha_level = .05/n_tests
 
 # Dose --------------------------------------------------------------------

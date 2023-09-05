@@ -75,7 +75,7 @@ eff_df_selfref_change$power = eff_df_selfref_change$power / iter_aim2
 
 eff_df_selfref_change_closest_80 = dplyr::filter(eff_df_selfref_change, power >= 0.8) %>%
   top_n(n = 1, wt = -1*power) %>%
-  mutate(descript = paste0('Aims 3A & 3B\n\U03C9\U00B2~=', round(omega2, 2)))
+  mutate(descript = paste0('Aims 3A & 3B\n\U03C9\U00B2~=', round(omega2, 3)))
 
 
 p3 = ggplot(data = eff_df_selfref_change, aes(x = omega2, y = power)) +
