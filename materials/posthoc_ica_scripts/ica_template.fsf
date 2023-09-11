@@ -282,7 +282,7 @@ set feat_files(2) "/Volumes/columbia/mbNF_MDD/rtBANDA/resting/bold_data/SUBID_se
 set fmri(confoundevs) 0
 
 # Resampling resolution
-set fmri(regstandard_res) 4
+set fmri(regstandard_res) 2
 
 # Variance-normalise timecourses
 set fmri(varnorm) 1
