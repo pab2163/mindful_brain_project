@@ -2,6 +2,9 @@ import os
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
+from nilearn import image as nimg
+from nilearn import plotting 
+from nilearn import masking
 import os.path
 import subprocess
 import os
@@ -9,12 +12,11 @@ from glob import glob
 import sys
 import pandas as pd
 
-
+# Set up files used for all participants
 template_networks='template_networks.nii.gz'
 dmn_template='../../murfi-rt-PyProject/scripts/DMNax_brainmaskero2.nii'
 cen_template='../../murfi-rt-PyProject/scripts/CENa_brainmaskero2.nii'
 os.system(f'fslmerge -t {template_networks} {dmn_template} {cen_template}')
-
 os.system('mkdir masks')
 
 def make_masks_one_participant(subid):
@@ -95,24 +97,59 @@ def make_masks_one_participant(subid):
     os.system(f'fslmaths {dmn_component} -mul {dmn_template} {dmn_component}')
     os.system(f'fslmaths {cen_component} -mul {cen_template} {cen_component}')
 
-    # get number of non-zero voxels in masks, calculate percentile cutofff needed for the desired absolute number of voxels
-    voxels_in_dmn=7750
-    voxels_in_cen=3731
+    # calculate the thresholds to extract exactly 2000 voxels for DMN and CEN masks
+    dmn_nilearn = nimg.load_img(dmn_component).get_fdata()
+    dmn_nilearn = dmn_nilearn[dmn_nilearn>0]
+    cen_nilearn = nimg.load_img(cen_component).get_fdata()
+    cen_nilearn = cen_nilearn[cen_nilearn>0]
+    dmn_threshold_value = dmn_nilearn.flatten()
+    dmn_threshold_value.sort()
+    dmn_threshold_value=dmn_threshold_value[-2000]
+    cen_threshold_value = cen_nilearn.flatten()
+    cen_threshold_value.sort()
+    cen_threshold_value=cen_threshold_value[-2000]
 
-    percentile_dmn=100*(1-(num_voxels_desired/voxels_in_dmn))
-    percentile_cen=100*(1-(num_voxels_desired/voxels_in_cen))
+    # use fslmaths to threshold
+    os.system(f'fslmaths {dmn_component} -thr {dmn_threshold_value} -bin {dmn_thresh} -odt short')
+    os.system(f'fslmaths {cen_component} -thr {cen_threshold_value} -bin {cen_thresh} -odt short')
 
-    # threshold masks at the given percentile
-    os.system(f'fslmaths {dmn_component} -thrp {percentile_dmn} -bin {dmn_thresh} -odt short')
-    os.system(f'fslmaths {cen_component} -thrp {percentile_cen} -bin {cen_thresh} -odt short')
 
     # copy masks to participant's mask directory
     os.system(f'mv {dmn_thresh} masks/{subid}_dmn_mask.nii.gz')
     os.system(f'mv {cen_thresh} masks/{subid}_cen_mask.nii.gz')
 
+    print('Numbers of voxels in masks')
+    os.system(f'fslstats masks/{subid}_dmn_mask.nii.gz -V')
+    os.system(f'fslstats masks/{subid}_cen_mask.nii.gz -V')
 
-subs = ['sub-rtBANDA049']#, 'sub-rtBANDA056', 'sub-rtBANDA060', 'sub-rtBANDA066', 'sub-rtBANDA073',
-        #'sub-rtBANDA088', 'sub-rtBANDA106', 'sub-rtBANDA116', 'sub-rtBANDA145']
+    dmn_output = nimg.load_img(f'masks/{subid}_dmn_mask.nii.gz')
+    plotting.plot_roi(roi_img=dmn_output, cut_coords=(-2, 49, 5),
+                      output_file = f'mask_plots/{subid}_dmn.png')
+    plt.close()
 
+    # check how many voxels in mpfc and pcc
+    mpfc_mask=nimg.load_img('../ROI/DMNax_brainmaskero2_mpfc_mask.nii.gz')
+    pcc_mask=nimg.load_img('../ROI/DMNax_brainmaskero2_pcc_mask.nii.gz')
+    mpfc_masked=masking.apply_mask(dmn_output, mpfc_mask)
+    pcc_masked=masking.apply_mask(dmn_output, pcc_mask)
+    voxels_in_mpfc = sum(mpfc_masked>0)
+    voxels_in_pcc = sum(pcc_masked>0)
+
+    outdata = {'subid':subid,
+               'dmn_ic':dmn_ic_selection,
+               'cen_ic': cen_ic_selection,
+               'mpfc_voxels':voxels_in_mpfc,
+               'pcc_voxels': voxels_in_pcc}
+    
+    return(outdata)
+
+subs = ['sub-rtBANDA049', 'sub-rtBANDA056', 'sub-rtBANDA060', 'sub-rtBANDA066', 'sub-rtBANDA073',
+        'sub-rtBANDA088', 'sub-rtBANDA106', 'sub-rtBANDA116', 'sub-rtBANDA145']
+
+# run and save out counts of voxels in mpfc/pcc
+voxelcount_list = []
 for i in subs:
-    make_masks_one_participant(subid=i)
+    voxelcount_list.append(make_masks_one_participant(subid=i))
+
+voxelcounts=pd.DataFrame(voxelcount_list)
+voxelcounts.to_csv('rtbanda_mpfc_pcc_voxel_counts.csv')
