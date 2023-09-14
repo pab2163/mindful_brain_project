@@ -18,6 +18,7 @@ dmn_template='../../murfi-rt-PyProject/scripts/DMNax_brainmaskero2.nii'
 cen_template='../../murfi-rt-PyProject/scripts/CENa_brainmaskero2.nii'
 os.system(f'fslmerge -t {template_networks} {dmn_template} {cen_template}')
 os.system('mkdir masks')
+os.system('mkdir masks/mpfc_pcc')
 
 def make_masks_one_participant(subid):
     # set up filepaths
@@ -134,6 +135,43 @@ def make_masks_one_participant(subid):
     pcc_masked=masking.apply_mask(dmn_output, pcc_mask)
     voxels_in_mpfc = sum(mpfc_masked>0)
     voxels_in_pcc = sum(pcc_masked>0)
+
+    #### ----------------------------------------------------
+    # Make 1000-voxel PCC and mPFC masks for each partcipant
+    #### ----------------------------------------------------
+    ic_mpfc_path=f'{ica_directory}/dmn_ic_mpfc_masked.nii.gz'
+    ic_pcc_path=f'{ica_directory}/dmn_ic_pcc_masked.nii.gz'
+    os.system(f'fslmaths {dmn_component} -mul ../ROI/DMNax_brainmaskero2_mpfc_mask.nii.gz {ic_mpfc_path}')
+    os.system(f'fslmaths {dmn_component} -mul ../ROI/DMNax_brainmaskero2_pcc_mask.nii.gz {ic_pcc_path}')
+
+    # get threshold values for personalized 1000-voxel mPFC and PCCs
+    mpfc_ic_img=nimg.load_img(ic_mpfc_path).get_fdata()
+    pcc_ic_img=nimg.load_img(ic_pcc_path).get_fdata()
+    mpfc_ic_threshold_value = mpfc_ic_img.flatten()
+    mpfc_ic_threshold_value.sort()
+    mpfc_ic_threshold_value=mpfc_ic_threshold_value[-1000]
+    pcc_ic_threshold_value = pcc_ic_img.flatten()
+    pcc_ic_threshold_value.sort()
+    pcc_ic_threshold_value=pcc_ic_threshold_value[-1000]
+
+    mpfc_thresh=f'masks/mpfc_pcc/{subid}_mpfc1000voxels.nii.gz'
+    pcc_thresh=f'masks/mpfc_pcc/{subid}_pcc1000voxels.nii.gz'
+    mpfc_pcc_thresh=f'masks/mpfc_pcc/{subid}_combined_mpfc_pcc1000voxels.nii.gz'
+
+    # use fslmaths to threshold & binarize mpfc/pcc masks
+    os.system(f'fslmaths {ic_mpfc_path} -thr {mpfc_ic_threshold_value} -bin {mpfc_thresh} -odt short')
+    os.system(f'fslmaths {ic_pcc_path} -thr {pcc_ic_threshold_value} -bin {pcc_thresh} -odt short')
+
+    # combine them
+    os.system(f'fslmaths {mpfc_thresh} -add {pcc_thresh} {mpfc_pcc_thresh} -odt short')
+    os.system(f'fslstats {mpfc_thresh} -V')
+    os.system(f'fslstats {pcc_thresh} -V')
+
+
+    combined_mpfc_pcc = nimg.load_img(f'{mpfc_pcc_thresh}')
+    plotting.plot_roi(roi_img=combined_mpfc_pcc, cut_coords=(-2, 49, 5),
+                      output_file = f'mask_plots/{subid}_combined_mpfc_pcc.png')
+    plt.close()
 
     outdata = {'subid':subid,
                'dmn_ic':dmn_ic_selection,

@@ -1,0 +1,25 @@
+---
+title: "Untitled"
+author: "Paul A. Bloom"
+date: "2023-09-12"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+```{r}
+
+library(ggplot2)
+df = read.csv('rtbanda_mpfc_pcc_voxel_counts.csv')
+
+
+ggplot(df, aes(x = mpfc_voxels, y = pcc_voxels)) +
+    geom_point() + 
+    geom_smooth(method = 'lm')
+
+
+cor.test(df$mpfc_voxels, df$pcc_voxels)
+```
