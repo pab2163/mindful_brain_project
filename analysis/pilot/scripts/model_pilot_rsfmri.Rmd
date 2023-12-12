@@ -67,10 +67,12 @@ AIC(m_random_int, m_random_slope)
 ## Bayesian
 ```{r}
 m_random_int_bayes = brms::brm(data = full_data,
-                    fc ~ time + fd + age + (1|id))
+                    fc ~ time + fd + age + (1|id),
+                    seed = 1)
 
 m_random_slope_bayes = brms::brm(data = full_data,
-                    fc ~ time + fd + age + (time|id))
+                    fc ~ time + fd + age + (time|id),
+                    seed = 1)
 
 # output of models
 sjPlot::tab_model(m_random_int_bayes, m_random_slope_bayes)
@@ -104,6 +106,13 @@ pilot_figure = ggplot(full_data_summarized, aes(x = time, y = fc)) +
 # save figure
 ggsave(pilot_figure, file = 'pilot_figure_for_jaacap_reg_report.png', height=4, width = 5)
     
+```
+
+
+# Posterior probability of negative change in mPFC - PCC connectivity over time
+```{r}
+posterior_draws = as_draws_df(m_random_int_bayes, variable = 'b_timepre')
+sum(posterior_draws$b_timepre > 0) / nrow(posterior_draws)
 ```
 
 
