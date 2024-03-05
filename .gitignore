@@ -12,3 +12,4 @@ self_reference/stimtime_generation/
 self_reference/reMIND/
 */pilot_data
 *.Rhistory
+analysis/pilot/data/
