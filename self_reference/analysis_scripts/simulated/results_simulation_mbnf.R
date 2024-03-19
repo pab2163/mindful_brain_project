@@ -36,16 +36,19 @@ rand_dose <- list(0.5, 0, .5)
 res = 1
 
 # make initial models  (outcome is automatically called y)
-setup_model <- makeLmer(y ~ group*time + (time|id), fixef=fixed_dose, VarCorr=rand_dose, sigma=res, data=df)
-summary(setup_model)
-
-one_simulated_dataset = setup_model@frame
+set.seed(1)
+setup_model_mpfc <- makeLmer(mpfc ~ group*time + (time|id), fixef=fixed_dose, VarCorr=rand_dose, sigma=res, data=df)
+one_simulated_dataset = setup_model_mpfc@frame
 
 one_simulated_dataset = one_simulated_dataset %>%
   group_by(id) %>%
   mutate(head_motion_intercept = rnorm(n=1)) %>%
   ungroup() %>%
-  mutate(mean_fd = rnorm(n = nrow(.), mean = head_motion_intercept, sd = .5))
+  mutate(mean_fd = rnorm(n = nrow(.), mean = head_motion_intercept, sd = .5),
+         pcc = rnorm(n = nrow(.), mean = mpfc, sd = 0.3))
+
+ggplot(one_simulated_dataset, aes(x = mpfc, y = pcc)) +
+  geom_point()
 
 
 fd_icc_check = lmer(data = one_simulated_dataset, mean_fd ~ 1 + (1|id))
@@ -59,53 +62,121 @@ one_simulated_dataset = mutate(one_simulated_dataset, time = ifelse(time == 0, '
 
 
 
-model_random_slope <- brms::brm(y ~ group*time + (time|id), data=one_simulated_dataset,
+model_random_slope_mpfc <- brms::brm(mpfc ~ group*time + (time|id), data=one_simulated_dataset,
                          iter=2000, cores = 4)
 
-model_random_intercept <- brms::brm(y ~ group*time + (1|id), data=one_simulated_dataset,
+model_random_intercept_mpfc <- brms::brm(mpfc ~ group*time + (1|id), data=one_simulated_dataset,
                                 iter=2000, cores = 4)
 
+model_random_slope_pcc <- brms::brm(pcc ~ group*time + (time|id), data=one_simulated_dataset,
+                                     iter=2000, cores = 4)
 
-one_simulated_dataset = mutate(one_simulated_dataset, 
-                               time_binary = ifelse(time == 'post', 1, 0))
-
-model_random_intercept_no_dose  <- brms::brm(y ~ group:time_binary + time_binary + (1|id), data=one_simulated_dataset,
-                                    iter=2000, cores = 4)
-
-loo_random_slope = loo(model_random_slope)
-loo_random_intercept = loo(model_random_intercept)
-
-loo_compare(loo_random_slope, loo_random_intercept)
-
-fixef(model_random_intercept)
-fixef(model_random_slope)
+model_random_intercept_pcc <- brms::brm(pcc ~ group*time + (1|id), data=one_simulated_dataset,
+                                         iter=2000, cores = 4)
 
 
-summary(model_random_intercept_no_dose)
+# one_simulated_dataset = mutate(one_simulated_dataset, 
+#                                time_binary = ifelse(time == 'post', 1, 0))
+# 
+# model_random_intercept_no_dose  <- brms::brm(y ~ group:time_binary + time_binary + (1|id), data=one_simulated_dataset,
+#                                     iter=2000, cores = 4)
+
+loo_random_slope_mpfc = loo(model_random_slope_mpfc)
+loo_random_intercept_mpfc = loo(model_random_intercept_mpfc)
+loo_compare(loo_random_slope_mpfc, loo_random_intercept_mpfc)
+
+loo_random_slope_pcc = loo(model_random_slope_pcc)
+loo_random_intercept_pcc = loo(model_random_intercept_pcc)
+loo_compare(loo_random_slope_pcc, loo_random_intercept_pcc)
+
+#fixef(model_random_intercept)
+#fixef(model_random_slope)
 
 
-ggplot(data = one_simulated_dataset, aes(x = time, y = y, color = group)) +
-  geom_point() +
-  geom_line(aes(group = id))
+#summary(model_random_intercept_no_dose)
+
+
+# ggplot(data = one_simulated_dataset, aes(x = time, y = mpfc, color = group)) +
+#   geom_point() +
+#   geom_line(aes(group = id))
 
 raw_data_summary = one_simulated_dataset %>%
   group_by(group, time, id) %>%
-  summarise(dmn_avg = mean(y))
+  summarise(mpfc_avg = mean(mpfc),
+            pcc_avg = mean(pcc))
 
-summary(model_random_intercept_no_dose)
+#summary(model_random_intercept_no_dose)
 
 
-cond_fx = conditional_effects(model_random_intercept_no_dose)
-cond_fx$`time_binary:group` %>%
-  dplyr::filter(., time_binary %in% c(0, 1)) %>%
-  dplyr::mutate(time = ifelse(time_binary == 0, ' pre', 'post')) %>%
+cond_fx = conditional_effects(model_random_intercept_mpfc)
+cond_fx$`group:time` %>%
+  #dplyr::filter(., time_binary %in% c(0, 1)) %>%
+  #dplyr::mutate(time = ifelse(time_binary == 0, ' pre', 'post')) %>%
   ggplot(data = ., aes(x = time, y = estimate__, color = group)) +
-    geom_line(data = raw_data_summary, aes(x = time, y = dmn_avg, color = group, group = id), alpha = 0.2) +
+    geom_line(data = raw_data_summary, aes(x = time, y = mpfc_avg, color = group, group = id), alpha = 0.2) +
     geom_point(position = position_dodge(0.1), size = 3) +
     geom_line(aes(group = group), position = position_dodge(0.1), lwd = 1) +
     geom_errorbar(aes(ymin = lower__, ymax = upper__), width = 0, position = position_dodge(0.1), lwd = 1) +
-    labs(x = 'Time', y = 'DMN Activity', color = 'mbNF Dose') +
+    labs(x = 'Time', y = 'mPFC Activity', color = 'mbNF Dose') +
     theme_bw()
+
+
+# Implement Benjamini-Hochberg Correction
+
+
+
+# posterior_distributions_mpfc = brms::as_draws_df(model_random_intercept_mpfc)
+# posterior_distributions_pcc = brms::as_draws_df(model_random_intercept_pcc)
+# 
+# proportion_same_direction_mpfc = max(
+#   sum(posterior_distributions_mpfc$`b_group30:timepost` > 0)/nrow(posterior_distributions_mpfc),
+#   sum(posterior_distributions_mpfc$`b_group30:timepost` < 0)/nrow(posterior_distributions_mpfc)
+# )
+# 
+# proportion_same_direction_pcc = max(
+#   sum(posterior_distributions_pcc$`b_group30:timepost` > 0)/nrow(posterior_distributions_pcc),
+#   sum(posterior_distributions_pcc$`b_group30:timepost` < 0)/nrow(posterior_distributions_pcc)
+# )
+# 
+# fixef(model_random_intercept_mpfc, probs = c(corrected_alpha/2, 1-corrected_alpha/2))
+# fixef(model_random_intercept_pcc)
+
+run_benjamini_hochberg = function(model_mpfc, model_pcc){
+  alpha = .05
+  n_comparisons = 2
+  corrected_alpha = alpha/ n_comparisons 
+  
+  
+  posterior_fx_draws_mpfc = brms::as_draws_df(model_mpfc)
+  posterior_fx_draws_pcc = brms::as_draws_df(model_pcc)
+  
+  proportion_same_direction_mpfc = max(
+    sum(posterior_fx_draws_mpfc$`b_group30:timepost` > 0)/nrow(posterior_fx_draws_mpfc),
+    sum(posterior_fx_draws_mpfc$`b_group30:timepost` < 0)/nrow(posterior_fx_draws_mpfc)
+  )
+  
+  proportion_same_direction_pcc = max(
+    sum(posterior_fx_draws_pcc$`b_group30:timepost` > 0)/nrow(posterior_fx_draws_pcc),
+    sum(posterior_fx_draws_pcc$`b_group30:timepost` < 0)/nrow(posterior_fx_draws_pcc)
+  )
+  
+  print(c(proportion_same_direction_mpfc, proportion_same_direction_pcc))
+  
+  if (proportion_same_direction_mpfc > proportion_same_direction_pcc){
+    mpfc_fixef = fixef(model_mpfc, probs = c(corrected_alpha/2, 1-corrected_alpha/2))
+    pcc_fixef = fixef(model_pcc)
+  } else{
+    mpfc_fixef = fixef(model_mpfc)
+    pcc_fixef = fixef(model_pcc, probs = c(corrected_alpha/2, 1-corrected_alpha/2))
+  }
+  
+  return(list('mpfc_fixef'=mpfc_fixef, 'pcc_fixef'=pcc_fixef))
+  
+  
+}
+
+run_benjamini_hochberg(model_mpfc = model_random_slope_mpfc, model_pcc = model_random_slope_pcc)
+
 
 # Behavioral Analysis -----------------------------------------------------
 
@@ -122,7 +193,7 @@ dropout_frame = df %>% mutate(dropout = 'no')
 df_behavior = left_join(df_behavior, dropout_frame, by = c('id', 'time', 'run', 'group')) %>%
   dplyr::filter(!is.na(dropout))
 
-
+# Pulled from "Self-Referential Processing in Depressed Adolescents: A HighDensity ERP Study" (Auerbach et al., 2015)
 mean_positive_endorse_pre = .3
 mean_negative_endorse = .6
 mean_positive_endorse_post_15 = .4
@@ -132,7 +203,7 @@ mean_positive_endorse_post_30 = .5
 mean_change_positive_endorse_15 = mean_positive_endorse_post_15 - mean_positive_endorse_pre
 mean_change_positive_endorse_30 = mean_positive_endorse_post_30 - mean_positive_endorse_pre
 
-
+# simulate participant-level 'latent' parameters
 df_behavior = df_behavior %>%
   group_by(id) %>%
   mutate(endorse_pct_pos_pre = runif(n=1, min = mean_positive_endorse_pre - .2, max = mean_positive_endorse_pre + .2),
@@ -144,9 +215,29 @@ df_behavior = df_behavior %>%
          change_pct_neg = ifelse(group == 15,
                                  runif(n=1, min = -.1, max = .1),
                                  runif(n=1, min = -.1, max = .1))) %>%
-  ungroup() %>%
-  group_by(id, time, run, group, valence, trial)
-  mutate(endorse = rbinom(n = ))
+  ungroup() 
+
+# then use them to simulate trial-level data
+df_behavior = df_behavior %>%
+  group_by(id, time, run, group, valence, trial) %>%
+  mutate(endorse = rbinom(n = 1, size =1, prob = 
+                            case_when(
+                              time == 0 & valence == 'positive' ~ endorse_pct_pos_pre,
+                              time == 0 & valence == 'negative' ~ endorse_pct_neg_pre,
+                              time == 1 & valence == 'positive' ~ endorse_pct_pos_pre + change_pct_pos,
+                              time == 1 & valence == 'negative' ~ endorse_pct_neg_pre + change_pct_neg,
+                            ))) %>%
+  ungroup()
 
 
-df_behavior %>% ungroup() %>% group_by(group) %>% summarise(mean_pos_change = mean(change_pct_pos))
+df_behavior_summary_check = df_behavior %>%
+  group_by(id, time, group, valence) %>%
+  summarise(pct_endorse = sum(endorse)/n())
+
+
+ggplot(df_behavior_summary_check, aes(x = factor(time), y = pct_endorse, color = group)) +
+  stat_summary(fun.data = mean_cl_boot) +
+  facet_grid(~valence)
+
+
+
