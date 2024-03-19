@@ -239,5 +239,29 @@ ggplot(df_behavior_summary_check, aes(x = factor(time), y = pct_endorse, color =
   stat_summary(fun.data = mean_cl_boot) +
   facet_grid(~valence)
 
+model_random_intercept_behavior <- brms::brm(endorse ~ group*time*valence + (1|id), 
+                                             family = bernoulli(link = 'logit'),
+                                             data=df_behavior,
+                                         iter=2000, cores = 4)
 
+summary(model_random_intercept_behavior)
+
+
+conditional_effects(model_random_intercept_behavior)
+
+
+predictor_grid_behavior = expand.grid(valence = valence, group = group, time = time)
+
+predictor_grid_behavior = fitted(model_random_intercept_behavior, newdata = predictor_grid_behavior,
+                     re_formula = NA) %>%
+  cbind(predictor_grid_behavior, .)
+
+ggplot(df_behavior_summary_check, aes(x = factor(time), y = pct_endorse, color = group)) +
+  #stat_summary(fun.data = mean_cl_boot, alpha = 0.5) +
+  geom_line(aes(group = id), alpha = 0.2) +
+  geom_point(data = predictor_grid_behavior, aes(y = Estimate), size = 3) +
+  geom_line(data = predictor_grid_behavior, aes(y = Estimate, group = group), lwd = 1) +
+  geom_errorbar(data = predictor_grid_behavior, aes(ymin = Q2.5, ymax = Q97.5, y = Estimate), width = 0, lwd = 1) +
+  facet_grid(~valence) +
+  theme_bw()
 
