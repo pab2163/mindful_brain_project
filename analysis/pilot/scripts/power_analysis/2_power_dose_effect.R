@@ -31,7 +31,6 @@ df = df %>%
 
 # specific starting model parameters
 fixed_dose = c(0, -.5, -.5, -.5, 0)
-
 rand_dose <- list(0.5, -0.2, 0.2)
 
 # Residual variance is 1 (so fixed effects are cohen's d)
