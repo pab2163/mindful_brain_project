@@ -1,0 +1,46 @@
+---
+title: "plot_power"
+author: "Paul A. Bloom"
+date: "2024-04-08"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+library(tidyverse)
+
+
+target_engagement = read.csv('powersims_target_engagement.csv') %>%
+    mutate(type = 'target_engagement')
+dose = read.csv('powersims_dose_fx.csv') %>%
+    mutate(type = 'dose', 
+           power = power/10000,
+           cohens_d_ematools = NA)
+
+
+power = rbind(target_engagement, dose)
+
+
+ggplot(power, aes(x = omega2, y = power, color = type)) +
+    geom_point() +
+    geom_line() + 
+    geom_hline(yintercept = c(.8, .95), lty = 2) +
+    labs(x = "Omega2", color = 'Aim')
+
+ggplot(power, aes(x = cohens_d_ematools*-1, y = power, color = type)) +
+    geom_point() +
+    geom_line() + 
+    geom_hline(yintercept = c(.8, .95), lty = 2) +
+    labs(x = "Pseudo Cohen's D'", color = 'Aim')
+
+
+ggplot(power, aes(y = cohens_d_ematools, x = effect_size_cohens_d)) + 
+    geom_point() 
+
+
+summary(lm(data = power, cohens_d_ematools ~ effect_size_cohens_d))
+
+```

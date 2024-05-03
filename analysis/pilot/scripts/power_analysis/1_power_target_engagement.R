@@ -2,6 +2,7 @@ library(Matrix)
 library(tidyverse)
 library(simr)
 library(ggrepel)
+library(EMAtools)
 iter = 10000
 
 # 2 timepoints: pre/post
@@ -35,7 +36,6 @@ df = df %>%
 
 # specific starting model parameters
 fixed_main = c(0, -.5, 0)
-rand_dose <- list(0.5, -0.2, 0.2)
 rand_main <- list(0.5, -0.2, 0.2)
 
 # Residual variance is 1 (so fixed effects are cohen's d)
@@ -43,18 +43,24 @@ res = 1
 
 # make initial models 
 model_main_effect <- makeLmer(y ~ time + mean_fd + (time|id), fixef=fixed_main, VarCorr=rand_main, sigma=res, data=df)
+cohens_d_ematools = EMAtools::lme.dscore(mod = model_main_effect, data = model_main_effect@frame, type = 'lme4')[1, 3]
 
 # Main Effect -------------------------------------------------------------
 effect_sizes = seq(from = -.7, to = -.1, by = .01)
 eff_df_main = data.frame(effect_size_cohens_d = effect_sizes)
+eff_df_main$cohens_d_ematools = NA
 eff_df_main$power = NA
 eff_df_main$omega2 = NA
 
 start_time = Sys.time()
 
 for (effect_size in effect_sizes){
-  fixef(model_main_effect)['time'] <- effect_size
+  #fixef(model_main_effect)['time'] <- effect_size
+  fixed_main = c(0, effect_size, 0)
+  model_main_effect <- makeLmer(y ~ time + mean_fd + (time|id), fixef=fixed_main, VarCorr=rand_main, sigma=res, data=df)
   effsize_m = effectsize::omega_squared(model_main_effect)
+  eff_df_main$cohens_d_ematools[eff_df_main$effect_size_cohens_d == effect_size] = 
+    EMAtools::lme.dscore(mod = model_main_effect, data = model_main_effect@frame, type = 'lme4')[1, 3]
   eff_df_main$omega2[eff_df_main$effect_size_cohens_d == effect_size] = effsize_m$Omega2_partial[effsize_m$Parameter =='time']
   sim_treat <- powerSim(model_main_effect, nsim=iter, test = fixed(xname='time', 't'))
   eff_df_main$power[eff_df_main$effect_size_cohens_d == effect_size] = sum(sim_treat$pval < .05)/iter
