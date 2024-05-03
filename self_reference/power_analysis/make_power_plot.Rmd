@@ -1,0 +1,93 @@
+---
+title: "Make Power Analysis Plot"
+author: "Paul A. Bloom"
+date: "2024-04-23"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+
+```{r}
+library(tidyverse)
+library(ggrepel)
+
+
+```
+
+# Behavior (Aim 2)
+
+```{r}
+behavior = read.csv('behavior_power_simulations.csv')
+
+# calculated power at each effect size
+power_calc = behavior %>%
+  dplyr::filter(term == 'group30:time:valencenegative') %>%
+  ungroup() %>%
+  group_by(true_effect_size) %>%
+  summarise(power = sum(p.value < .05)/n())
+
+# determine the minimum effect size clearing 80% power
+min_fx = dplyr::filter(power_calc, power >= 0.8) %>%
+  slice_min(order_by = power, n = 1) %>%
+  mutate(descript = paste0('Minimal Effect Size: ~', true_effect_size))
+
+# plot power curve as a function of effect size
+behavior_plot = ggplot(data = power_calc, aes(x = true_effect_size, y = power)) +
+    geom_hline(yintercept = 0) +
+    geom_point(color = 'green4', size = 2) + 
+    geom_hline(yintercept = .8, lty = 3) + 
+    geom_vline(data = min_fx, aes(xintercept = true_effect_size), lty = 2, color = 'green4') +
+    geom_line(color = 'green4', lwd = 1) +
+    geom_label_repel(data = min_fx, nudge_x = 0.02, nudge_y = -.35,
+                   aes(label = descript), show.legend = FALSE, color = 'green4') +
+    labs(x = 'Effect Size (Difference in Probability)\nDosing Effect on Change in Negative Word Endorse Probability',
+         y = 'Power',
+         title = 'Aim 2: Dosing Effect on Negative Self-Referential Bias') +
+    theme_bw() +
+    ylim(-.001, 1)
+```
+
+
+# Brain (Aim 1)
+
+```{r}
+brain = read.csv('brain_power_simulations.csv') %>%
+    dplyr::filter(effect_sizes %% .04 == 0)
+
+# determine the minimum effect size clearing 80% power
+min_fx_brain = dplyr::filter(brain, power/10000 >= 0.8) %>%
+  slice_min(order_by = power, n = 1) %>%
+  mutate(descript = paste0('Minimal Effect Size \U03C9\U00B2: ~', round(omega2, 3)))
+
+# plot power curve as a function of effect size
+brain_plot = ggplot(data = brain, aes(x = omega2, y = power/10000)) +
+    geom_point(color = 'blue4', size = 2) + 
+    geom_hline(yintercept = .8, lty = 3) + 
+    geom_vline(data = min_fx_brain, aes(xintercept = omega2), lty = 2, color = 'blue4') +
+    geom_line(color = 'blue4', lwd = 1) +
+    labs(x = 'Effect Size \U03C9\U00B2\nDosing Effect on Change in DMN Activation',
+         y = 'Power',
+         title = 'Aim 1: Dosing Effect on DMN Activation') +
+    theme_bw() +
+    xlim(0.0001, 0.155) +
+    geom_hline(yintercept = 0) +
+    ylim(-.001, 1) +
+    geom_rect(ymin = -1, ymax = 0., xmin = 0.14, xmax = Inf, aes(fill = 'Large'), alpha = 0.05, color = 'black') +
+    geom_rect(ymin = -1, ymax = 0, xmin = 0, xmax = 0.06, aes(fill = 'Small'), alpha = 0.05, color = 'black') +
+    geom_rect(ymin = -1, ymax = 0, xmin = 0.06, xmax = 0.14, aes(fill = 'Medium'), alpha = 0.05, color = 'black') +
+    geom_label_repel(data = min_fx_brain, nudge_y = -.35, nudge_x = 0.02,
+                   aes(label = descript), show.legend = FALSE, color = 'blue4') +
+    scale_fill_manual(values = c('gray60', 'gray75', 'white'))  +
+    theme(legend.position = 'bottom') +
+    guides(fill = 'none')
+```
+
+# Combine plots as panels and export to png
+```{r}
+power_grid = cowplot::plot_grid(brain_plot, behavior_plot, align = 'h', axis = 'bt', labels = c('A', 'B'))
+cowplot::save_plot(power_grid, base_width = 10, base_height = 4, filename = 'power_plot_sret.png')
+```
