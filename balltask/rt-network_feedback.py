@@ -484,7 +484,7 @@ Try to continue using this as your anchor, but it is also okay to switch anytime
 ready_text="You will see the plus sign (+) for 30 seconds at the start. \
 Whenever you see the plus +,  please don’t practice Noting – just relax.\
 \n\nOnce the circles appear, please start the Noting practice. \
-This practice will last 2.5 min. Press any button to start." 
+This practice will last 2.5 min." 
 
 feedback_run1_text1 = "Great job! Now, you’ll get to continue your Mental Noting with some feedback based on your actual brain activity to help your practice! \
 \n\nYou will see the 2 circles and white ball again. \
