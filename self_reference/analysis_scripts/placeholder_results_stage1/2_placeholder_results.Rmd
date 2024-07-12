@@ -1,0 +1,287 @@
+---
+title: "Make Placeholder Results"
+author: "Paul A. Bloom"
+date: "2024-04-24"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+library(Matrix)
+library(tidyverse)
+library(simr)
+library(ggrepel)
+library(brms)
+```
+
+# Load simulated data
+```{r}
+load('simuldated_datasets_for_placeholder_results.rda')
+
+# extra data for simulating the SRET semantic (is this word postive?) condition
+simulated_semantic_condition = expand.grid(id = 1:90, time = c(0,1), run = 1:4, trial = 1:5, 
+                                           valence = c('positive', 'negative'))
+
+simulated_semantic_condition = mutate(simulated_semantic_condition, categorize_as_positive = rbinom(n = n(), size = 1,
+                                                                      prob = ifelse(
+                                                                        valence == 'negative', 0.3, 0.7)))
+```
+
+# Manipulation Check
+
+## Brain
+
+```{r}
+mpfc_manipulation_check = brms::brm(mpfc ~ 1 + (1|id),
+                                    data=one_simulated_brain_dataset,
+                                    iter=2000, cores = 4)
+
+pcc_manipulation_check  = brms::brm(pcc ~ 1 + (1|id),
+                                    data=one_simulated_brain_dataset,
+                                    iter=2000, cores = 4)
+
+
+sjPlot::tab_model(mpfc_manipulation_check, pcc_manipulation_check)
+```
+
+## Behavior
+
+```{r}
+behavior_manip = brms::brm(categorize_as_positive ~ valence + (valence | id), 
+                           data = simulated_semantic_condition, 
+                           iter = 2000, cores = 4, family = bernoulli(link ='logit'))
+
+behavior_manipulation_check_cond_fx = conditional_effects(behavior_manip)
+
+# must not include .5
+behavior_manipulation_check_cond_fx$valence %>% dplyr::select(valence, estimate__, lower__, upper__) 
+```
+
+# Aim 1
+
+## Run mPFC and PCC models
+
+```{r}
+weakly_informative_custom_prior = c(prior_string("student_t(3, 0, 2.5)", class = "b"),
+               prior_string("gamma(4,1)", class = 'nu'))
+
+
+model_random_slope_mpfc <- brms::brm(mpfc ~ group*time + (time|id), data=one_simulated_brain_dataset,
+                         iter=2000, cores = 4, prior = weakly_informative_custom_prior, family = 'student')
+
+model_random_intercept_mpfc <- brms::brm(mpfc ~ group*time + (1|id), data=one_simulated_brain_dataset,
+                                iter=2000, cores = 4, prior = weakly_informative_custom_prior, family = 'student')
+
+model_random_slope_pcc <- brms::brm(pcc ~ group*time + (time|id), data=one_simulated_brain_dataset,
+                                     iter=2000, cores = 4, prior = weakly_informative_custom_prior, family = 'student')
+
+model_random_intercept_pcc <- brms::brm(pcc ~ group*time + (1|id), data=one_simulated_brain_dataset,
+                                         iter=2000, cores = 4, prior = weakly_informative_custom_prior, family = 'student')
+
+# summarize raw data
+raw_data_summary = one_simulated_brain_dataset %>%
+  group_by(group, time, id) %>%
+  summarise(mPFC = mean(mpfc),
+            PCC = mean(pcc)) %>%
+  pivot_longer(c(mPFC, PCC), names_to = 'roi')
+
+```
+
+## Model comparison based on LOO ELPD
+
+```{r}
+loo_random_slope_mpfc = loo(model_random_slope_mpfc)
+loo_random_intercept_mpfc = loo(model_random_intercept_mpfc)
+loo_mpfc = loo_compare(loo_random_slope_mpfc, loo_random_intercept_mpfc)
+loo_mpfc$model = row.names(loo_mpfc) # best model listed first
+
+loo_random_slope_pcc = loo(model_random_slope_pcc)
+loo_random_intercept_pcc = loo(model_random_intercept_pcc)
+loo_pcc = loo_compare(loo_random_slope_pcc, loo_random_intercept_pcc)
+loo_pcc$model = row.names(loo_pcc) # best model listed first
+
+
+# Choose mPFC Model
+if (loo_mpfc$model[[1]] == 'model_random_slope_mpfc'){
+  print('Random slope model better')
+  best_mpfc_model = model_random_slope_mpfc
+  cond_fx_mpfc = conditional_effects(model_random_slope_mpfc)
+}else{
+  print('Random intercept model better')
+  cond_fx_mpfc = conditional_effects(model_random_intercept_mpfc)
+  best_mpfc_model = model_random_intercept_mpfc
+
+}
+
+# Choose PCC model
+if (loo_pcc$model[[1]] == 'model_random_slope_pcc'){
+  print('Random slope model better')
+  cond_fx_pcc = conditional_effects(model_random_slope_pcc)
+  best_pcc_model = model_random_slope_pcc
+}else{
+  print('Random intercept model better')
+  cond_fx_pcc = conditional_effects(model_random_intercept_pcc)
+  best_pcc_model = model_random_intercept_pcc
+
+}
+
+sjPlot::tab_model(best_mpfc_model, best_pcc_model)
+
+```
+
+## Stats corrected for multiple comparisons
+```{r}
+run_benjamini_hochberg = function(model_mpfc, model_pcc){
+  alpha = .05
+  n_comparisons = 2
+  corrected_alpha = alpha/ n_comparisons 
+  
+  
+  posterior_fx_draws_mpfc = brms::as_draws_df(model_mpfc)
+  posterior_fx_draws_pcc = brms::as_draws_df(model_pcc)
+  
+  proportion_same_direction_mpfc = max(
+    sum(posterior_fx_draws_mpfc$`b_group30:timepost` > 0)/nrow(posterior_fx_draws_mpfc),
+    sum(posterior_fx_draws_mpfc$`b_group30:timepost` < 0)/nrow(posterior_fx_draws_mpfc)
+  )
+  
+  proportion_same_direction_pcc = max(
+    sum(posterior_fx_draws_pcc$`b_group30:timepost` > 0)/nrow(posterior_fx_draws_pcc),
+    sum(posterior_fx_draws_pcc$`b_group30:timepost` < 0)/nrow(posterior_fx_draws_pcc)
+  )
+  
+  print(c(proportion_same_direction_mpfc, proportion_same_direction_pcc))
+  
+  if (proportion_same_direction_mpfc > proportion_same_direction_pcc){
+    mpfc_fixef = fixef(model_mpfc, probs = c(corrected_alpha/2, 1-corrected_alpha/2))
+    pcc_fixef = fixef(model_pcc)
+  } else{
+    mpfc_fixef = fixef(model_mpfc)
+    pcc_fixef = fixef(model_pcc, probs = c(corrected_alpha/2, 1-corrected_alpha/2))
+  }
+  
+  return(list('mpfc_fixef'=mpfc_fixef, 'pcc_fixef'=pcc_fixef))
+  
+  
+}
+
+run_benjamini_hochberg(model_mpfc = best_mpfc_model, model_pcc=best_pcc_model)
+
+
+emmeans::emmeans(best_mpfc_model, specs = ~time) %>%
+  pairs(reverse=TRUE)
+
+emmeans::emmeans(best_pcc_model, specs = ~time) %>%
+  pairs(reverse=TRUE)
+```
+
+## Plotting outputs from brain models
+
+```{r}
+cond_fx = plyr::rbind.fill(cond_fx_mpfc$`group:time` %>% data.frame() %>% mutate(roi = 'mPFC'), 
+                cond_fx_pcc$`group:time` %>% data.frame() %>% mutate(roi = 'PCC'))
+
+cond_fx = mutate(cond_fx, 
+                 time = dplyr::recode(time, ' pre'=' pre-mbNF', 'post'='post-mbNF'),
+                 group = dplyr::recode(group, '30'='30 min', '15'='15 min'))
+raw_data_summary = mutate(raw_data_summary, 
+                          time = dplyr::recode(time, ' pre'=' pre-mbNF', 'post'='post-mbNF'),
+                 group = dplyr::recode(group, '30'='30 min', '15'='15 min'))
+
+
+aim_1_placeholder_plot = cond_fx %>%
+  ggplot(data = ., aes(x = time, y = estimate__, color = group)) +
+    geom_hline(yintercept = 0, lty = 2) +
+    geom_line(data = raw_data_summary, aes(x = time, y = value, color = group, group = id), alpha = 0.2) +
+    geom_line(aes(group = group), position = position_dodge(0.1), lwd = 1) +
+    geom_errorbar(aes(ymin = lower__, ymax = upper__), width = 0, position = position_dodge(0.1), lwd = 1) +
+    geom_point(position = position_dodge(0.1), size = 3) + 
+    labs(x = 'Time', y = 'Self > Other Activation', color = 'mbNF Dose') +
+    facet_grid(~roi) + 
+    theme_bw() +
+    theme(text = element_text(face = 'bold'))
+
+ggsave(aim_1_placeholder_plot, file = 'aim_1_placeholder_figure.png', height = 4, width = 7)
+```
+
+
+# Aim 2 (Behavior)
+
+## Run model
+```{r}
+weakly_informative_custom_prior_logit = c(prior_string("student_t(3, 0, 2.5)", class = "b"))
+
+model_task_behavior <- brms::brm(endorse ~ group*time*valence + (1|id), 
+                                             family = bernoulli(link = 'logit'),
+                                             data=one_simulated_behavior_dataset,
+                                         iter=2000, cores = 4, prior =weakly_informative_custom_prior_logit)
+
+summary(model_task_behavior)
+```
+
+
+## Make plot
+
+```{r}
+
+trial = 1:20
+valence = c('positive', 'negative')
+group = c('15', '30')
+time = 0:1
+predictor_grid_behavior = expand.grid(valence = valence, group = group, time = time)
+
+predictor_grid_behavior = fitted(model_task_behavior, newdata = predictor_grid_behavior,
+                     re_formula = NA) %>%
+  cbind(predictor_grid_behavior, .)
+
+df_behavior_summary_check = one_simulated_behavior_dataset %>%
+  group_by(id, time, group, valence) %>%
+  summarise(pct_endorse = sum(endorse)/n())
+
+predictor_grid_behavior = mutate(predictor_grid_behavior, 
+                 time = dplyr::recode(time, '0'=' pre-mbNF', '1'='post-mbNF'),
+                 group = dplyr::recode(group, '30'='30 min', '15'='15 min'),
+                 valence = dplyr::recode(valence, 
+                                         'positive'='Positive\nAdjectives', 
+                                         'negative'='Negative\nAdjectives'))
+
+
+df_behavior_summary_check = mutate(df_behavior_summary_check, 
+                 time = dplyr::recode(time, '0'=' pre-mbNF', '1'='post-mbNF'),
+                 group = dplyr::recode(group, '30'='30 min', '15'='15 min'),
+                 valence = dplyr::recode(valence, 
+                                         'positive'='Positive\nAdjectives', 
+                                         'negative'='Negative\nAdjectives'))
+
+
+aim_2_placeholder_plot = ggplot(df_behavior_summary_check, aes(x = time, y = pct_endorse, color = group)) +
+  geom_line(aes(group = id), alpha = 0.2) +
+  geom_point(data = predictor_grid_behavior, aes(y = Estimate), size = 3) +
+  geom_line(data = predictor_grid_behavior, aes(y = Estimate, group = group), lwd = 1) +
+  geom_errorbar(data = predictor_grid_behavior, aes(ymin = Q2.5, ymax = Q97.5, y = Estimate), width = 0, lwd = 1) +
+  facet_grid(~valence) +
+  theme_bw() +
+  labs(y = 'Probability of Endorsement\nAs Self-Referential', color = 'mbNF Dose', x = 'Time') +
+    theme(text = element_text(face = 'bold'))
+
+ggsave(aim_2_placeholder_plot, file = 'aim_2_placeholder_figure.png', height = 4, width = 7)
+```
+
+## Estiamted Marginal Means Comparisons for Stats
+```{r}
+emmeans::emmeans(model_task_behavior, specs = ~time*valence, 
+                 at = list(valence = c('negative', 'positive'),
+                           time = c(0,1)), type = 'response') %>%
+  pairs(reverse=TRUE)
+
+
+emmeans::emmeans(model_task_behavior, specs = ~time*group, 
+                 at = list(valence = c('negative', 'positive'),
+                           time = c(0, 1),
+                           group= c(30, 15)), type = 'response') %>%
+  pairs(reverse=TRUE)
+
+```
