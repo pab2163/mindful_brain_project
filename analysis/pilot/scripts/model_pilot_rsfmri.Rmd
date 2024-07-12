@@ -1,0 +1,118 @@
+---
+title: "Model Pilot rsfMRI Data"
+author: "Paul A. Bloom"
+date: "2023-11-30"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Load packages
+
+```{r}
+library(Matrix)
+library(tidyverse)
+library(lmerTest)
+library(brms)
+```
+## Read in data and combine in long form
+
+Head Motion
+```{r}
+fd = read.table('../data/FDj_4_runs.txt')
+names(fd) = c('pre1', 'pre2', 'post1', 'post2')
+fd$id = 1:9
+
+# participant ages
+fd$age = c(19.5, 19, 18.1, 18.6, 17.9,18.2,18.9,19.8, 19.5)
+
+fd = fd %>%
+    pivot_longer(-c(id, age), names_to = 'run', values_to = 'fd') %>%
+    mutate(time = ifelse(grepl('pre', run), 'pre', 'post'),
+           run = ifelse(grepl('1', run), 1, 2))
+
+```
+
+Functional Connectivity Between mPFC-PCC
+```{r}
+fc = read.csv('../data/MPFC_PCC_4_runs.csv')
+names(fc) = c('pre1', 'pre2', 'post1', 'post2')
+fc$id = 1:9
+fc = fc %>%
+    pivot_longer(-id, names_to = 'run', values_to = 'fc') %>%
+    mutate(time = ifelse(grepl('pre', run), 'pre', 'post'),
+           run = ifelse(grepl('1', run), 1, 2))
+
+# join data together
+full_data = left_join(fd, fc, by = c('id', 'run', 'time'))
+```
+
+
+## Frequentist (random slope model gives singular fit)
+```{r}
+m_random_int = lmerTest::lmer(data = full_data,
+                    fc ~ time + fd + (1|id))
+
+m_random_slope = lmerTest::lmer(data = full_data,
+                    fc ~ time + fd + (time|id))
+
+# output of models
+sjPlot::tab_model(m_random_int, m_random_slope)
+
+# AIC model comparison
+AIC(m_random_int, m_random_slope)
+```
+## Bayesian
+```{r}
+m_random_int_bayes = brms::brm(data = full_data,
+                    fc ~ time + fd + age + (1|id),
+                    seed = 1)
+
+m_random_slope_bayes = brms::brm(data = full_data,
+                    fc ~ time + fd + age + (time|id),
+                    seed = 1)
+
+# output of models
+sjPlot::tab_model(m_random_int_bayes, m_random_slope_bayes)
+
+# Compare models
+m_random_int_bayes_loo = brms::loo(m_random_int_bayes)
+m_random_slope_bayes_loo = brms::loo(m_random_slope_bayes)
+brms::loo_compare(m_random_int_bayes_loo, m_random_slope_bayes_loo)
+```
+
+## Make pilot data figure
+```{r}
+# extract model conditional (marginal) estimates
+conditional_effects = brms::conditional_effects(m_random_int_bayes)[[1]]
+
+# raw participant-level averages at pre & post-mbNF
+full_data_summarized = full_data %>%
+    group_by(id, time) %>%
+    summarise(fc = mean(fc))
+
+# make figure
+pilot_figure = ggplot(full_data_summarized, aes(x = time, y = fc)) +
+    geom_line(aes(group = id), alpha = 0.2) +
+    geom_point(data = conditional_effects, aes(y = `estimate__`), size = 3, color = 'blue') +
+    geom_line(data = conditional_effects, aes(y = `estimate__`, group = fd), lwd = 1, color = 'blue') +
+    geom_errorbar(data = conditional_effects, aes(ymin= `lower__`, ymax = `upper__`), width = .1, lwd = 1, color = 'blue') +
+    theme_bw() +
+    labs(y = 'mPFC - PCC rsFC', x = NULL) +
+    scale_x_discrete(limits = c('pre', 'post'), labels = c('Pre-mbNF', 'Post-mbNF'))
+
+# save figure
+ggsave(pilot_figure, file = 'pilot_figure_for_jaacap_reg_report.png', height=4, width = 5)
+    
+```
+
+
+# Posterior probability of negative change in mPFC - PCC connectivity over time
+```{r}
+posterior_draws = as_draws_df(m_random_int_bayes, variable = 'b_timepre')
+sum(posterior_draws$b_timepre > 0) / nrow(posterior_draws)
+```
+
+
