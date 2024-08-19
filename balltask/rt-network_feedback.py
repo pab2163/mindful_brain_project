@@ -250,7 +250,7 @@ endExpNow = False  # flag for 'escape' or other condition => quit the exp
 
 # Start Code - component code to be run before the window creation
 # Setup the Window
-win = visual.Window(size=(1080,1080), fullscr=True, screen=1, allowGUI=False, allowStencil=False,#1024, 1024
+win = visual.Window(size=(1080,1080), fullscr=False, screen=1, allowGUI=False, allowStencil=False,#1024, 1024
     monitor='testMonitor', color=[-1,-1,-1], colorSpace='rgb',
     blendMode='avg', useFBO=True,
     )
@@ -433,6 +433,25 @@ def run_instructions(instruct_text):
     instruct_text.draw()
     win.flip()
     wait_for_keypress(['space'])
+
+def quit_psychopy():
+    """Close everything and exit nicely (ending the experiment)
+    """
+    # pygame.quit()  # safe even if pygame was never initialised
+    logging.flush()
+
+    # properly shutdown ioHub server
+    from psychopy.iohub.client import ioHubConnection
+
+    if ioHubConnection.ACTIVE_CONNECTION:
+        ioHubConnection.ACTIVE_CONNECTION.quit()
+
+    for thisThread in threading.enumerate():
+        if hasattr(thisThread, 'stop') and hasattr(thisThread, 'running'):
+            # this is one of our event threads - kill it and wait for success
+            thisThread.stop()
+            while thisThread.running == 0:
+                pass  # wait until it has properly finished polling
 
 ball = visual.Circle(win, 
                     pos=(0,0), 
@@ -729,6 +748,8 @@ win.flip()
 
 pda_outlier=False
 #-------Start Routine "feedback"-------
+# initialize last_acquired_frame_time
+last_acquired_frame_time = feedbackClock.getTime()
 continueRoutine = True
 # Loop keeps going until RUN_TIME is up
 while continueRoutine and routineTimer.getTime() > 0:
@@ -766,11 +787,6 @@ while continueRoutine and routineTimer.getTime() > 0:
     for i in range(n_roi):
         roi_raw_i=communicator.get_roi_activation(roi_names_list[i], frame)
         roi_raw_activations.append(roi_raw_i)
-    
-    # So psychopy doesn't start too early if MURFI has started sending data early (real feedback values shouldn't be 0)
-    # if roi_raw_activations[0] ==0: #and roi_raw_activations[0]==0:
-    #     #win.close()
-    #     print ("let's begin feedback")
        
     '''
     Check for any missing values (nan) from MURFI on the current frame. If there is a nan value, this most likely
@@ -779,11 +795,24 @@ while continueRoutine and routineTimer.getTime() > 0:
     for the next volume are available. 
     '''
     if np.isnan(roi_raw_activations[0]) or np.isnan(roi_raw_activations[1]):
-        pass
-    
+        # get timestamp
+        non_new_data_time=feedbackClock.getTime()
+
+        # if time is more than 10s after last_acquired_frame_time, quit task (this means no more data is flowing in)
+        if non_new_data_time - last_acquired_frame_time > 10:
+            print('ERROR: NO DATA ARRIVING FROM MURFI! Is this a MoCo issue?')
+            print(f'quit at {non_new_data_time} since there were no new frames since {last_acquired_frame_time}')
+            convert_balltask_csv_to_bids(infile = f'{filename}_roi_outputs.csv')
+            core.quit()
+
     # a list of [CEN, DMN] for the current frame
     else:
         roi_activities=roi_raw_activations
+
+        # get a timestamp for last_acquired_frame_time
+        last_acquired_frame_time = feedbackClock.getTime()
+        print(last_acquired_frame_time)
+
         if np.nanmax(np.abs(roi_activities)) > expInfo['pda_outlier_threshold']:
             pda_outlier=True
             num_pda_outliers+=1
@@ -981,25 +1010,6 @@ next_participant=expInfo['participant']
 anchor = expInfo['anchor']
 next_feedback_condition = expInfo['feedback_condition']
 
-
-def quit_psychopy():
-    """Close everything and exit nicely (ending the experiment)
-    """
-    # pygame.quit()  # safe even if pygame was never initialised
-    logging.flush()
-
-    # properly shutdown ioHub server
-    from psychopy.iohub.client import ioHubConnection
-
-    if ioHubConnection.ACTIVE_CONNECTION:
-        ioHubConnection.ACTIVE_CONNECTION.quit()
-
-    for thisThread in threading.enumerate():
-        if hasattr(thisThread, 'stop') and hasattr(thisThread, 'running'):
-            # this is one of our event threads - kill it and wait for success
-            thisThread.stop()
-            while thisThread.running == 0:
-                pass  # wait until it has properly finished polling
 
 # Shut down psychopy before starting next run
 quit_psychopy()
