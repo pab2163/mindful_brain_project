@@ -34,10 +34,10 @@ def convert_balltask_csv_to_bids(infile):
     df.participant = "sub-" + df.participant
     df['run'] = slider_outputs['run'][0]
     df['feedback_on'] = slider_outputs['feedback_on'][0]
-    df['slider_noting'] = int(slider_outputs.loc[slider_outputs.question_text=='How often were you using the mental noting practice?', 'response'])
-    df['slider_ballcheck'] = int(slider_outputs.loc[slider_outputs.question_text=='How often did you check the position of the ball?', 'response'])
-    df['slider_difficulty'] = int(slider_outputs.loc[slider_outputs.question_text=='How difficult was it to apply mental noting?', 'response'])
-    df['slider_calm'] = int(slider_outputs.loc[slider_outputs.question_text=='How calm do you feel right now?', 'response'])
+    df['slider_noting'] = (slider_outputs.loc[slider_outputs.question_text=='How often were you using the mental noting practice?', 'response'])
+    df['slider_ballcheck'] = (slider_outputs.loc[slider_outputs.question_text=='How often did you check the position of the ball?', 'response'])
+    df['slider_difficulty'] = (slider_outputs.loc[slider_outputs.question_text=='How difficult was it to apply mental noting?', 'response'])
+    df['slider_calm'] = (slider_outputs.loc[slider_outputs.question_text=='How calm do you feel right now?', 'response'])
     out_df = df[['onset', 'duration', 'trial_type', 'feedback_source_volume',
                  'cen_signal', 'dmn_signal', 'pda', 
                  'ball_y_position','cen_hit', 'dmn_hit', 

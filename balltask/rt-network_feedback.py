@@ -190,13 +190,24 @@ if int(expInfo['run']) == 1:
     expInfo['scale_factor'] = default_scale_factor
 else:
     try:
-        last_run_filename = filename.replace(expInfo['run'], str(int(expInfo['run'])-1)) + '_roi_outputs.csv'
-        last_run_info = pd.read_csv(last_run_filename)
+
+        # loop through prior runs, starting at most recent, until the most recent prior run with at least 140 volumes is found
+        # label this most recent run with 140+ volumes as the "last run" to pull parameters from
+        last_run_complete=False
+        last_run_counter=1
+        while last_run_complete==False and last_run_counter < expInfo['run']:
+            last_run_filename = filename.replace(expInfo['run'], str(int(expInfo['run'])-last_run_counter)) + '_roi_outputs.csv'
+            last_run_info = pd.read_csv(last_run_filename)
+            if last_run_info.shape[0] > 140:
+                last_run_complete=True
+            else:
+                last_run_counter+=1
 
         # Max values in cumulative hits columns give the total number of hits each in the last run
         last_run_cen_hits = last_run_info.cen_cumulative_hits.max()
         last_run_dmn_hits = last_run_info.dmn_cumulative_hits.max()
 
+        print('Last run volumes: ', last_run_info.shape[0], ' Last run filename: ', last_run_filename)
         print('Last run CEN hits: ', last_run_cen_hits, ' Last run DMN hits: ', last_run_dmn_hits)
 
         # last_run_scale_factor
@@ -755,6 +766,7 @@ continueRoutine = True
 while continueRoutine and routineTimer.getTime() > 0:
     # get current time
     t = feedbackClock.getTime()
+    run_stop_time=t
     frameN = frameN + 1  # number of completed frames (so 0 is the first frame)
     # update/draw components on each frame
     
@@ -802,8 +814,8 @@ while continueRoutine and routineTimer.getTime() > 0:
         if non_new_data_time - last_acquired_frame_time > 10:
             print('ERROR: NO DATA ARRIVING FROM MURFI! Is this a MoCo issue?')
             print(f'quit at {non_new_data_time} since there were no new frames since {last_acquired_frame_time}')
-            convert_balltask_csv_to_bids(infile = f'{filename}_roi_outputs.csv')
-            core.quit()
+            continueRoutine=False
+ 
 
     # a list of [CEN, DMN] for the current frame
     else:
@@ -966,18 +978,39 @@ for thisComponent in finishComponents:
         thisComponent.status = NOT_STARTED
 
 # Ask slider questions
-slider_instruction.draw()
-win.flip()
-wait_for_keypress(key_list=[right_button, left_button, enter_button])
+if run_stop_time >= 90:
+    slider_instruction.draw()
+    win.flip()
+    wait_for_keypress(key_list=[right_button, left_button, enter_button])
 
-run_slider(question_text='How often were you using the mental noting practice?',
-                left_label='Never', right_label='Always')
-run_slider(question_text='How often did you check the position of the ball?',
-                left_label='Never', right_label='All the time')
-run_slider(question_text='How difficult was it to apply mental noting?',
-                left_label='Not at all', right_label='Very Difficult')
-run_slider(question_text='How calm do you feel right now?',
-                left_label='Not at all', right_label='Very calm')
+    run_slider(question_text='How often were you using the mental noting practice?',
+                    left_label='Never', right_label='Always')
+    run_slider(question_text='How often did you check the position of the ball?',
+                    left_label='Never', right_label='All the time')
+    run_slider(question_text='How difficult was it to apply mental noting?',
+                    left_label='Not at all', right_label='Very Difficult')
+    run_slider(question_text='How calm do you feel right now?',
+                    left_label='Not at all', right_label='Very calm')
+else:
+    with open(run_questions_file, 'a') as csvfile:
+            stim_writer = csv.writer(csvfile, delimiter=',', quotechar='|', quoting=csv.QUOTE_MINIMAL)
+            stim_writer.writerow([expInfo['participant'], expInfo['run'], expInfo['feedback_on'],
+                                  'How often were you using the mental noting practice?', np.nan, np.nan])
+
+    with open(run_questions_file, 'a') as csvfile:
+            stim_writer = csv.writer(csvfile, delimiter=',', quotechar='|', quoting=csv.QUOTE_MINIMAL)
+            stim_writer.writerow([expInfo['participant'], expInfo['run'], expInfo['feedback_on'],
+                                  'How often did you check the position of the ball?', np.nan, np.nan])  
+    with open(run_questions_file, 'a') as csvfile:
+            stim_writer = csv.writer(csvfile, delimiter=',', quotechar='|', quoting=csv.QUOTE_MINIMAL)
+            stim_writer.writerow([expInfo['participant'], expInfo['run'], expInfo['feedback_on'],
+                                  'How difficult was it to apply mental noting', np.nan, np.nan])  
+
+    with open(run_questions_file, 'a') as csvfile:
+            stim_writer = csv.writer(csvfile, delimiter=',', quotechar='|', quoting=csv.QUOTE_MINIMAL)
+            stim_writer.writerow([expInfo['participant'], expInfo['run'], expInfo['feedback_on'],
+                                  'How calm do you feel right now?', np.nan, np.nan])  
+
 
 # Convert csv output to BIDS-format tsv
 convert_balltask_csv_to_bids(infile = f'{filename}_roi_outputs.csv')
