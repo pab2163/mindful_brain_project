@@ -29,7 +29,6 @@ def convert_balltask_csv_to_bids(infile):
     df['pda']=df.cen_signal-df.dmn_signal
     df['cen_hit']=np.where(df.cen_cumulative_hits.diff(periods=-1) == -1, 1, 0)
     df['dmn_hit']=np.where(df.dmn_cumulative_hits.diff(periods=-1) == -1, 1, 0)
-    df.fillna('n/a', inplace=True)
     df['participant']=slider_outputs['id'][0]
     df.participant = "sub-" + df.participant
     df['run'] = slider_outputs['run'][0]
@@ -38,6 +37,7 @@ def convert_balltask_csv_to_bids(infile):
     df['slider_ballcheck'] = (slider_outputs.loc[slider_outputs.question_text=='How often did you check the position of the ball?', 'response'])
     df['slider_difficulty'] = (slider_outputs.loc[slider_outputs.question_text=='How difficult was it to apply mental noting?', 'response'])
     df['slider_calm'] = (slider_outputs.loc[slider_outputs.question_text=='How calm do you feel right now?', 'response'])
+    df.fillna('n/a', inplace=True)
     out_df = df[['onset', 'duration', 'trial_type', 'feedback_source_volume',
                  'cen_signal', 'dmn_signal', 'pda', 
                  'ball_y_position','cen_hit', 'dmn_hit', 
