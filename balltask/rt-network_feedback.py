@@ -195,7 +195,7 @@ else:
         # label this most recent run with 140+ volumes as the "last run" to pull parameters from
         last_run_complete=False
         last_run_counter=1
-        while last_run_complete==False and last_run_counter < expInfo['run']:
+        while last_run_complete==False and last_run_counter < int(expInfo['run']):
             last_run_filename = filename.replace(expInfo['run'], str(int(expInfo['run'])-last_run_counter)) + '_roi_outputs.csv'
             last_run_info = pd.read_csv(last_run_filename)
             if last_run_info.shape[0] > 140:
@@ -226,7 +226,8 @@ else:
             expInfo['scale_factor'] = last_run_scale_factor 
 
         print('Last run scale factor: ', last_run_scale_factor, ' This run scale factor: ', expInfo['scale_factor'])
-    except:
+    except Exception as error:
+        print(error)
         print('WARNING: could not pull scale factor from previous run. Settting to default scale factor.')
         expInfo['scale_factor'] = default_scale_factor
 
@@ -977,8 +978,8 @@ for thisComponent in finishComponents:
     if hasattr(thisComponent, 'status'):
         thisComponent.status = NOT_STARTED
 
-# Ask slider questions
-if run_stop_time >= 90:
+# Ask slider questions only if halfway through the run or more (60s into feedback)
+if run_stop_time >= 60:
     slider_instruction.draw()
     win.flip()
     wait_for_keypress(key_list=[right_button, left_button, enter_button])
