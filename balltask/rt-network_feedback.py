@@ -229,13 +229,13 @@ else:
 
             print('Last run scale factor: ', last_run_scale_factor, ' This run scale factor: ', expInfo['scale_factor'])
         elif:
-        print('WARNING: could not pull scale factor from previous run. Settting to default scale factor.')
+        print('WARNING: no prior complete runs. Settting to default scale factor.')
         expInfo['scale_factor'] = default_scale_factor
 
     # If this breaks (no prior runs) use default scale factor    
     except Exception as error:
         print(error)
-        print('WARNING: could not pull scale factor from previous run. Settting to default scale factor.')
+        print('ERROR: could not pull scale factor from previous run. Settting to default scale factor.')
         expInfo['scale_factor'] = default_scale_factor
 
 
