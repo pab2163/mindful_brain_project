@@ -203,29 +203,36 @@ else:
             else:
                 last_run_counter+=1
 
-        # Max values in cumulative hits columns give the total number of hits each in the last run
-        last_run_cen_hits = last_run_info.cen_cumulative_hits.max()
-        last_run_dmn_hits = last_run_info.dmn_cumulative_hits.max()
+        # ONLY update scale factor if there is a prior COMPLETE run to use to do this
+        if last_run_complete:
+            # Max values in cumulative hits columns give the total number of hits each in the last run
+            last_run_cen_hits = last_run_info.cen_cumulative_hits.max()
+            last_run_dmn_hits = last_run_info.dmn_cumulative_hits.max()
 
-        print('Last run volumes: ', last_run_info.shape[0], ' Last run filename: ', last_run_filename)
-        print('Last run CEN hits: ', last_run_cen_hits, ' Last run DMN hits: ', last_run_dmn_hits)
+            print('Last run volumes: ', last_run_info.shape[0], ' Last run filename: ', last_run_filename)
+            print('Last run CEN hits: ', last_run_cen_hits, ' Last run DMN hits: ', last_run_dmn_hits)
 
-        # last_run_scale_factor
-        last_run_scale_factor = last_run_info.scale_factor[0]
+            # last_run_scale_factor
+            last_run_scale_factor = last_run_info.scale_factor[0]
 
-        # if 5+ hits in either direction, decrease scale factor
-        if last_run_dmn_hits > max_hits or last_run_cen_hits > max_hits:
-            expInfo['scale_factor'] = last_run_scale_factor * 0.75
-        
-        # if not enough hits, increase scale factor
-        elif last_run_cen_hits + last_run_dmn_hits < min_hits:
-            expInfo['scale_factor'] = last_run_scale_factor * 1.25
+            # if 5+ hits in either direction, decrease scale factor
+            if last_run_dmn_hits > max_hits or last_run_cen_hits > max_hits:
+                expInfo['scale_factor'] = last_run_scale_factor * 0.75
+            
+            # if not enough hits, increase scale factor
+            elif last_run_cen_hits + last_run_dmn_hits < min_hits:
+                expInfo['scale_factor'] = last_run_scale_factor * 1.25
 
-        # otherwise, keep scale factor the same
-        else:
-            expInfo['scale_factor'] = last_run_scale_factor 
+            # otherwise, keep scale factor the same
+            else:
+                expInfo['scale_factor'] = last_run_scale_factor 
 
-        print('Last run scale factor: ', last_run_scale_factor, ' This run scale factor: ', expInfo['scale_factor'])
+            print('Last run scale factor: ', last_run_scale_factor, ' This run scale factor: ', expInfo['scale_factor'])
+        elif:
+        print('WARNING: could not pull scale factor from previous run. Settting to default scale factor.')
+        expInfo['scale_factor'] = default_scale_factor
+
+    # If this breaks (no prior runs) use default scale factor    
     except Exception as error:
         print(error)
         print('WARNING: could not pull scale factor from previous run. Settting to default scale factor.')
