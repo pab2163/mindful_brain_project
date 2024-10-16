@@ -190,33 +190,56 @@ if int(expInfo['run']) == 1:
     expInfo['scale_factor'] = default_scale_factor
 else:
     try:
-        last_run_filename = filename.replace(expInfo['run'], str(int(expInfo['run'])-1)) + '_roi_outputs.csv'
-        last_run_info = pd.read_csv(last_run_filename)
 
-        # Max values in cumulative hits columns give the total number of hits each in the last run
-        last_run_cen_hits = last_run_info.cen_cumulative_hits.max()
-        last_run_dmn_hits = last_run_info.dmn_cumulative_hits.max()
+        # loop through prior runs, starting at most recent, until the most recent prior run with at least 140 volumes is found
+        # label this most recent run with 140+ volumes as the "last run" to pull parameters from
+        last_run_complete=False
+        last_run_counter=1
+        while last_run_complete==False and last_run_counter < int(expInfo['run']):
+            last_run_filename = filename.replace("Feedback_" + str(expInfo['run']), 
+                                                 "Feedback_" + str(int(expInfo['run'])-last_run_counter)) + '_roi_outputs.csv'
+            print(last_run_filename)
+            print(expInfo['run'])
+            print(expInfo['participant'])
+            last_run_info = pd.read_csv(last_run_filename)
+            if last_run_info.shape[0] > 140:
+                last_run_complete=True
+            else:
+                last_run_counter+=1
 
-        print('Last run CEN hits: ', last_run_cen_hits, ' Last run DMN hits: ', last_run_dmn_hits)
+        # ONLY update scale factor if there is a prior COMPLETE run to use to do this
+        if last_run_complete:
+            # Max values in cumulative hits columns give the total number of hits each in the last run
+            last_run_cen_hits = last_run_info.cen_cumulative_hits.max()
+            last_run_dmn_hits = last_run_info.dmn_cumulative_hits.max()
 
-        # last_run_scale_factor
-        last_run_scale_factor = last_run_info.scale_factor[0]
+            print('Last run volumes: ', last_run_info.shape[0], ' Last run filename: ', last_run_filename)
+            print('Last run CEN hits: ', last_run_cen_hits, ' Last run DMN hits: ', last_run_dmn_hits)
 
-        # if 5+ hits in either direction, decrease scale factor
-        if last_run_dmn_hits > max_hits or last_run_cen_hits > max_hits:
-            expInfo['scale_factor'] = last_run_scale_factor * 0.75
-        
-        # if not enough hits, increase scale factor
-        elif last_run_cen_hits + last_run_dmn_hits < min_hits:
-            expInfo['scale_factor'] = last_run_scale_factor * 1.25
+            # last_run_scale_factor
+            last_run_scale_factor = last_run_info.scale_factor[0]
 
-        # otherwise, keep scale factor the same
+            # if 5+ hits in either direction, decrease scale factor
+            if last_run_dmn_hits > max_hits or last_run_cen_hits > max_hits:
+                expInfo['scale_factor'] = last_run_scale_factor * 0.75
+            
+            # if not enough hits, increase scale factor
+            elif last_run_cen_hits + last_run_dmn_hits < min_hits:
+                expInfo['scale_factor'] = last_run_scale_factor * 1.25
+
+            # otherwise, keep scale factor the same
+            else:
+                expInfo['scale_factor'] = last_run_scale_factor 
+
+            print('Last run scale factor: ', last_run_scale_factor, ' This run scale factor: ', expInfo['scale_factor'])
         else:
-            expInfo['scale_factor'] = last_run_scale_factor 
+            print('WARNING: no prior complete runs. Settting to default scale factor.')
+            expInfo['scale_factor'] = default_scale_factor
 
-        print('Last run scale factor: ', last_run_scale_factor, ' This run scale factor: ', expInfo['scale_factor'])
-    except:
-        print('WARNING: could not pull scale factor from previous run. Settting to default scale factor.')
+    # If this breaks (no prior runs) use default scale factor    
+    except Exception as error:
+        print(error)
+        print('ERROR: could not pull scale factor from previous run. Settting to default scale factor.')
         expInfo['scale_factor'] = default_scale_factor
 
 
@@ -250,7 +273,7 @@ endExpNow = False  # flag for 'escape' or other condition => quit the exp
 
 # Start Code - component code to be run before the window creation
 # Setup the Window
-win = visual.Window(size=(1080,1080), fullscr=True, screen=1, allowGUI=False, allowStencil=False,#1024, 1024
+win = visual.Window(size=(1080,1080), fullscr=False, screen=1, allowGUI=False, allowStencil=False,#1024, 1024
     monitor='testMonitor', color=[-1,-1,-1], colorSpace='rgb',
     blendMode='avg', useFBO=True,
     )
@@ -433,6 +456,25 @@ def run_instructions(instruct_text):
     instruct_text.draw()
     win.flip()
     wait_for_keypress(['space'])
+
+def quit_psychopy():
+    """Close everything and exit nicely (ending the experiment)
+    """
+    # pygame.quit()  # safe even if pygame was never initialised
+    logging.flush()
+
+    # properly shutdown ioHub server
+    from psychopy.iohub.client import ioHubConnection
+
+    if ioHubConnection.ACTIVE_CONNECTION:
+        ioHubConnection.ACTIVE_CONNECTION.quit()
+
+    for thisThread in threading.enumerate():
+        if hasattr(thisThread, 'stop') and hasattr(thisThread, 'running'):
+            # this is one of our event threads - kill it and wait for success
+            thisThread.stop()
+            while thisThread.running == 0:
+                pass  # wait until it has properly finished polling
 
 ball = visual.Circle(win, 
                     pos=(0,0), 
@@ -729,11 +771,14 @@ win.flip()
 
 pda_outlier=False
 #-------Start Routine "feedback"-------
+# initialize last_acquired_frame_time
+last_acquired_frame_time = feedbackClock.getTime()
 continueRoutine = True
 # Loop keeps going until RUN_TIME is up
 while continueRoutine and routineTimer.getTime() > 0:
     # get current time
     t = feedbackClock.getTime()
+    run_stop_time=t
     frameN = frameN + 1  # number of completed frames (so 0 is the first frame)
     # update/draw components on each frame
     
@@ -766,11 +811,6 @@ while continueRoutine and routineTimer.getTime() > 0:
     for i in range(n_roi):
         roi_raw_i=communicator.get_roi_activation(roi_names_list[i], frame)
         roi_raw_activations.append(roi_raw_i)
-    
-    # So psychopy doesn't start too early if MURFI has started sending data early (real feedback values shouldn't be 0)
-    # if roi_raw_activations[0] ==0: #and roi_raw_activations[0]==0:
-    #     #win.close()
-    #     print ("let's begin feedback")
        
     '''
     Check for any missing values (nan) from MURFI on the current frame. If there is a nan value, this most likely
@@ -779,11 +819,24 @@ while continueRoutine and routineTimer.getTime() > 0:
     for the next volume are available. 
     '''
     if np.isnan(roi_raw_activations[0]) or np.isnan(roi_raw_activations[1]):
-        pass
-    
+        # get timestamp
+        non_new_data_time=feedbackClock.getTime()
+
+        # if time is more than 10s after last_acquired_frame_time, quit task (this means no more data is flowing in)
+        if non_new_data_time - last_acquired_frame_time > 10:
+            print('ERROR: NO DATA ARRIVING FROM MURFI! Is this a MoCo issue?')
+            print(f'quit at {non_new_data_time} since there were no new frames since {last_acquired_frame_time}')
+            continueRoutine=False
+ 
+
     # a list of [CEN, DMN] for the current frame
     else:
         roi_activities=roi_raw_activations
+
+        # get a timestamp for last_acquired_frame_time
+        last_acquired_frame_time = feedbackClock.getTime()
+        print(last_acquired_frame_time)
+
         if np.nanmax(np.abs(roi_activities)) > expInfo['pda_outlier_threshold']:
             pda_outlier=True
             num_pda_outliers+=1
@@ -936,19 +989,40 @@ for thisComponent in finishComponents:
     if hasattr(thisComponent, 'status'):
         thisComponent.status = NOT_STARTED
 
-# Ask slider questions
-slider_instruction.draw()
-win.flip()
-wait_for_keypress(key_list=[right_button, left_button, enter_button])
+# Ask slider questions only if halfway through the run or more (60s into feedback)
+if run_stop_time >= 60:
+    slider_instruction.draw()
+    win.flip()
+    wait_for_keypress(key_list=[right_button, left_button, enter_button])
 
-run_slider(question_text='How often were you using the mental noting practice?',
-                left_label='Never', right_label='Always')
-run_slider(question_text='How often did you check the position of the ball?',
-                left_label='Never', right_label='All the time')
-run_slider(question_text='How difficult was it to apply mental noting?',
-                left_label='Not at all', right_label='Very Difficult')
-run_slider(question_text='How calm do you feel right now?',
-                left_label='Not at all', right_label='Very calm')
+    run_slider(question_text='How often were you using the mental noting practice?',
+                    left_label='Never', right_label='Always')
+    run_slider(question_text='How often did you check the position of the ball?',
+                    left_label='Never', right_label='All the time')
+    run_slider(question_text='How difficult was it to apply mental noting?',
+                    left_label='Not at all', right_label='Very Difficult')
+    run_slider(question_text='How calm do you feel right now?',
+                    left_label='Not at all', right_label='Very calm')
+else:
+    with open(run_questions_file, 'a') as csvfile:
+            stim_writer = csv.writer(csvfile, delimiter=',', quotechar='|', quoting=csv.QUOTE_MINIMAL)
+            stim_writer.writerow([expInfo['participant'], expInfo['run'], expInfo['feedback_on'],
+                                  'How often were you using the mental noting practice?', np.nan, np.nan])
+
+    with open(run_questions_file, 'a') as csvfile:
+            stim_writer = csv.writer(csvfile, delimiter=',', quotechar='|', quoting=csv.QUOTE_MINIMAL)
+            stim_writer.writerow([expInfo['participant'], expInfo['run'], expInfo['feedback_on'],
+                                  'How often did you check the position of the ball?', np.nan, np.nan])  
+    with open(run_questions_file, 'a') as csvfile:
+            stim_writer = csv.writer(csvfile, delimiter=',', quotechar='|', quoting=csv.QUOTE_MINIMAL)
+            stim_writer.writerow([expInfo['participant'], expInfo['run'], expInfo['feedback_on'],
+                                  'How difficult was it to apply mental noting', np.nan, np.nan])  
+
+    with open(run_questions_file, 'a') as csvfile:
+            stim_writer = csv.writer(csvfile, delimiter=',', quotechar='|', quoting=csv.QUOTE_MINIMAL)
+            stim_writer.writerow([expInfo['participant'], expInfo['run'], expInfo['feedback_on'],
+                                  'How calm do you feel right now?', np.nan, np.nan])  
+
 
 # Convert csv output to BIDS-format tsv
 convert_balltask_csv_to_bids(infile = f'{filename}_roi_outputs.csv')
@@ -981,25 +1055,6 @@ next_participant=expInfo['participant']
 anchor = expInfo['anchor']
 next_feedback_condition = expInfo['feedback_condition']
 
-
-def quit_psychopy():
-    """Close everything and exit nicely (ending the experiment)
-    """
-    # pygame.quit()  # safe even if pygame was never initialised
-    logging.flush()
-
-    # properly shutdown ioHub server
-    from psychopy.iohub.client import ioHubConnection
-
-    if ioHubConnection.ACTIVE_CONNECTION:
-        ioHubConnection.ACTIVE_CONNECTION.quit()
-
-    for thisThread in threading.enumerate():
-        if hasattr(thisThread, 'stop') and hasattr(thisThread, 'running'):
-            # this is one of our event threads - kill it and wait for success
-            thisThread.stop()
-            while thisThread.running == 0:
-                pass  # wait until it has properly finished polling
 
 # Shut down psychopy before starting next run
 quit_psychopy()
