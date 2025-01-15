@@ -4,6 +4,7 @@ import os
 import glob
 
 def update_json(fname):
+    print(fname)
     # read in json file to a dictionary
     with open(fname, 'r') as openfile:
         # Reading from json file
@@ -35,6 +36,7 @@ def update_json(fname):
     with open(fname, "w") as outfile:
         outfile.write(json_out)
 
+    print('')
 
 
 # find all bids json files recursively 
