@@ -96,7 +96,7 @@ def infotodict(seqinfo):
             info[twovol].append(s.series_id)
 
         # Resting state (AP and PA).
-        elif s.dim4 > 100 and 'task-rest' in s.protocol_name and not s.is_motion_corrected:
+        elif s.dim4 > 100 and 'task-rest' in s.protocol_name and not s.is_motion_corrected and not 'task-restpre' in s.protocol_name and not 'task-restost' in s.protocol_name:
             info[rest].append(s.series_id)
         elif s.dim4 > 100 and 'task-restpre' in s.protocol_name and not s.is_motion_corrected:
             info[restpre].append(s.series_id)
