@@ -15,7 +15,7 @@ def organize_dicoms(main_path, dicom_out_path, subject):
     # For CU data (subject id remind2###) - need to unzip dicoms
     if 'remind2' in subject:
     
-    old_session_labels = glob.glob(f'{main_path}/{subject}/*')
+    old_session_labels = glob.glob(f'{main_path}/cu/{subject}/*')
     for label in old_session_labels:
         print(label)
         if label.endswith('Auerbach^REMIND') or label.endswith('loc'):
