@@ -51,15 +51,15 @@ def infotodict(seqinfo):
         'sub-{subject}/{session}/func/sub-{subject}_{session}_task-feedback_run-{item:02d}_bold')
     # fieldmaps
     fmap_rest = create_key(
-        'sub-{subject}/{session}/fmap/sub-{subject}_{session}_acq-rest_dir-{dir}_run-{item:02d}_epi')
+        'sub-{subject}/{session}/fmap/sub-{subject}_{session}_acq-rest_dir-{dir}_epi')
     fmap_selfref = create_key(
-        'sub-{subject}/{session}/fmap/sub-{subject}_{session}_acq-selfref_dir-{dir}_run-{item:02d}_epi')
+        'sub-{subject}/{session}/fmap/sub-{subject}_{session}_acq-selfref_dir-{dir}_epi')
     fmap_realtime = create_key(
-        'sub-{subject}/{session}/fmap/sub-{subject}_{session}_acq-realtime_dir-{dir}_run-{item:02d}_epi')
+        'sub-{subject}/{session}/fmap/sub-{subject}_{session}_acq-realtime_dir-{dir}_epi')
     fmap_restpre = create_key(
-        'sub-{subject}/{session}/fmap/sub-{subject}_{session}_acq-restpre_dir-{dir}_run-{item:02d}_epi')
+        'sub-{subject}/{session}/fmap/sub-{subject}_{session}_acq-restpre_dir-{dir}_epi')
     fmap_restpost = create_key(
-        'sub-{subject}/{session}/fmap/sub-{subject}_{session}_acq-restpost_dir-{dir}_run-{item:02d}_epi')
+        'sub-{subject}/{session}/fmap/sub-{subject}_{session}_acq-restpost_dir-{dir}_epi')
 
 
     info = {
