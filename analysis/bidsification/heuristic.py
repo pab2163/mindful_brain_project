@@ -151,3 +151,9 @@ def infotodict(seqinfo):
             info[feedback].append(s.series_id)
 
     return info
+
+# To autopopulate the IntendedFor field in BIDS fmap json files
+POPULATE_INTENDED_FOR_OPTS = {
+        'matching_parameters': ['ImagingVolume', 'Shims'],
+        'criterion': 'Closest'
+}
