@@ -1,6 +1,7 @@
 import glob
 from pathlib import Path
 import os
+import sys
 
 def organize_dicoms(main_path, dicom_out_path, subject):
     '''
@@ -14,19 +15,18 @@ def organize_dicoms(main_path, dicom_out_path, subject):
 
     # For CU data (subject id remind2###) - need to unzip dicoms
     if 'remind2' in subject:
+        old_session_labels = glob.glob(f'{main_path}/cu/{subject}/*')
+        for label in old_session_labels:
+            print(label)
+            if label.endswith('Auerbach^REMIND') or label.endswith('loc'):
+                session = 'loc'
+            elif label.endswith('Auerbach^REMIND_1') or label.endswith('nf'): 
+                session = 'nf'
     
-    old_session_labels = glob.glob(f'{main_path}/{subject}/*')
-    for label in old_session_labels:
-        print(label)
-        if label.endswith('Auerbach^REMIND') or label.endswith('loc'):
-            session = 'loc'
-        elif label.endswith('Auerbach^REMIND_1') or label.endswith('nf'): 
-            session = 'nf'
-
-
-        # find all the zipped dicom folders, unzip them to new directory
-        zip_dicom_list = list(Path(label).rglob("*dicom.[z][i][p]"))
-        unzip_dicoms(zip_dicom_list, sub_out_path, session)
+    
+            # find all the zipped dicom folders, unzip them to new directory
+            zip_dicom_list = list(Path(label).rglob("*dicom.[z][i][p]"))
+            unzip_dicoms(zip_dicom_list, sub_out_path, session)
 
     # For NEU data, folders are separated by session. Nest them
     if 'remind3' in subject:
@@ -52,5 +52,5 @@ main_path = '/neurodata/mindful_brain_project/data/dicom'
 
 os.system(f'mkdir {dicom_out_path}')
 
-
-organize_dicoms(main_path=main_path, dicom_out_path = dicom_out_path, subject='remind2079')
+# run for one subject! 
+organize_dicoms(main_path=main_path, dicom_out_path = dicom_out_path, subject=sys.argv[1])
