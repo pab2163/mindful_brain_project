@@ -30,7 +30,14 @@ def organize_dicoms(main_path, dicom_out_path, subject):
     # For NEU data, folders are separated by session. Nest them
     if 'remind3' in subject:
         pass
-        
+
+def exclude_runs(run_list):
+    '''
+    Given a list of "bad" runs to exclude - make sure these are not in the file structure to be passed to heudiconv
+
+    '''
+    pass
+
 def unzip_dicoms(dicom_list, sub_out_path, session):
     '''
     Given a list of zipped dicom files, unzip them into the designated subject/session folder
