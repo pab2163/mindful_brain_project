@@ -1,0 +1,545 @@
+---
+title: "qa_metricwire_EW"
+output: html_document
+date: "2024-12-10"
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(tidyverse)
+library(emmeans)
+library(lme4)
+library(purrr)
+library(broom.mixed)
+theme_set(theme_bw())
+```
+
+# Cleaning & Prep
+
+```{r}
+# read in files
+redcap_id= read.csv('/Volumes/columbia/mbNF_MDD/DATA/QA_Checks/metricwire/data/REMINDMindfulnessBas-MetricwireKey_DATA_2025-01-07_2057.csv')
+redcap_id = mutate(redcap_id, metricwire_id = trimws(metricwire_id))
+
+ema=read.csv('/Volumes/columbia/mbNF_MDD/DATA/QA_Checks/metricwire/data/1736283383581_Mindful Brain Project Data.csv')
+
+# select on participants in redcap (real participants)
+ema = dplyr::filter(ema, User.Id %in% redcap_id$metricwire_id)
+ema = left_join(ema, redcap_id %>% dplyr::select(User.Id=metricwire_id, everything()), by = 'User.Id')
+
+# make all blank strings NA
+ema <- ema %>% mutate_if(is.character, na_if,"")
+
+ema <- ema %>% mutate(Trigger.Name=str_replace(Trigger.Name, "3005 Block2", "3005 Block 2"))
+ema <- ema %>% mutate(Trigger.Name=str_replace(Trigger.Name, "Block 2/3 Trigger Template", "2059 Block 3"))
+
+# coalesce responses from different versions or the prompts (different versions are different question orders)
+ema = ema %>% mutate_at(vars(contains('_')), .funs = as.character) %>% 
+  dplyr::mutate(phq2_q1=coalesce(!!! select(., contains('phq2_q1'))),
+                phq2_q2=coalesce(!!! select(., contains('phq2_q2'))),
+                gad2_q1=coalesce(!!! select(., contains('gad2_q1'))),
+                gad2_q2=coalesce(!!! select(., contains('gad2_q2'))),
+                stress_q1=coalesce(!!! select(., contains('stress_q1'))),
+                attn_q1=coalesce(!!! select(., contains('attn_q1'))),
+                sms_q1=coalesce(!!! select(., contains('sms_q1'))),
+                sms_q2=coalesce(!!! select(., contains('sms_q2'))),
+                sms_q3=coalesce(!!! select(., contains('sms_q3'))),
+                mwq_q1=coalesce(!!! select(., contains('mwq_q1'))),
+                noting_q1=coalesce(!!! select(., contains('noting_q1'))),
+                noting_q2=coalesce(!!! select(., contains('noting_q2'))),
+                rrs_q1=coalesce(!!! select(., contains('rrs_q1'))),
+                rrs_q2=coalesce(!!! select(., contains('rrs_q2'))),
+                ptq_q1=coalesce(!!! select(., contains('ptq_q1'))),
+                ptq_q2=coalesce(!!! select(., contains('ptq_q2'))),
+                selfref_q1=coalesce(!!! select(., contains('selfref_q1'))),
+                selfref_q2=coalesce(!!! select(., contains('selfref_q2'))))
+
+# take out the "version" columns
+ema_data_coalesced = ema %>% dplyr::select(-contains('_v'))
+
+# Label the blocks
+ema_data_coalesced = ema_data_coalesced %>% 
+  mutate(trigger = case_when(
+    grepl('Block 1', Trigger.Name) ~ 'Post-Baseline',
+    grepl('Block 2', Trigger.Name) ~ 'Post-MRI',
+    grepl('Block 3', Trigger.Name) ~ 'Pre-Followup'
+  ))
+
+
+# convert response data to numerica (NOTE: this will convert ALL types of missing data to NA)
+# We will want to come back to this if we want codes for types of missingness
+ema_data_coalesced = ema_data_coalesced %>% mutate_at(vars(contains('phq2_') | 
+                                                             contains('gad2_') | 
+                                                             contains('sms_') | 
+                                                             contains('noting_') | 
+                                                             contains('mwq_') |
+                                                             contains('ptq_') |
+                                                             contains('stress_q1') |
+                                                             contains('selfref_') |
+                                                             contains('attn_q1') |
+                                                             contains('rrs_')), 
+                                                      .funs=as.numeric) %>%
+  ungroup()
+
+# binary indicator for whether participant submitted a response to each prompt
+# and whether attention check was 'passed' 
+# Attention check is marked as "passed" if between 40-60 (inclusive)
+ema_data_coalesced = mutate(ema_data_coalesced, 
+                            submitted_yn = ifelse(Response.Type=='Submission', 1, 0),
+                            attn_check_passed = ifelse(attn_q1 >= 40 & attn_q1 <= 60, 1, 0))
+
+
+
+# names of all individual items
+q_items = names(ema_data_coalesced)[grepl('_q', names(ema_data_coalesced))]
+
+
+# calculate useful time variables
+# personal time=days since EMA start
+ema_data_coalesced = mutate(ema_data_coalesced, 
+                            Survey.Started.DateTime=as.POSIXct(paste(Survey.Started.Date, Survey.Started.Time), 
+                                                              format = '%d/%m/%Y %H:%M:%S'))
+
+ema_data_coalesced = ema_data_coalesced %>%
+  group_by(User.Id) %>%
+  mutate(personal_time = difftime(Survey.Started.DateTime, min(Survey.Started.DateTime), units=c('days'))) %>%
+  ungroup()
+
+```
+
+```{r}
+# overall submission rate (1=submitted)
+table(ema_data_coalesced$submitted_yn)/nrow(ema_data_coalesced)
+
+# overall attention check passed (1=passed)
+ema_data_coalesced %>% dplyr::filter(submitted_yn==1) %>%
+  group_by(attn_check_passed) %>%
+  count()
+
+hist(ema_data_coalesced$attn_q1)
+```
+
+# Adherence 
+
+## Adherence By Item
+
+Note, this is item-level missingness among *submitted* responses
+
+```{r adherence_item}
+ema_data_byitem_long = ema_data_coalesced %>%
+  dplyr::filter(Response.Type=='Submission') %>%
+  pivot_longer(contains('phq2_') | 
+                                                             contains('gad2_') | 
+                                                             contains('sms_') | 
+                                                             contains('noting_') | 
+                                                             contains('mwq_') |
+                                                             contains('ptq_') |
+                                                             contains('stress_q1') |
+                                                             contains('selfref_') |
+                                                             contains('attn_q1') |
+                                                             contains('rrs_')) 
+
+
+ema_data_byitem_missing =ema_data_byitem_long %>%
+  group_by(name) %>%
+  summarise(n=n(),
+            missing=sum(is.na(value)),
+            pct_missing = missing/n) %>%
+  dplyr::arrange(pct_missing)
+
+write.csv(ema_data_byitem_missing, file = '/Volumes/columbia/mbNF_MDD/DATA/QA_Checks/metricwire/completion_rates/ema_completion_by_item.csv', row.names=FALSE)
+```
+
+## Adherence by EMA block (e.g. timepoint)
+
+```{r adherence_block}
+# by participant and block
+ema_summary_data_qa = ema_data_coalesced %>%  
+  group_by(record_id, trigger) %>%
+  summarise(total_pings = n(), 
+            submitted = sum(Response.Type=='Submission'),
+            missed = sum(Response.Type=='Missed'),
+            attn_check_passed = sum(attn_check_passed==1 & submitted_yn==1)/submitted,
+            percent_submitted = submitted/total_pings)
+
+write.csv(ema_summary_data_qa, file = '/Volumes/columbia/mbNF_MDD/DATA/QA_Checks/metricwire/completion_rates/ema_completion_by_block.csv', row.names = FALSE)
+
+
+# mixed-effects model for adherence by block
+ahherence_model_block = lme4::glmer(data = ema_data_coalesced, submitted_yn ~ trigger + (1|User.Id),
+                                    family = binomial(link='logit'))
+
+ahherence_estimates_block = emmeans::emmeans(ahherence_model_block, specs = 'trigger', type = 'response') %>%
+  as.data.frame()
+
+# model summmary 
+summary(ahherence_model_block)
+```
+
+```{r}
+# plot by block
+ema_pct_submitted = ggplot(ema_summary_data_qa, aes(x = trigger, y = percent_submitted)) +
+  geom_point(aes(color = record_id)) + 
+  geom_line(aes(group = record_id, color = record_id)) +
+  geom_point(data = ahherence_estimates_block, aes(x = trigger, y = prob), size = 4) + 
+  geom_errorbar(data = ahherence_estimates_block, aes(x = trigger, y = prob, 
+                                                  ymin = asymp.LCL, ymax = asymp.UCL), 
+                width = 0.1, lwd = 1) + 
+  ylim(0, 1) +
+  theme_bw() +
+  labs(x = 'Timepoint', y = 'Response Rate') +
+  theme(legend.position = 'none')
+
+ggsave(ema_pct_submitted, file = '/Volumes/columbia/mbNF_MDD/DATA/QA_Checks/metricwire/completion_rates/ema_completion_by_block.png')
+```
+
+## Adherence By Time of Day
+
+
+```{r}
+table(ema_data_coalesced$Trigger.Time)
+
+
+ema_data_coalesced %>%
+  group_by(record_id, Trigger.Time, Time.Zone) %>%
+  count()
+
+ema_data_coalesced %>%
+  group_by(record_id, Time.Zone, Response.Type) %>%
+  count()
+
+summary_adherence_by_time_of_day = ema_data_coalesced %>%
+  group_by(record_id, Trigger.Time) %>%
+  summarise(adherence = sum(submitted_yn/n()))
+
+
+ema_adherence_timeofday = ggplot(summary_adherence_by_time_of_day %>% dplyr::filter(Trigger.Time %in% c("07:00:00", "14:00:00", "17:00:00" ,"19:00:00")), 
+       aes(x = Trigger.Time, y = adherence)) +
+  geom_point(aes(color=record_id)) +
+  geom_line(aes(group = record_id, color = record_id)) +
+  stat_summary(fun.data=mean_cl_boot) +
+  labs(x = 'Time of Day', y = 'Proportion EMA Completed')
+
+ggsave(ema_adherence_timeofday, file = '/Volumes/columbia/mbNF_MDD/DATA/QA_Checks/metricwire/completion_rates/ema_completion_by_timeofday.png')
+
+
+
+# get day of week
+ema_data_coalesced = mutate(ema_data_coalesced, 
+                            dayofweek = weekdays(as.Date(Survey.Started.DateTime)),
+                            weekend = ifelse(dayofweek %in% c('Saturday', 'Sunday'), 'Weekend', 'Weekday'))
+
+summary_adherence_by_weekend = ema_data_coalesced %>%
+  group_by(record_id, weekend) %>%
+  summarise(adherence = sum(submitted_yn/n()))
+
+ema_adherence_weekend = ggplot(summary_adherence_by_weekend, 
+       aes(x = weekend, y = adherence)) +
+  geom_point(aes(color=record_id)) +
+  geom_line(aes(group = record_id, color = record_id)) +
+  stat_summary(fun.data=mean_cl_boot)  +
+  labs(x = '', y = 'Proportion EMA Completed')
+
+ggsave(ema_adherence_weekend, file = '/Volumes/columbia/mbNF_MDD/DATA/QA_Checks/metricwire/completion_rates/ema_completion_by_weekend.png')
+
+
+
+ema_data_coalesced %>%
+  #dplyr::filter(!is.na(Time.Zone)) %>%
+  group_by(Trigger.Time, Time.Zone) %>%
+  count()
+
+```
+
+
+# Summaries of EMA Scales
+
+```{r}
+ema_scale_summaries = ema_data_coalesced %>%
+  ungroup() %>%
+  rowwise() %>%
+  mutate(phq2_mean = mean(c(phq2_q1, phq2_q2)),
+         gad_mean = mean(c_across(contains('gad2'))),
+         noting_mean = mean(c_across(contains('noting'))),
+         sms_mean = mean(c_across(contains('sms_'))),
+         rrs_mean = mean(c_across(contains('rrs'))),
+         mwq_mean = mean(c_across(contains('mwq'))),
+         ptq_mean = mean(c_across(contains('ptq'))),
+         stress_mean = mean(c_across(contains('stress'))), # mean of 1 item
+         selfref_mean = mean(c_across(contains('selfref'))),
+  ) %>%
+  ungroup()
+
+# using a nested data frame, run models for each scale as a function of block
+ema_scale_models_by_block = ema_scale_summaries %>%
+  pivot_longer(contains('_mean')) %>%
+  group_by(name) %>%
+  nest() %>%
+  mutate(
+         # run models
+         model=purrr::map(data, ~lme4::lmer(data=., value ~ trigger + (trigger|record_id))),
+         
+         # get estimated marginal means from each model
+         model_emmeans = purrr::map(model, ~emmeans::emmeans(object=., specs = 'trigger') %>% data.frame()
+         ),
+         tidy_estimates = purrr::map(model, ~broom.mixed::tidy(., conf.int=TRUE) %>% data.frame()))
+
+# unnest the estimated marginal mean estimates
+ema_scale_model_emmeans = ema_scale_models_by_block %>%
+  unnest(model_emmeans) %>%
+  dplyr::select(-model, -data, -tidy_estimates) %>%
+  mutate(measure = dplyr::recode(name, 
+                                 'gad_mean'='Anxiety (GAD2)', 
+                              'noting_mean'='Mental Noting',
+                              'phq2_mean'='Depression (PHQ2)',
+                              'sms_mean'='State Mindfulness (SMS)',
+                              'rrs_mean'='Rumination (RRS)',
+                              'ptq_mean'='Perseverative Thinking (PTQ)',
+                              'mwq_mean'='Mind-Wandering (MWQ)',
+                              'stress_mean'='Stress (PSS)',
+                              'selfref_mean'='Negative Self-Ref\nThinking (CTI-C)')) 
+
+
+ema_scale_summaries_by_block = ema_scale_summaries %>%
+  pivot_longer(contains('_mean')) %>%
+  group_by(record_id, name, trigger) %>%
+  summarise(mean_value = mean(value, na.rm = TRUE)) %>%
+  mutate(measure = dplyr::recode(name, 
+                                 'gad_mean'='Anxiety (GAD2)', 
+                              'noting_mean'='Mental Noting',
+                              'phq2_mean'='Depression (PHQ2)',
+                              'sms_mean'='State Mindfulness (SMS)',
+                              'rrs_mean'='Rumination (RRS)',
+                              'ptq_mean'='Perseverative Thinking (PTQ)',
+                              'mwq_mean'='Mind-Wandering (MWQ)',
+                              'stress_mean'='Stress (PSS)',
+                              'selfref_mean'='Negative Self-Ref\nThinking (CTI-C)')) 
+
+
+ema_scale_summaries_by_block_plot = ema_scale_summaries_by_block %>%
+  ggplot(data = ., aes(x = trigger, y = mean_value)) +
+  geom_point(aes(color = record_id)) + 
+  geom_line(aes(group = record_id, color = record_id)) + 
+  geom_point(data = ema_scale_model_emmeans, aes(x = trigger, y = emmean), size=3) + 
+  geom_errorbar(data = ema_scale_model_emmeans, aes(x = trigger, y = emmean,
+                                                    ymin = lower.CL, ymax = upper.CL),
+                lwd=1, width = 0.1) + 
+  facet_wrap(~measure, nrow = 2) +
+  theme(legend.position = 'none') +
+  labs(y = 'Mean Response', x = 'Each Line=1 Participant')
+
+ggsave(ema_scale_summaries_by_block_plot, 
+       file = '/Volumes/columbia/mbNF_MDD/DATA/QA_Checks/metricwire/pre_post_analysis/ema_scale_summaries.png',
+       height = 10, width =12)
+
+
+
+# fixed effects estimates by block
+ema_scale_model_fixef = ema_scale_models_by_block %>%
+  unnest(tidy_estimates) %>%
+  dplyr::select(-model, -data, -model_emmeans) %>%
+  dplyr::filter(term %in% c('triggerPost-MRI', 'triggerPre-Followup')) %>%
+  mutate(measure = dplyr::recode(name, 
+                                 'gad_mean'='Anxiety (GAD2)', 
+                              'noting_mean'='Mental Noting',
+                              'phq2_mean'='Depression (PHQ2)',
+                              'sms_mean'='State Mindfulness (SMS)',
+                              'rrs_mean'='Rumination (RRS)',
+                              'ptq_mean'='Perseverative Thinking (PTQ)',
+                              'mwq_mean'='Mind-Wandering (MWQ)',
+                              'stress_mean'='Stress (PSS)',
+                              'selfref_mean'='Negative Self-Ref\nThinking (CTI-C)'))
+ema_scale_model_fixef
+```
+
+
+
+
+# Individual Participant Plots
+
+```{r}
+make_individual_participant_plot = function(df, participant_id){
+  ema_summaries_long = ema_scale_summaries %>%
+    dplyr::filter(record_id==participant_id) %>%
+    pivot_longer(contains('mean')) %>%
+    mutate(abbr = dplyr::recode(name, 
+                              'gad_mean'='GAD', 
+                              'noting_mean'='Noting',
+                              'phq2_mean'='PHQ',
+                              'sms_mean'='SMS',
+                              'rrs_mean'='RRS',
+                              'ptq_mean'='PTQ',
+                              'mwq_mean'='MWQ',
+                              'stress_mean'='PSS',
+                              'selfref_mean'='CTI-C'))
+  
+  ema_summaries_long_plot = ggplot(ema_summaries_long, aes(x = personal_time, y = value, color = trigger)) +
+    geom_point(size=0.5) + 
+    geom_line(data = ema_summaries_long %>% dplyr::filter(submitted_yn ==1)) +
+    facet_grid(rows = vars(abbr)) +
+    labs(y = 'Response', x='Days Since EMA Start')
+
+  plot_filepath = paste0('/Volumes/columbia/mbNF_MDD/DATA/QA_Checks/metricwire/individual_participant_plots/scale_timeseries/',
+                       participant_id, '.png')  
+  
+  ggsave(ema_summaries_long_plot,
+         height = 10, width = 12,
+         file=plot_filepath)
+    
+}
+
+
+for (id in unique(ema_data_coalesced$record_id)){
+  make_individual_participant_plot(df=ema_data_coalesced, participant_id = id)
+}
+
+
+
+```
+
+# Descriptive plots of individual participant trajectories for rumination / depression 
+
+```{r}
+indiv_trajectories_rumination_depression = ema_scale_summaries %>%
+    pivot_longer(contains('mean')) %>%
+    mutate(abbr = dplyr::recode(name, 
+                              'gad_mean'='GAD', 
+                              'noting_mean'='Noting',
+                              'phq2_mean'='PHQ',
+                              'sms_mean'='SMS',
+                              'rrs_mean'='RRS',
+                              'ptq_mean'='PTQ',
+                              'mwq_mean'='MWQ',
+                              'stress_mean'='PSS',
+                              'selfref_mean'='CTI-C')) %>%
+  group_by(record_id, abbr, trigger, name) %>%
+  mutate(trigger_specific_avg = mean(value, na.rm=TRUE),
+         ptime_min = min(personal_time),
+         ptime_max = max(personal_time)) %>%
+  ungroup()
+  
+  
+indiv_RRS_plot =indiv_trajectories_rumination_depression %>%
+  dplyr::filter(name == 'rrs_mean') %>%
+  ggplot(data=., aes(x = personal_time, y = value)) +
+    #geom_smooth(color = 'black') +
+    geom_point(size=0.5, aes(group = trigger)) + 
+    geom_line(data = . %>% dplyr::filter(submitted_yn ==1), aes(group = trigger)) +
+    geom_segment(aes(group = trigger, y=trigger_specific_avg, yend = trigger_specific_avg, x = ptime_min, xend = ptime_max, color = trigger)) +
+    facet_wrap(~record_id) +
+    labs(y = 'Response', x='Days Since EMA Start', title = 'RRS')
+
+indiv_PTQ_plot =indiv_trajectories_rumination_depression %>%
+  dplyr::filter(name == 'ptq_mean') %>%
+  ggplot(data=., aes(x = personal_time, y = value)) +
+    #geom_smooth(color = 'black') +
+    geom_point(size=0.5, aes(group = trigger)) + 
+    geom_line(data = . %>% dplyr::filter(submitted_yn ==1), aes(group = trigger)) +
+    geom_segment(aes(group = trigger, y=trigger_specific_avg, yend = trigger_specific_avg, x = ptime_min, xend = ptime_max, color = trigger)) +
+    facet_wrap(~record_id) +
+    labs(y = 'Response', x='Days Since EMA Start', title = 'PTQ')
+
+indiv_PHQ_plot =indiv_trajectories_rumination_depression %>%
+  dplyr::filter(name == 'phq2_mean') %>%
+  ggplot(data=., aes(x = personal_time, y = value)) +
+    #geom_smooth(color = 'black') +
+    geom_point(size=0.5, aes(group = trigger)) + 
+    geom_line(data = . %>% dplyr::filter(submitted_yn ==1), aes(group = trigger)) +
+    geom_segment(aes(group = trigger, y=trigger_specific_avg, yend = trigger_specific_avg, x = ptime_min, xend = ptime_max, color = trigger)) +
+    facet_wrap(~record_id) +
+    labs(y = 'Response', x='Days Since EMA Start', title = 'PHQ2')
+
+ggsave(indiv_RRS_plot, 
+       file = '/Volumes/columbia/mbNF_MDD/DATA/QA_Checks/metricwire/pre_post_analysis/rrs_individuals.png',
+       height = 8, width =12)
+
+ggsave(indiv_PTQ_plot, 
+       file = '/Volumes/columbia/mbNF_MDD/DATA/QA_Checks/metricwire/pre_post_analysis/ptq_individuals.png',
+       height = 8, width =12)
+
+ggsave(indiv_PHQ_plot, 
+       file = '/Volumes/columbia/mbNF_MDD/DATA/QA_Checks/metricwire/pre_post_analysis/phq2_individuals.png',
+       height = 8, width =12)
+```
+
+
+```{r}
+# 
+# ggsave(quick_ema_summary, file = 'quick_ema_summary_plt_EW.png', width = 10, height = 4)
+# 
+# 
+# individual_ema_summaries = ema_scale_summaries %>%
+#   pivot_longer(contains('_mean')) %>%
+#   group_by(User.Id, name, trigger) %>%
+#   summarise(mean_value = mean(value, na.rm = TRUE)) %>%
+#   mutate(name = dplyr::recode(name, 'gad_mean'='Anxiety (GAD2)', 
+#                               'noting_mean'='Mental Noting',
+#                               'phq2_mean'='Depression (PHQ2)',
+#                               'sms_mean'='State Mindfulness (SMS)',
+#                               'rrs_mean'='Rumination (RRS)'))
+# 
+# 
+# noting_plt = individual_ema_summaries %>%
+#   dplyr::filter(name == 'Mental Noting') %>%
+#     ggplot(data = ., aes(x = trigger, y = mean_value, color = User.Id)) +
+#     geom_point() + 
+#     geom_line(aes(group = User.Id)) + 
+#     theme(legend.position = 'none') +
+#     labs(y = 'Mean Response', x = 'Each Line=1 Participant', title = 'Mental Noting') +
+#     ylim(0,100)
+# 
+# gad2_plt = individual_ema_summaries %>%
+#   dplyr::filter(name == 'Anxiety (GAD2)') %>%
+#     ggplot(data = ., aes(x = trigger, y = mean_value, color = User.Id)) +
+#     geom_point() + 
+#     geom_line(aes(group = User.Id)) + 
+#     theme(legend.position = 'none') +
+#     labs(y = 'Mean Response', x = 'Each Line=1 Participant', title = 'Anxiety (GAD2)') +
+#     ylim(0,100)
+# 
+# phq2_plt = individual_ema_summaries %>%
+#   dplyr::filter(name == 'Depression (PHQ2)') %>%
+#     ggplot(data = ., aes(x = trigger, y = mean_value, color = User.Id)) +
+#     geom_point() + 
+#     geom_line(aes(group = User.Id)) + 
+#     theme(legend.position = 'none') +
+#     labs(y = 'Mean Response', x = 'Each Line=1 Participant', title = 'Depression (PHQ2)') +
+#     ylim(0,100)
+# 
+# sms_plt = individual_ema_summaries %>%
+#   dplyr::filter(name == 'State Mindfulness (SMS)') %>%
+#     ggplot(data = ., aes(x = trigger, y = mean_value, color = User.Id)) +
+#     geom_point() + 
+#     geom_line(aes(group = User.Id)) + 
+#     theme(legend.position = 'none') +
+#     labs(y = 'Mean Response', x = 'Each Line=1 Participant', title = 'State Mindfulness (SMS)') +
+#     ylim(0,100)
+# 
+# rrs_plt = individual_ema_summaries %>%
+#   dplyr::filter(name == 'Rumination (RRS)') %>%
+#     ggplot(data = ., aes(x = trigger, y = mean_value, color = User.Id)) +
+#     geom_point() + 
+#     geom_line(aes(group = User.Id)) + 
+#     theme(legend.position = 'none') +
+#     labs(y = 'Mean Response', x = 'Each Line=1 Participant', title = 'Rumination (RRS)') +
+#     ylim(0,100)
+# 
+# ggsave(noting_plt, file = 'quick_ema_plots/noting_EW.png', height =4, width = 4)
+# ggsave(gad2_plt, file = 'quick_ema_plots/gad2_EW.png', height =4, width = 4)
+# ggsave(phq2_plt, file = 'quick_ema_plots/phq2_EW.png', height =4, width = 4)
+# ggsave(sms_plt, file = 'quick_ema_plots/sms_EW.png', height =4, width = 4)
+# ggsave(rrs_plt, file = 'quick_ema_plots/rrs_EW.png', height =4, width = 4)
+
+
+# ggsave(ema_pct_submitted, file = 'quick_ema_plots/ema_pct_submitted_EW.png', height =4, width = 4)
+# 
+# 
+# ggplot(ema_summary_data_qa, aes(x = trigger, y = attn_check_passed)) +
+#   geom_line(aes(group = record_id), alpha = 0.3) +
+#   stat_summary(fun.data = mean_cl_boot) +
+#   ylim(0, 1) +
+#   theme_bw() +
+#   labs(x = 'Timepoint', y = '% of attention checks passed')
+```
+
+

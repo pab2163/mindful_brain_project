@@ -1,0 +1,40 @@
+---
+title: "CDRS QA"
+date: '2025-01-15'
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(tidyverse)
+theme_set(theme_bw())
+```
+
+```{r, echo=FALSE}
+# Load in CDRS file 
+CDRS_file <- read.csv('/Volumes/columbia/mbNF_MDD/DATA/QA_Checks/CDRS/REMINDMindfulnessBas-CDRSQA_DATA_LABELS_2025-01-15_0135.csv')
+
+#Update CDRS event names
+CDRS_file = CDRS_file %>%
+  mutate(trigger = case_when(
+    Event.Name == 'Baseline (Arm 2: All)' ~ 'Baseline',
+    Event.Name == 'Followup (Arm 2: All)' ~ 'Followup'
+  ))
+
+CDRS_file = mutate(CDRS_file, Record.ID=as.character(Record.ID))
+```
+
+## Plots
+```{r plots, echo=FALSE}
+#Plot for CDRS sum scores
+CDRS_prepost = ggplot(CDRS_file, aes(x = trigger, y = CDRS.Raw.Sum.)) +
+  geom_point(aes(color = Record.ID)) +
+  geom_line(aes(group = Record.ID, color = Record.ID)) +
+  stat_summary(fun.data = mean_cl_boot) +
+  theme(legend.position = 'none') +
+  labs(title = "Pre/Post CDRS Summary Score", x = "Visit", y = "CDRS Summary Score") +
+  ylim(0, 100)
+
+ggsave(CDRS_prepost, file = '/Volumes/columbia/mbNF_MDD/DATA/QA_Checks/CDRS/CDRS_prepost_plot.png')
+
+```
