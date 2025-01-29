@@ -11,7 +11,7 @@ args=($@)
 main_proj="/neurodata/mindful_brain_project"
 work_dir="${main_proj}/work"
 dicom_dir="${main_proj}/data/dicom_prepped_for_heudiconv/${subject}/${session}"
-scripts_dir="${main_proj}/mindful_brain_project/analysis/bidsification"
+scripts_dir="${main_proj}/mindful_brain_project/analysis/mri_preproc/0_bidsification"
 output_dir="${main_proj}/data/bids_data"
 
 echo ${dicom_dir}
