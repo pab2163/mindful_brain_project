@@ -24,10 +24,10 @@ def organize_dicoms(main_path, dicom_out_path, subject):
         print(f'No file exists marking runs to be ignored for {subject} - is this correct?')
         runs_to_exclude=False
 
-    # sub_out_path = f'{dicom_out_path}/{subject}/'
-    # os.system(f'mkdir {sub_out_path}')
-    # os.system(f'mkdir {sub_out_path}/loc')
-    # os.system(f'mkdir {sub_out_path}/nf')
+    sub_out_path = f'{dicom_out_path}/{subject}/'
+    os.system(f'mkdir {sub_out_path}')
+    os.system(f'mkdir {sub_out_path}/loc')
+    os.system(f'mkdir {sub_out_path}/nf')
 
 
     # For CU data (subject id remind2###) - need to unzip dicoms
@@ -37,11 +37,13 @@ def organize_dicoms(main_path, dicom_out_path, subject):
             print(label)
             if label.endswith('Auerbach^REMIND') or label.endswith('loc'):
                 session = 'loc'
-                os.system(f"mv {label} {label.replace('Auerbach^REMIND', 'loc')}")
+                if label.endswith('Auerbach^REMIND'):
+                    os.system(f"mv {label} {label.replace('Auerbach^REMIND', 'loc')}")
 
             elif label.endswith('Auerbach^REMIND_1') or label.endswith('nf'): 
                 session = 'nf'
-                os.system(f"mv {label} {label.replace('Auerbach^REMIND_1', 'nf')}")
+                if label.endswith('Auerbach^REMIND_1'):
+                    os.system(f"mv {label} {label.replace('Auerbach^REMIND_1', 'nf')}")
 
             # exclude marked runs
             if runs_to_exclude:
@@ -49,7 +51,7 @@ def organize_dicoms(main_path, dicom_out_path, subject):
 
             # find all the zipped dicom folders, unzip them to new directory
             zip_dicom_list = list(Path(label).rglob("*dicom.[z][i][p]"))
-            unzip_dicoms(zip_dicom_list, sub_out_path, session)
+            #unzip_dicoms(zip_dicom_list, sub_out_path, session)
 
     # # For NEU data, folders are separated by session. Nest them
     # if 'remind3' in subject:
@@ -65,10 +67,10 @@ def exclude_runs(run_list, subject):
         run = run.replace('ses-nf', 'nf')
         run = run.replace('ses-loc', 'loc')
         run_path = f'{base_path}/{run}'
-        print(run_path)
 
         # remove the excluded runs
-        #os.system(f'rm -rf {run_path}')
+        print(f'Removing: {run_path}')
+        os.system(f'rm -rf {run_path}')
 
 def unzip_dicoms(dicom_list, sub_out_path, session):
     '''
