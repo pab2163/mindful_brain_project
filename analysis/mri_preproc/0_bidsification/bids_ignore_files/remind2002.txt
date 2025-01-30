@@ -1,4 +1,4 @@
-fmap-epi_acq-restpre_dir-AP
-fmap-epi_acq-restpre_dir-PA
-func-bold_task-2vol_run-01
-func-bold_task-restpre_run-01
+ses-nf/fmap-epi_acq-restpre_dir-AP
+ses-nf/fmap-epi_acq-restpre_dir-PA
+ses-nf/func-bold_task-2vol_run-01
+ses-nf/func-bold_task-restpre_run-01
