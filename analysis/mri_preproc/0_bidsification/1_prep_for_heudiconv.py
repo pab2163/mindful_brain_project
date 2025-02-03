@@ -2,6 +2,7 @@ import glob
 from pathlib import Path
 import os
 import sys
+import shutil 
 
 def organize_dicoms(main_path, dicom_out_path, subject):
     '''
@@ -18,7 +19,6 @@ def organize_dicoms(main_path, dicom_out_path, subject):
 
         # Remove trailing newline characters from each line
         bids_ignore_runs = [line.rstrip('\n') for line in bids_ignore_runs]
-        print(bids_ignore_runs)
 
     else:
         print(f'No file exists marking runs to be ignored for {subject} - is this correct?')
@@ -35,7 +35,7 @@ def organize_dicoms(main_path, dicom_out_path, subject):
         site = 'cu'
         old_session_labels = glob.glob(f'{main_path}/cu/{subject}/*')
         for label in old_session_labels:
-            print(label)
+            print(f'\n\nSession label: {label}')
             if label.endswith('Auerbach^REMIND') or label.endswith('loc'):
                 session = 'loc'
                 if label.endswith('Auerbach^REMIND'):
@@ -52,7 +52,7 @@ def organize_dicoms(main_path, dicom_out_path, subject):
 
             # find all the zipped dicom folders, unzip them to new directory
             zip_dicom_list = list(Path(label).rglob("*dicom.[z][i][p]"))
-            #unzip_dicoms(zip_dicom_list, sub_out_path, session)
+            unzip_dicoms(zip_dicom_list, sub_out_path, session)
 
     # For NEU data, folders are separated by session. There is no need to unzip, but moving files is needed
     if 'remind3' in subject:
@@ -60,18 +60,25 @@ def organize_dicoms(main_path, dicom_out_path, subject):
         old_session_labels = glob.glob(f'{main_path}/neu/*{subject}*')
         # loop through sessions
         for label in old_session_labels:
-            print(label)
+            print(f'\n\nSession label: {label}')
             if 'ses-loc' in label:
                 session='loc'
             elif 'ses-nf' in label or 'ses-rt' in label:
                 session='nf'
         
             if runs_to_exclude:
+                bids_ignore_runs_session=[]
                 if session=='loc':
                     # bids ignore runs are only ones from localizer session
-                    bids_ignore_runs_session = bids_ignore_runs['ses-loc' in bids_ignore_runs]
+                    for r in bids_ignore_runs:
+                        if 'ses-loc' in r:
+                            bids_ignore_runs_session.append(r)
                 elif session=='nf':
-                    bids_ignore_runs_session = bids_ignore_runs['ses-nf' in bids_ignore_runs]
+                    # bids ignore runs are only ones from nf session
+                    for r in bids_ignore_runs:
+                        if 'ses-nf' in r:
+                            bids_ignore_runs_session.append(r)
+                print(bids_ignore_runs)
                 exclude_runs(bids_ignore_runs_session, subject, site, label)
 
             reorganize_data(session, label, sub_out_path)
@@ -81,20 +88,23 @@ def reorganize_data(session, label, sub_out_path):
     '''
     Function to move ONLY NEU dicom data from raw form to the dicom folder prepped for heudiconv
     '''
-    for run in glob.glob(f'{label}/*'):
-        cmd = f"cp -r {run} {sub_out_path}/{session}/"
-        print(cmd)
+    for run in glob.glob(f'{label}/*/*'):
+        shutil.copytree(Path(run), Path(f'{sub_out_path}/{session}'))
 
 def exclude_runs(run_list, subject, site, session):
     '''
     Given a list of "bad" runs to exclude - make sure these are not in the file structure to be passed to heudiconv
     '''
 
+    # make sure it is a list (in case just 1 run to exclude)
+    run_list = ensure_list(run_list)
+    print(f'RUN LIST: {run_list}')
+
     # find base directories for dicom folders
     if site=='cu':
         base_path = f'{main_path}/{site}]/{subject}'
     elif site=='neu':
-        base_path = f'{session}/`Whitfieldgabrieli_Bauer_1029_R61Remind - 1`'
+        base_path = f'{session}/Whitfieldgabrieli_Bauer_1029_R61Remind - 1'
 
     # loop through list of runs to exclude, finalize path, and remove folders
     for run in run_list:
@@ -103,12 +113,18 @@ def exclude_runs(run_list, subject, site, session):
             run = run.replace('ses-loc', 'loc')
         elif site=='neu':
             run = run.split('/')[-1]
-        run_path = f'{base_path}/{run}'
+        run_path = Path(f'{base_path}/{run}')
 
         # remove the excluded runs
         print(f'Removing: {run_path}')
-        os.system(f'rm -rf {run_path}')
-
+        #print(os.path.isdir(run_path))
+        try:
+            shutil.rmtree(run_path)
+        except FileNotFoundError:
+             print(f"Folder '{run_path}' not found.")
+        except OSError as e:
+            print(f"Error deleting folder '{run_path}': {e}")
+            
 def unzip_dicoms(dicom_list, sub_out_path, session):
     '''
     Given a list of zipped dicom files, unzip them into the designated subject/session folder
@@ -121,6 +137,13 @@ def unzip_dicoms(dicom_list, sub_out_path, session):
             os.system(f'unzip {dicom_zip} -d {sub_out_path}/{session}')
         else:
             print(f"IGNORE: {str(dicom_zip).split('/')[-2]}")
+
+def ensure_list(value):
+    """Ensures that the input is a list, converting it to a single-item list if not."""
+    if isinstance(value, list):
+        return value
+    else:
+        return [value]
 
 
 
