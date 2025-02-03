@@ -29,9 +29,10 @@ def organize_dicoms(main_path, dicom_out_path, subject):
     os.system(f'mkdir {sub_out_path}/loc')
     os.system(f'mkdir {sub_out_path}/nf')
 
-
+    site = ''
     # For CU data (subject id remind2###) - need to unzip dicoms
     if 'remind2' in subject:
+        site = 'cu'
         old_session_labels = glob.glob(f'{main_path}/cu/{subject}/*')
         for label in old_session_labels:
             print(label)
@@ -47,24 +48,61 @@ def organize_dicoms(main_path, dicom_out_path, subject):
 
             # exclude marked runs
             if runs_to_exclude:
-                exclude_runs(bids_ignore_runs, subject)
+                exclude_runs(bids_ignore_runs, subject, site, session)
 
             # find all the zipped dicom folders, unzip them to new directory
             zip_dicom_list = list(Path(label).rglob("*dicom.[z][i][p]"))
             #unzip_dicoms(zip_dicom_list, sub_out_path, session)
 
-    # # For NEU data, folders are separated by session. Nest them
-    # if 'remind3' in subject:
-    #     pass
+    # For NEU data, folders are separated by session. There is no need to unzip, but moving files is needed
+    if 'remind3' in subject:
+        site = 'neu'
+        old_session_labels = glob.glob(f'{main_path}/neu/*{subject}*')
+        # loop through sessions
+        for label in old_session_labels:
+            print(label)
+            if 'ses-loc' in label:
+                session='loc'
+            elif 'ses-nf' in label or 'ses-rt' in label:
+                session='nf'
+        
+            if runs_to_exclude:
+                if session=='loc':
+                    # bids ignore runs are only ones from localizer session
+                    bids_ignore_runs_session = bids_ignore_runs['ses-loc' in bids_ignore_runs]
+                elif session=='nf':
+                    bids_ignore_runs_session = bids_ignore_runs['ses-nf' in bids_ignore_runs]
+                exclude_runs(bids_ignore_runs_session, subject, site, label)
 
-def exclude_runs(run_list, subject):
+            reorganize_data(session, label, sub_out_path)
+
+
+def reorganize_data(session, label, sub_out_path):
+    '''
+    Function to move ONLY NEU dicom data from raw form to the dicom folder prepped for heudiconv
+    '''
+    for run in glob.glob(f'{label}/*'):
+        cmd = f"cp -r {run} {sub_out_path}/{session}/"
+        print(cmd)
+
+def exclude_runs(run_list, subject, site, session):
     '''
     Given a list of "bad" runs to exclude - make sure these are not in the file structure to be passed to heudiconv
     '''
-    base_path = f'{main_path}/cu/{subject}'
+
+    # find base directories for dicom folders
+    if site=='cu':
+        base_path = f'{main_path}/{site}]/{subject}'
+    elif site=='neu':
+        base_path = f'{session}/`Whitfieldgabrieli_Bauer_1029_R61Remind - 1`'
+
+    # loop through list of runs to exclude, finalize path, and remove folders
     for run in run_list:
-        run = run.replace('ses-nf', 'nf')
-        run = run.replace('ses-loc', 'loc')
+        if site=='cu':
+            run = run.replace('ses-nf', 'nf')
+            run = run.replace('ses-loc', 'loc')
+        elif site=='neu':
+            run = run.split('/')[-1]
         run_path = f'{base_path}/{run}'
 
         # remove the excluded runs
