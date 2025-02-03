@@ -60,7 +60,6 @@ def organize_dicoms(main_path, dicom_out_path, subject):
 def exclude_runs(run_list, subject):
     '''
     Given a list of "bad" runs to exclude - make sure these are not in the file structure to be passed to heudiconv
-
     '''
     base_path = f'{main_path}/cu/{subject}'
     for run in run_list:
