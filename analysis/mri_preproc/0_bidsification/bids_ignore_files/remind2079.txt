@@ -1,0 +1,4 @@
+ses-loc/anat-loc_ses-lo1
+ses-nf/anat-loc_ses-rt15
+ses-nf/fmap-acq-restpre_dir-AP
+ses-nf/fmap-acq-restpre_dir-PA

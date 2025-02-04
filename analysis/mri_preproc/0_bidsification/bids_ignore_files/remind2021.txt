@@ -1,0 +1,4 @@
+ses-loc/anat-T1w_acq-mprage
+ses-loc/anat-T1w_acq-mprage_1
+ses-nf/fmap-epi_acq-restpre_dir-PA
+ses-nf/func-bold_task-feedback_run-05
