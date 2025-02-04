@@ -4,9 +4,14 @@ import os
 import sys
 import shutil 
 
+# keys in filenames that signal they should not be bidsified (moco, localizer, etc)
+ignore_keys = ['ignore-BIDS', 'Phoenix', 'MoCo', 'anat-loc', 'anatloc', 'ZIPReport']
+
 def organize_dicoms(main_path, dicom_out_path, subject):
     '''
     Organizes dicoms pre-heudiconv for one subject
+        -Inputs are a bit different for cu vs. neu, so processing is a little different
+        -Outputs in the dicom_out_path should be formatted the same way
     '''
     
     # find out if file specifying exclusions exists
@@ -89,7 +94,15 @@ def reorganize_data(session, label, sub_out_path):
     Function to move ONLY NEU dicom data from raw form to the dicom folder prepped for heudiconv
     '''
     for run in glob.glob(f'{label}/*/*'):
-        shutil.copytree(Path(run), Path(f'{sub_out_path}/{session}'))
+        sourcepath=Path(run)
+        run_end = run.split('/')[-1]
+        destpath=Path(f'{sub_out_path}/{session}/{run_end}')
+        # only move files to prepped dicom folder if they don't contain ignore keys
+        if not any([x in str(run) for x in ignore_keys]):
+            #print([sourcepath, destpath])
+            shutil.move(sourcepath, destpath)
+        else:
+            print(f'NOT MOVING: {sourcepath}')
 
 def exclude_runs(run_list, subject, site, session):
     '''
@@ -98,7 +111,7 @@ def exclude_runs(run_list, subject, site, session):
 
     # make sure it is a list (in case just 1 run to exclude)
     run_list = ensure_list(run_list)
-    print(f'RUN LIST: {run_list}')
+    #print(f'RUN LIST: {run_list}')
 
     # find base directories for dicom folders
     if site=='cu':
@@ -130,7 +143,7 @@ def unzip_dicoms(dicom_list, sub_out_path, session):
     Given a list of zipped dicom files, unzip them into the designated subject/session folder
     Does not unzip files set to be ignored
     '''
-    ignore_keys = ['ignore-BIDS', 'Phoenix', 'MoCo', 'anat-loc']
+    
     for dicom_zip in dicom_list:
         if not any([x in str(dicom_zip) for x in ignore_keys]):
             print(f"unzipping: {str(dicom_zip).split('/')[-2]}")
