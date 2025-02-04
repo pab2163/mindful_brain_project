@@ -57,6 +57,7 @@ def organize_dicoms(main_path, dicom_out_path, subject):
 
             # find all the zipped dicom folders, unzip them to new directory
             zip_dicom_list = list(Path(label).rglob("*dicom.[z][i][p]"))
+            print(zip_dicom_list)
             unzip_dicoms(zip_dicom_list, sub_out_path, session)
 
     # For NEU data, folders are separated by session. There is no need to unzip, but moving files is needed
