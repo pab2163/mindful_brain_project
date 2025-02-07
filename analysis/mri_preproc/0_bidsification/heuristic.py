@@ -52,27 +52,27 @@ def infotodict(seqinfo):
     
     # fieldmaps (AP)
     fmap_rest_ap = create_key(
-        'sub-{subject}/{session}/fmap/sub-{subject}_{session}_acq-rest_dir-{dir}_run-{item:02d}_epi')
+        'sub-{subject}/{session}/fmap/sub-{subject}_{session}_acq-rest_dir-AP_run-{item:02d}_epi')
     fmap_selfref_ap = create_key(
-        'sub-{subject}/{session}/fmap/sub-{subject}_{session}_acq-selfref_dir-{dir}_run-{item:02d}_epi')
+        'sub-{subject}/{session}/fmap/sub-{subject}_{session}_acq-selfref_dir-AP_run-{item:02d}_epi')
     fmap_realtime_ap = create_key(
-        'sub-{subject}/{session}/fmap/sub-{subject}_{session}_acq-realtime_dir-{dir}_run-{item:02d}_epi')
+        'sub-{subject}/{session}/fmap/sub-{subject}_{session}_acq-realtime_dir-AP_run-{item:02d}_epi')
     fmap_restpre_ap = create_key(
-        'sub-{subject}/{session}/fmap/sub-{subject}_{session}_acq-restpre_dir-{dir}_run-{item:02d}_epi')
+        'sub-{subject}/{session}/fmap/sub-{subject}_{session}_acq-restpre_dir-AP_run-{item:02d}_epi')
     fmap_restpost_ap = create_key(
-        'sub-{subject}/{session}/fmap/sub-{subject}_{session}_acq-restpost_dir-{dir}_run-{item:02d}_epi')
+        'sub-{subject}/{session}/fmap/sub-{subject}_{session}_acq-restpost_dir-AP_run-{item:02d}_epi')
 
     # fieldmaps (PA)
     fmap_rest_pa = create_key(
-        'sub-{subject}/{session}/fmap/sub-{subject}_{session}_acq-rest_dir-{dir}_run-{item:02d}_epi')
+        'sub-{subject}/{session}/fmap/sub-{subject}_{session}_acq-rest_dir-PA_run-{item:02d}_epi')
     fmap_selfref_pa = create_key(
-        'sub-{subject}/{session}/fmap/sub-{subject}_{session}_acq-selfref_dir-{dir}_run-{item:02d}_epi')
+        'sub-{subject}/{session}/fmap/sub-{subject}_{session}_acq-selfref_dir-PA_run-{item:02d}_epi')
     fmap_realtime_pa= create_key(
-        'sub-{subject}/{session}/fmap/sub-{subject}_{session}_acq-realtime_dir-{dir}_run-{item:02d}_epi')
+        'sub-{subject}/{session}/fmap/sub-{subject}_{session}_acq-realtime_dir-PA_run-{item:02d}_epi')
     fmap_restpre_pa = create_key(
-        'sub-{subject}/{session}/fmap/sub-{subject}_{session}_acq-restpre_dir-{dir}_run-{item:02d}_epi')
+        'sub-{subject}/{session}/fmap/sub-{subject}_{session}_acq-restpre_dir-PA_run-{item:02d}_epi')
     fmap_restpost_pa = create_key(
-        'sub-{subject}/{session}/fmap/sub-{subject}_{session}_acq-restpost_dir-{dir}_run-{item:02d}_epi')
+        'sub-{subject}/{session}/fmap/sub-{subject}_{session}_acq-restpost_dir-PA_run-{item:02d}_epi')
 
 
     info = {
