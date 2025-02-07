@@ -49,17 +49,30 @@ def infotodict(seqinfo):
         'sub-{subject}/{session}/func/sub-{subject}_{session}_task-transferpost_run-{item:02d}_bold')
     feedback= create_key(
         'sub-{subject}/{session}/func/sub-{subject}_{session}_task-feedback_run-{item:02d}_bold')
-    # fieldmaps
-    fmap_rest = create_key(
-        'sub-{subject}/{session}/fmap/sub-{subject}_{session}_acq-rest_dir-{dir}_epi')
-    fmap_selfref = create_key(
-        'sub-{subject}/{session}/fmap/sub-{subject}_{session}_acq-selfref_dir-{dir}_epi')
-    fmap_realtime = create_key(
-        'sub-{subject}/{session}/fmap/sub-{subject}_{session}_acq-realtime_dir-{dir}_epi')
-    fmap_restpre = create_key(
-        'sub-{subject}/{session}/fmap/sub-{subject}_{session}_acq-restpre_dir-{dir}_epi')
-    fmap_restpost = create_key(
-        'sub-{subject}/{session}/fmap/sub-{subject}_{session}_acq-restpost_dir-{dir}_epi')
+    
+    # fieldmaps (AP)
+    fmap_rest_ap = create_key(
+        'sub-{subject}/{session}/fmap/sub-{subject}_{session}_acq-rest_dir-{dir}_run-{item:02d}_epi')
+    fmap_selfref_ap = create_key(
+        'sub-{subject}/{session}/fmap/sub-{subject}_{session}_acq-selfref_dir-{dir}_run-{item:02d}_epi')
+    fmap_realtime_ap = create_key(
+        'sub-{subject}/{session}/fmap/sub-{subject}_{session}_acq-realtime_dir-{dir}_run-{item:02d}_epi')
+    fmap_restpre_ap = create_key(
+        'sub-{subject}/{session}/fmap/sub-{subject}_{session}_acq-restpre_dir-{dir}_run-{item:02d}_epi')
+    fmap_restpost_ap = create_key(
+        'sub-{subject}/{session}/fmap/sub-{subject}_{session}_acq-restpost_dir-{dir}_run-{item:02d}_epi')
+
+    # fieldmaps (PA)
+    fmap_rest_pa = create_key(
+        'sub-{subject}/{session}/fmap/sub-{subject}_{session}_acq-rest_dir-{dir}_run-{item:02d}_epi')
+    fmap_selfref_pa = create_key(
+        'sub-{subject}/{session}/fmap/sub-{subject}_{session}_acq-selfref_dir-{dir}_run-{item:02d}_epi')
+    fmap_realtime_pa= create_key(
+        'sub-{subject}/{session}/fmap/sub-{subject}_{session}_acq-realtime_dir-{dir}_run-{item:02d}_epi')
+    fmap_restpre_pa = create_key(
+        'sub-{subject}/{session}/fmap/sub-{subject}_{session}_acq-restpre_dir-{dir}_run-{item:02d}_epi')
+    fmap_restpost_pa = create_key(
+        'sub-{subject}/{session}/fmap/sub-{subject}_{session}_acq-restpost_dir-{dir}_run-{item:02d}_epi')
 
 
     info = {
@@ -82,11 +95,8 @@ def infotodict(seqinfo):
 
     # this section defines how heudiconv should "find" each sequence among the dicoms and match them to the keys
     for s in seqinfo:
-
-        print(s)
-
         # T1.
-        if (s.dim1, s.dim2, s.dim3, s.dim4) == (256, 256, 176, 1) and 'T1w' in s.protocol_name and not s.is_motion_corrected and 'NORM' in s.image_type:
+        if (s.dim1, s.dim2, s.dim3, s.dim4) == (256, 256, 176, 1) and 'T1w' in s.protocol_name and not s.is_motion_corrected and 'NORM' not in s.image_type:
             info[t1] = [s.series_id]
 
         # T2.
@@ -97,7 +107,7 @@ def infotodict(seqinfo):
         elif s.dim4 == 2 and 'task-2vol' in s.protocol_name:
             info[twovol].append(s.series_id)
 
-        # Resting state (AP and PA).
+        # Resting state
         elif s.dim4 > 100 and 'task-rest' in s.protocol_name and not s.is_motion_corrected and not 'task-restpre' in s.protocol_name and not 'task-restpost' in s.protocol_name:
             info[rest].append(s.series_id)
         elif s.dim4 > 100 and 'task-restpre' in s.protocol_name and not s.is_motion_corrected:
@@ -108,36 +118,36 @@ def infotodict(seqinfo):
         # Fieldmaps (AP and PA).
         elif 'fmap' in s.protocol_name and 'rest' in s.protocol_name and not 'restpre' in s.protocol_name and not 'restpost' in s.protocol_name:
             if 'AP' in s.protocol_name:
-                info[fmap_rest].append({'dir': 'AP', 'item': s.series_id})
+                info[fmap_rest_ap].append({'dir': 'AP', 'item': s.series_id})
             elif 'PA' in s.protocol_name:
-                info[fmap_rest].append({'dir': 'PA', 'item': s.series_id})
+                info[fmap_rest_pa].append({'dir': 'PA', 'item': s.series_id})
 
         elif 'fmap' in s.protocol_name and 'restpre' in s.protocol_name:
             if 'AP' in s.protocol_name:
-                info[fmap_restpre].append({'dir': 'AP', 'item': s.series_id})
+                info[fmap_restpre_ap].append({'dir': 'AP', 'item': s.series_id})
             elif 'PA' in s.protocol_name:
-                info[fmap_restpre].append({'dir': 'PA', 'item': s.series_id})
+                info[fmap_restpre_pa].append({'dir': 'PA', 'item': s.series_id})
 
         elif 'fmap' in s.protocol_name and 'restpost' in s.protocol_name:
             if 'AP' in s.protocol_name:
-                info[fmap_restpost].append({'dir': 'AP', 'item': s.series_id})
+                info[fmap_restpost_ap].append({'dir': 'AP', 'item': s.series_id})
             elif 'PA' in s.protocol_name:
-                info[fmap_restpost].append({'dir': 'PA', 'item': s.series_id})
+                info[fmap_restpost_pa].append({'dir': 'PA', 'item': s.series_id})
 
         elif 'fmap' in s.protocol_name and 'realtime' in s.protocol_name:
             if 'AP' in s.protocol_name:
-                info[fmap_realtime].append({'dir': 'AP', 'item': s.series_id})
+                info[fmap_realtime_ap].append({'dir': 'AP', 'item': s.series_id})
             elif 'PA' in s.protocol_name:
-                info[fmap_realtime].append({'dir': 'PA', 'item': s.series_id})
+                info[fmap_realtime_pa].append({'dir': 'PA', 'item': s.series_id})
 
         elif 'fmap' in s.protocol_name and 'selfref' in s.protocol_name:
             if 'AP' in s.protocol_name:
-                info[fmap_selfref].append({'dir': 'AP', 'item': s.series_id})
+                info[fmap_selfref_ap].append({'dir': 'AP', 'item': s.series_id})
             elif 'PA' in s.protocol_name:
-                info[fmap_selfref].append({'dir': 'PA', 'item': s.series_id})
+                info[fmap_selfref_pa].append({'dir': 'PA', 'item': s.series_id})
 
         # self reference task.
-        elif s.dim4 > 200 and 'task-selfref' in s.protocol_name:
+        elif s.dim4 > 100 and 'task-selfref' in s.protocol_name:
             info[selfref].append(s.series_id)
 
         # transfer run pre
