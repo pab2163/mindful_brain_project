@@ -83,8 +83,10 @@ def infotodict(seqinfo):
     # this section defines how heudiconv should "find" each sequence among the dicoms and match them to the keys
     for s in seqinfo:
 
+        print(s)
+
         # T1.
-        if (s.dim1, s.dim2, s.dim3, s.dim4) == (256, 256, 176, 1) and 'T1w' in s.protocol_name and not s.is_motion_corrected:
+        if (s.dim1, s.dim2, s.dim3, s.dim4) == (256, 256, 176, 1) and 'T1w' in s.protocol_name and not s.is_motion_corrected and 'NORM' in s.image_type:
             info[t1] = [s.series_id]
 
         # T2.
