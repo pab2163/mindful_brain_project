@@ -1,6 +1,8 @@
 """Heuristic to convert dicoms to nifti in Brain Imaging Data Structure format
 for the R61 realtime remind project.
 
+Drafted by Jiahe Zhang, updated by Paul Bloom, Jamaal Spence, Emma Wool
+
 Use this heuristic with [heudiconv](https://github.com/nipy/heudiconv).
 
 
@@ -100,8 +102,8 @@ def infotodict(seqinfo):
 
     # this section defines how heudiconv should "find" each sequence among the dicoms and match them to the keys
     for s in seqinfo:
-        # T1.
-        if (s.dim1, s.dim2, s.dim3, s.dim4) == (256, 256, 176, 1) and 'T1w' in s.protocol_name and not s.is_motion_corrected and 'NORM' not in s.image_type:
+        # T1. (sometimes 2 copies of the T1w come off the scanner. we only use the copy of the T1 marked with "NORM" - bias correction)
+        if (s.dim1, s.dim2, s.dim3, s.dim4) == (256, 256, 176, 1) and 'T1w' in s.protocol_name and not s.is_motion_corrected and 'NORM' in s.image_type:
             info[t1] = [s.series_id]
 
         # T2.
@@ -120,7 +122,7 @@ def infotodict(seqinfo):
         elif s.dim4 > 100 and 'task-restpost' in s.protocol_name and not s.is_motion_corrected:
             info[restpost].append(s.series_id)
        
-        # Fieldmaps (AP and PA).
+        # Fieldmaps (AP and PA). Note, AP/PA need to be defined distinctly so as to be numbered correctly in AP/PA pairs. 
         elif 'fmap' in s.protocol_name and 'rest' in s.protocol_name and not 'restpre' in s.protocol_name and not 'restpost' in s.protocol_name:
             if 'AP' in s.protocol_name:
                 info[fmap_rest_ap].append({'dir': 'AP', 'item': s.series_id})
