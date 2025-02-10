@@ -116,7 +116,7 @@ def exclude_runs(run_list, subject, site, session):
 
     # find base directories for dicom folders
     if site=='cu':
-        base_path = f'{main_path}/{site}]/{subject}'
+        base_path = f'{main_path}/{site}/{subject}'
     elif site=='neu':
         base_path = f'{session}/Whitfieldgabrieli_Bauer_1029_R61Remind - 1'
 
