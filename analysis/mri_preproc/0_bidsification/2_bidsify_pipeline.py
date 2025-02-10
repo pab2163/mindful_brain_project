@@ -71,22 +71,22 @@ def run_pipeline_one_participant(id):
 	Run heudiconv only if output bids folder doesn't exist
 	Uses heuristic.py to bidsify all dicoms!
 	Have to do this separately for loc / nf sessions
-	
+		
 	Make sure to delete prior hidden .heudiconv directroy in the bids output first
 	Otherwise, bidsification might not be up to date if edits are made to heuristic.py
 
 	'''
-	# heudiconv_command_cleanup=f'rm -rf {bids_path}/.heudiconv/{id}'
-	# heudiconv_command_loc=f'bash run_heudiconv.sh {id} loc'
-	# heudiconv_command_nf=f'bash run_heudiconv.sh {id} loc'
+	heudiconv_command_cleanup=f'rm -rf {bids_path}/.heudiconv/{id}'
+	heudiconv_command_loc=f'bash run_heudiconv.sh {id} loc'
+	heudiconv_command_nf=f'bash run_heudiconv.sh {id} loc'
 
-	# if os.path.isdir(f'{bids_path}/sub-{id}'):
-	# 	log_and_print(f'BIDSified data already exists for {id}')
-	# else:
-	# 	log_and_print(f'Running heudiconv to bidsify data for {id}')
-	# 	os.system(heudiconv_command_cleanup)
-	# 	os.system(heudiconv_command_loc)
-	# 	os.system(heudiconv_command_nf)
+	if os.path.isdir(f'{bids_path}/sub-{id}'):
+		log_and_print(f'BIDSified data already exists for {id}')
+	else:
+		log_and_print(f'Running heudiconv to bidsify data for {id}')
+		os.system(heudiconv_command_cleanup)
+		os.system(heudiconv_command_loc)
+		os.system(heudiconv_command_nf)
 
 
 # loop through ids to prep dicoms / bidsfy

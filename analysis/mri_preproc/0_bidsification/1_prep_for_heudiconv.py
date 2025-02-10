@@ -45,12 +45,12 @@ def organize_dicoms(main_path, dicom_out_path, subject):
                 session = 'loc'
                 if label.endswith('Auerbach^REMIND'):
                     os.system(f"mv {label} {label.replace('Auerbach^REMIND', 'loc')}")
-
+		    label=label.replace('Auerbach^REMIND', 'loc')
             elif label.endswith('Auerbach^REMIND_1') or label.endswith('nf'): 
                 session = 'nf'
                 if label.endswith('Auerbach^REMIND_1'):
                     os.system(f"mv {label} {label.replace('Auerbach^REMIND_1', 'nf')}")
-
+		    label=label.replace('Auerbach^REMIND', 'loc')
             # exclude marked runs
             if runs_to_exclude:
                 exclude_runs(bids_ignore_runs, subject, site, session)
@@ -162,7 +162,7 @@ def ensure_list(value):
 
 
 dicom_out_path = '/neurodata/mindful_brain_project/data/dicom_prepped_for_heudiconv'
-main_path = '/neurodata/mindful_brain_project/data/dicom'
+main_path = '/neurodata/mindful_brain_project/data/dicom_raw'
 
 os.system(f'mkdir {dicom_out_path}')
 
