@@ -50,7 +50,7 @@ def organize_dicoms(main_path, dicom_out_path, subject):
                 session = 'nf'
                 if label.endswith('Auerbach^REMIND_1'):
                     os.system(f"mv {label} {label.replace('Auerbach^REMIND_1', 'nf')}")
-                    label=label.replace('Auerbach^REMIND', 'loc')
+                    label=label.replace('Auerbach^REMIND', 'nf')
             # exclude marked runs
             if runs_to_exclude:
                 exclude_runs(bids_ignore_runs, subject, site, session)
