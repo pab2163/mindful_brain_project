@@ -78,7 +78,7 @@ def run_pipeline_one_participant(id):
 	'''
 	heudiconv_command_cleanup=f'rm -rf {bids_path}/.heudiconv/{id}'
 	heudiconv_command_loc=f'bash run_heudiconv.sh {id} loc'
-	heudiconv_command_nf=f'bash run_heudiconv.sh {id} loc'
+	heudiconv_command_nf=f'bash run_heudiconv.sh {id} nf'
 
 	if os.path.isdir(f'{bids_path}/sub-{id}'):
 		log_and_print(f'BIDSified data already exists for {id}')
