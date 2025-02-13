@@ -43,8 +43,10 @@ def infotodict(seqinfo):
         'sub-{subject}/{session}/func/sub-{subject}_{session}_task-restpre_run-{item:02d}_bold')
     restpost = create_key(
         'sub-{subject}/{session}/func/sub-{subject}_{session}_task-restpost_run-{item:02d}_bold')
-    selfref = create_key(
-        'sub-{subject}/{session}/func/sub-{subject}_{session}_task-selfref_run-{item:02d}_bold')
+    selfref_run_1 = create_key(
+        'sub-{subject}/{session}/func/sub-{subject}_{session}_task-selfref_run-01_bold')
+    selfref_run_2 = create_key(
+        'sub-{subject}/{session}/func/sub-{subject}_{session}_task-selfref_run-01_bold')
     transferpre = create_key(
         'sub-{subject}/{session}/func/sub-{subject}_{session}_task-transferpre_run-{item:02d}_bold')
     transferpost = create_key(
@@ -94,7 +96,8 @@ def infotodict(seqinfo):
         fmap_restpost_pa: [],
         fmap_selfref_pa: [],
         fmap_realtime_pa: [],
-        selfref: [],
+        selfref_run_1: [],
+        selfref_run_2: [],
         transferpre: [],
         transferpost: [],
         feedback: []
@@ -154,8 +157,11 @@ def infotodict(seqinfo):
                 info[fmap_selfref_pa].append({'dir': 'PA', 'item': s.series_id})
 
         # self reference task.
-        elif s.dim4 > 100 and 'task-selfref' in s.protocol_name:
-            info[selfref].append(s.series_id)
+        elif s.dim4 > 100 and 'task-selfref' in s.protocol_name and ('run-01' in s.protocol_name or 'run01' in s.protocol_name):
+            info[selfref_run_1].append(s.series_id)
+
+        elif s.dim4 > 100 and 'task-selfref' in s.protocol_name and ('run-02' in s.protocol_name or 'run02' in s.protocol_name):
+            info[selfref_run_2].append(s.series_id)
 
         # transfer run pre
         elif s.dim4 > 80 and 'task-transferpre' in s.protocol_name and not s.is_motion_corrected:
