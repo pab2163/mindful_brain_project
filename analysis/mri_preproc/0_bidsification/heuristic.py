@@ -46,7 +46,7 @@ def infotodict(seqinfo):
     selfref_run_1 = create_key(
         'sub-{subject}/{session}/func/sub-{subject}_{session}_task-selfref_run-01_bold')
     selfref_run_2 = create_key(
-        'sub-{subject}/{session}/func/sub-{subject}_{session}_task-selfref_run-01_bold')
+        'sub-{subject}/{session}/func/sub-{subject}_{session}_task-selfref_run-02_bold')
     transferpre = create_key(
         'sub-{subject}/{session}/func/sub-{subject}_{session}_task-transferpre_run-{item:02d}_bold')
     transferpost = create_key(
