@@ -10,5 +10,4 @@ docker run -tid --rm \
     nipreps/fmriprep:23.2.1 \
     /data /out/fmriprep-23.2.1 \
     participant \
-    --write-graph \
     -w /work --fs-license-file /fslicense.txt
