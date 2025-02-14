@@ -33,27 +33,52 @@ def infotodict(seqinfo):
     """
 
     t1 = create_key('sub-{subject}/{session}/anat/sub-{subject}_{session}_T1w')
-    t2 = create_key('sub-{subject}/{session}/anat/sub-{subject}_{session}_T2w')
 
-    twovol = create_key(
-        'sub-{subject}/{session}/func/sub-{subject}_{session}_task-2vol_run-{item:02d}_bold')
-    rest = create_key(
-        'sub-{subject}/{session}/func/sub-{subject}_{session}_task-rest_run-{item:02d}_bold')
-    restpre = create_key(
-        'sub-{subject}/{session}/func/sub-{subject}_{session}_task-restpre_run-{item:02d}_bold')
-    restpost = create_key(
-        'sub-{subject}/{session}/func/sub-{subject}_{session}_task-restpost_run-{item:02d}_bold')
+    twovol_run_1 = create_key(
+        'sub-{subject}/{session}/func/sub-{subject}_{session}_task-2vol_run-01_bold')
+    rest_run_1 = create_key(
+        'sub-{subject}/{session}/func/sub-{subject}_{session}_task-rest_run-01_bold')
+    rest_run_2 = create_key(
+        'sub-{subject}/{session}/func/sub-{subject}_{session}_task-rest_run-02_bold')
+    restpre_run_1 = create_key(
+        'sub-{subject}/{session}/func/sub-{subject}_{session}_task-restpre_run-01_bold')
+    restpre_run_2 = create_key(
+        'sub-{subject}/{session}/func/sub-{subject}_{session}_task-restpre_run-02_bold')
+    restpost_run_1 = create_key(
+        'sub-{subject}/{session}/func/sub-{subject}_{session}_task-restpost_run-01_bold')
+    restpost_run_2 = create_key(
+        'sub-{subject}/{session}/func/sub-{subject}_{session}_task-restpost_run-02_bold')
     selfref_run_1 = create_key(
         'sub-{subject}/{session}/func/sub-{subject}_{session}_task-selfref_run-01_bold')
     selfref_run_2 = create_key(
         'sub-{subject}/{session}/func/sub-{subject}_{session}_task-selfref_run-02_bold')
-    transferpre = create_key(
-        'sub-{subject}/{session}/func/sub-{subject}_{session}_task-transferpre_run-{item:02d}_bold')
-    transferpost = create_key(
-        'sub-{subject}/{session}/func/sub-{subject}_{session}_task-transferpost_run-{item:02d}_bold')
-    feedback= create_key(
-        'sub-{subject}/{session}/func/sub-{subject}_{session}_task-feedback_run-{item:02d}_bold')
-    
+    transferpre_run_1 = create_key(
+        'sub-{subject}/{session}/func/sub-{subject}_{session}_task-transferpre_run-01_bold')
+    transferpost_run_1 = create_key(
+        'sub-{subject}/{session}/func/sub-{subject}_{session}_task-transferpost_run-01_bold')
+    transferpost_run_2 = create_key(
+        'sub-{subject}/{session}/func/sub-{subject}_{session}_task-transferpost_run-02_bold')
+    feedback_run_1 = create_key(
+        'sub-{subject}/{session}/func/sub-{subject}_{session}_task-feedback_run-01_bold')
+    feedback_run_2 = create_key(
+        'sub-{subject}/{session}/func/sub-{subject}_{session}_task-feedback_run-02_bold')
+    feedback_run_3 = create_key(
+        'sub-{subject}/{session}/func/sub-{subject}_{session}_task-feedback_run-03_bold')
+    feedback_run_4 = create_key(
+        'sub-{subject}/{session}/func/sub-{subject}_{session}_task-feedback_run-04_bold')
+    feedback_run_5 = create_key(
+        'sub-{subject}/{session}/func/sub-{subject}_{session}_task-feedback_run-05_bold')   
+    feedback_run_6 = create_key(
+        'sub-{subject}/{session}/func/sub-{subject}_{session}_task-feedback_run-06_bold')
+    feedback_run_7 = create_key(
+        'sub-{subject}/{session}/func/sub-{subject}_{session}_task-feedback_run-07_bold')
+    feedback_run_8 = create_key(
+        'sub-{subject}/{session}/func/sub-{subject}_{session}_task-feedback_run-08_bold')
+    feedback_run_9 = create_key(
+        'sub-{subject}/{session}/func/sub-{subject}_{session}_task-feedback_run-09_bold')
+    feedback_run_10= create_key(
+        'sub-{subject}/{session}/func/sub-{subject}_{session}_task-feedback_run-10_bold')    
+           
     # fieldmaps (AP)
     fmap_rest_ap = create_key(
         'sub-{subject}/{session}/fmap/sub-{subject}_{session}_acq-rest_dir-AP_run-{item:02d}_epi')
@@ -81,11 +106,13 @@ def infotodict(seqinfo):
 
     info = {
         t1: [],
-        t2: [],
-        twovol: [],
-        rest: [],
-        restpre: [],
-        restpost: [],
+        twovol_run_1: [],
+        rest_run_1: [],
+        rest_run_2: [],
+        restpre_run_1: [],
+        restpre_run_2: [],
+        restpost_run_1: [],
+        restpost_run_2: [],        
         fmap_rest_ap: [],
         fmap_restpre_ap: [],
         fmap_restpost_ap: [],
@@ -98,9 +125,19 @@ def infotodict(seqinfo):
         fmap_realtime_pa: [],
         selfref_run_1: [],
         selfref_run_2: [],
-        transferpre: [],
-        transferpost: [],
-        feedback: []
+        transferpre_run_1: [],
+        transferpost_run_1: [],
+        transferpost_run_2: [],
+        feedback_run_1: [],
+        feedback_run_2: [],
+        feedback_run_3: [],
+        feedback_run_4: [], 
+        feedback_run_5: [], 
+        feedback_run_6: [], 
+        feedback_run_7: [], 
+        feedback_run_8: [], 
+        feedback_run_9: [],   
+        feedback_run_10: []
     }
 
     # this section defines how heudiconv should "find" each sequence among the dicoms and match them to the keys
@@ -108,23 +145,73 @@ def infotodict(seqinfo):
         # T1. (sometimes 2 copies of the T1w come off the scanner. we only use the copy of the T1 marked with "NORM" - bias correction)
         if (s.dim1, s.dim2, s.dim3, s.dim4) == (256, 256, 176, 1) and 'T1w' in s.protocol_name and not s.is_motion_corrected and 'NORM' in s.image_type:
             info[t1] = [s.series_id]
-
-        # T2.
-        elif s.dim3 == 176 and s.dim4 == 1 and 'T2w' in s.protocol_name and not s.is_motion_corrected:
-            info[t2].append(s.series_id)
             
         # 2vol
         elif s.dim4 == 2 and 'task-2vol' in s.protocol_name:
-            info[twovol].append(s.series_id)
+            info[twovol_run_1].append(s.series_id)
 
-        # Resting state
+        # Resting state (localizer)
         elif s.dim4 > 100 and 'task-rest' in s.protocol_name and not s.is_motion_corrected and not 'task-restpre' in s.protocol_name and not 'task-restpost' in s.protocol_name:
-            info[rest].append(s.series_id)
+            if 'run-01' in s.protocol_name or 'run01' in s.protocol_name:
+                info[rest_run_1].append(s.series_id)
+            elif 'run-02' in s.protocol_name or 'run02' in s.protocol_name:
+                info[rest_run_2].append(s.series_id)
+                
+        # Resting state (pre-nf)
         elif s.dim4 > 100 and 'task-restpre' in s.protocol_name and not s.is_motion_corrected:
-            info[restpre].append(s.series_id)
+            if 'run-01' in s.protocol_name or 'run01' in s.protocol_name:
+                info[restpre_run_1].append(s.series_id)
+            elif 'run-02' in s.protocol_name or 'run02' in s.protocol_name:
+                info[restpre_run_2].append(s.series_id)
+
+        # Resting state (post-nf)
         elif s.dim4 > 100 and 'task-restpost' in s.protocol_name and not s.is_motion_corrected:
-            info[restpost].append(s.series_id)
+            if 'run-01' in s.protocol_name or 'run01' in s.protocol_name:
+                info[restpost_run_1].append(s.series_id)
+            elif 'run-02' in s.protocol_name or 'run02' in s.protocol_name:
+                info[restpost_run_2].append(s.series_id)
        
+        # self reference task.
+        elif s.dim4 > 100 and 'task-selfref' in s.protocol_name and ('run-01' in s.protocol_name or 'run01' in s.protocol_name):
+            info[selfref_run_1].append(s.series_id)
+
+        elif s.dim4 > 100 and 'task-selfref' in s.protocol_name and ('run-02' in s.protocol_name or 'run02' in s.protocol_name):
+            info[selfref_run_2].append(s.series_id)
+
+        # transfer run pre
+        elif s.dim4 > 80 and 'task-transferpre' in s.protocol_name and not s.is_motion_corrected:
+            info[transferpre_run_1].append(s.series_id)
+
+        # transfer run post
+        elif s.dim4 > 80 and 'task-transferpost' in s.protocol_name and not s.is_motion_corrected:
+            if 'run-01' in s.protocol_name or 'run01' in s.protocol_name:
+                info[transferpost_run_1].append(s.series_id)
+            elif 'run-02' in s.protocol_name or 'run02' in s.protocol_name:
+                info[transferpost_run_2].append(s.series_id)
+
+        # feedback
+        elif s.dim4 > 80 and 'task-feedback' in s.protocol_name and not s.is_motion_corrected:
+            if 'run-01' in s.protocol_name or 'run01' in s.protocol_name and not 'run10' in s.protocol_name:
+                info[feedback_run_1].append(s.series_id)
+            elif 'run-02' in s.protocol_name or 'run02' in s.protocol_name:
+                info[feedback_run_2].append(s.series_id)
+            elif 'run-03' in s.protocol_name or 'run03' in s.protocol_name:
+                info[feedback_run_3].append(s.series_id)
+            elif 'run-04' in s.protocol_name or 'run04' in s.protocol_name:
+                info[feedback_run_4].append(s.series_id)
+            elif 'run-05' in s.protocol_name or 'run05' in s.protocol_name:
+                info[feedback_run_5].append(s.series_id)
+            elif 'run-06' in s.protocol_name or 'run06' in s.protocol_name:
+                info[feedback_run_6].append(s.series_id)
+            elif 'run-07' in s.protocol_name or 'run07' in s.protocol_name:
+                info[feedback_run_7].append(s.series_id)
+            elif 'run-08' in s.protocol_name or 'run08' in s.protocol_name:
+                info[feedback_run_8].append(s.series_id)
+            elif 'run-09' in s.protocol_name or 'run09' in s.protocol_name:
+                info[feedback_run_9].append(s.series_id)
+            elif 'run-10' in s.protocol_name or 'run10' in s.protocol_name:
+                info[feedback_run_10].append(s.series_id)
+            
         # Fieldmaps (AP and PA). Note, AP/PA need to be defined distinctly so as to be numbered correctly in AP/PA pairs. 
         elif 'fmap' in s.protocol_name and 'rest' in s.protocol_name and not 'restpre' in s.protocol_name and not 'restpost' in s.protocol_name:
             if 'AP' in s.protocol_name:
@@ -155,25 +242,6 @@ def infotodict(seqinfo):
                 info[fmap_selfref_ap].append({'dir': 'AP', 'item': s.series_id})
             elif 'PA' in s.protocol_name:
                 info[fmap_selfref_pa].append({'dir': 'PA', 'item': s.series_id})
-
-        # self reference task.
-        elif s.dim4 > 100 and 'task-selfref' in s.protocol_name and ('run-01' in s.protocol_name or 'run01' in s.protocol_name):
-            info[selfref_run_1].append(s.series_id)
-
-        elif s.dim4 > 100 and 'task-selfref' in s.protocol_name and ('run-02' in s.protocol_name or 'run02' in s.protocol_name):
-            info[selfref_run_2].append(s.series_id)
-
-        # transfer run pre
-        elif s.dim4 > 80 and 'task-transferpre' in s.protocol_name and not s.is_motion_corrected:
-            info[transferpre].append(s.series_id)
-
-        # transfer run post
-        elif s.dim4 > 80 and 'task-transferpost' in s.protocol_name and not s.is_motion_corrected:
-            info[transferpost].append(s.series_id)
-
-        # feedback
-        elif s.dim4 > 80 and 'task-feedback' in s.protocol_name and not s.is_motion_corrected:
-            info[feedback].append(s.series_id)
 
     return info
 
