@@ -9,7 +9,7 @@ fi
 # Assign the input argument to a variable
 input_subject=$1
 
-docker run -tid --rm \
+docker run -tid \
     -v /neurodata/mindful_brain_project/data/bids_data/:/data:ro \
     -v /neurodata/mindful_brain_project/data/fmriprep/:/out \
     -v /neurodata//neurodata/mindful_brain_project/data/fmriprep/fmriprep-23.2.1/sourcedata/freesurfer:/freesurfer \
