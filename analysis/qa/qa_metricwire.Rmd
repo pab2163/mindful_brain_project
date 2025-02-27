@@ -18,7 +18,7 @@ theme_set(theme_bw())
 
 ```{r}
 # read in files
-redcap_id= read.csv('/Volumes/columbia/mbNF_MDD/DATA/QA_Checks/metricwire/data/REMINDMindfulnessBas-MetricwireKey_DATA_2025-01-07_2057.csv')
+redcap_id= read.csv('/Volumes/columbia/mbNF_MDD/DATA/QA_Checks/metricwire/data/REMINDMindfulnessBas-MetricwireKey_DATA_2025-02-19_2021.csv')
 redcap_id = mutate(redcap_id, metricwire_id = trimws(metricwire_id))
 
 ema=read.csv('/Volumes/columbia/mbNF_MDD/DATA/QA_Checks/metricwire/data/1740518399405_Mindful Brain Project Data.csv')
