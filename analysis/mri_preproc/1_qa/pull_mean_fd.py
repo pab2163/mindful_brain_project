@@ -9,11 +9,11 @@ all_confound_files = glob.glob('/neurodata/mindful_brain_project/data/fmriprep/f
 get mean fd from one confound file
 '''
 def mean_fd(filepath):
-    df = pandas.read_csv(filepath, sep = '\t')
+    df = pd.read_csv(filepath, sep = '\t')
     mean_fd = df['framewise_displacement'].mean()
 
-    output = {'filename': [filepath],
-              'mean_fd': [mean_fd]}
+    output = {'filename': filepath,
+              'mean_fd': mean_fd}
 
     return(output)
 
