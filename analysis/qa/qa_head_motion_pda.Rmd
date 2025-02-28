@@ -1,0 +1,43 @@
+---
+title: "qa_fd_pda"
+author: "Paul A. Bloom"
+date: "2025-02-28"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+library(tidyverse)
+
+df_task = read.table('/Volumes/columbia/mbNF_MDD/DATA/Tasks/balltask/remind2002/sub-remind2002_ses-nf_task-feedback_run-02.tsv', header = 1) %>%
+    select(volume = feedback_source_volume, everything())
+
+df_confound = read.table('/Volumes/columbia/mbNF_MDD/DATA/MRI/fmriprep/fmriprep-23.2.1/sub-remind2002/ses-nf/func/sub-remind2002_ses-nf_task-feedback_run-02_desc-confounds_timeseries.tsv', header =1)
+
+df_confound = mutate(df_confound, volume = 0:(nrow(df_confound)-1)) %>%
+    dplyr::select(volume, global_signal, csf, white_matter, framewise_displacement)
+
+
+df_task = left_join(df_task, df_confound, by = 'volume') %>%
+    mutate(framewise_displacement = as.numeric(framewise_displacement))
+
+df_task %>%
+    mutate(pda_diff = pda - lag(pda, n=1)) %>%
+    dplyr::filter(volume > 24, !is.na(pda_diff)) %>%
+    dplyr::select(cen_signal, dmn_signal, pda, pda_diff, global_signal, csf, white_matter, framewise_displacement) %>%
+    cor()
+
+
+df_task %>%
+    pivot_longer(c(pda, cen_signal, dmn_signal, global_signal, csf, white_matter, framewise_displacement)) %>%
+    group_by(name) %>%
+    mutate(value_z = scale(value)) %>%
+    ggplot(data = ., aes(x = volume, y = value_z)) +
+    geom_line() +
+    facet_grid(rows = vars(name))
+
+
+```
