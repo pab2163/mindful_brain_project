@@ -1,0 +1,66 @@
+---
+title: "check_fd"
+author: "Paul A. Bloom"
+date: "2025-02-25"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+library(tidyverse)
+
+mean_fd = read.csv('mean_fd_summary.csv')
+
+mean_fd = mean_fd %>%
+    mutate(filename = basename(filename)) %>%
+    separate(., col = filename, sep = '_', into = c('sub', 'ses', 'task', 'run', 'f1', 'f2')) %>%
+    dplyr::select(-f1, -f2) %>%
+    mutate(ses_task_run = paste0(ses, '_', task, '_', run),
+           ses_task_run_factor = factor(ses_task_run, levels = c(
+               "ses-loc_task-rest_run-01", 
+               "ses-loc_task-rest_run-02" ,
+               "ses-loc_task-selfref_run-01" ,
+               "ses-loc_task-selfref_run-02"  ,  
+               "ses-nf_task-restpre_run-01" ,
+               "ses-nf_task-restpre_run-02",
+               "ses-nf_task-transferpre_run-01", 
+               "ses-nf_task-feedback_run-01",
+               "ses-nf_task-feedback_run-02",
+               "ses-nf_task-feedback_run-03" , 
+               "ses-nf_task-feedback_run-04"  ,
+               "ses-nf_task-feedback_run-05" ,
+               "ses-nf_task-transferpost_run-01", 
+               "ses-nf_task-feedback_run-06",
+               "ses-nf_task-feedback_run-07",
+               "ses-nf_task-feedback_run-08" ,      
+               "ses-nf_task-feedback_run-09",
+               "ses-nf_task-feedback_run-10",
+               "ses-nf_task-transferpost_run-02",
+               "ses-nf_task-restpost_run-01"  ,
+               "ses-nf_task-restpost_run-02" ,
+               "ses-nf_task-selfref_run-01" ,
+               "ses-nf_task-selfref_run-02"     
+           )))
+
+
+
+
+
+ggplot(mean_fd, aes(x = ses_task_run_factor, y = mean_fd)) +
+    geom_hline(yintercept = 0.3, lty = 2) +
+    #stat_summary(fun.data =mean_cl_boot) +
+    geom_line(aes(group = sub, color = sub)) +
+    geom_point(aes(color = sub)) +
+    facet_grid(~ses, drop=TRUE, scales = 'free_x') +
+    theme_bw() +
+    theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1)) + 
+    labs(y = 'Mean FD', x = '')
+
+
+
+
+
+```
