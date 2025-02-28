@@ -18,7 +18,10 @@ mean_fd = mean_fd %>%
     mutate(filename = basename(filename)) %>%
     separate(., col = filename, sep = '_', into = c('sub', 'ses', 'task', 'run', 'f1', 'f2')) %>%
     dplyr::select(-f1, -f2) %>%
-    mutate(ses_task_run = paste0(ses, '_', task, '_', run),
+    mutate(run = case_when(task == 'task-selfref' & ses == 'ses-nf' & run == 'run-01' ~ 'run-03',
+                           task == 'task-selfref' & ses == 'ses-nf' & run == 'run-02' ~ 'run-04',
+                           !(task == 'task-selfref' & ses == 'ses-nf') ~ run),
+           ses_task_run = paste0(ses, '_', task, '_', run),
            ses_task_run_factor = factor(ses_task_run, levels = c(
                "ses-loc_task-rest_run-01", 
                "ses-loc_task-rest_run-02" ,
@@ -41,26 +44,40 @@ mean_fd = mean_fd %>%
                "ses-nf_task-transferpost_run-02",
                "ses-nf_task-restpost_run-01"  ,
                "ses-nf_task-restpost_run-02" ,
-               "ses-nf_task-selfref_run-01" ,
-               "ses-nf_task-selfref_run-02"     
-           )))
+               "ses-nf_task-selfref_run-03" ,
+               "ses-nf_task-selfref_run-04"     
+           ))) %>%
+    mutate(task_run_factor_label = gsub('ses-loc_task-', '', ses_task_run_factor),
+           task_run_factor_label = gsub('ses-nf_task-', '', task_run_factor_label))
 
 
+mean_fd = mutate(mean_fd, 
+                 site = ifelse(startsWith(sub, 'sub-remind3'), 'Northeastern', 'Columbia'),
+                 ses_label = ifelse(ses == 'ses-loc', 'Localizer Session', 'Neurofeedback Session'))
 
+extract_after_task <- function(input_string) {
+  # Use regex to find 'task-' and extract everything after it
+  result <- sub(".*task-", "", input_string)
+  
+  # Return the extracted portion
+  return(result)
+}
 
-
-ggplot(mean_fd, aes(x = ses_task_run_factor, y = mean_fd)) +
+fd_plot_by_run = ggplot(mean_fd, aes(x = ses_task_run_factor, y = mean_fd)) +
+    geom_boxplot() + 
     geom_hline(yintercept = 0.3, lty = 2) +
-    #stat_summary(fun.data =mean_cl_boot) +
-    geom_line(aes(group = sub, color = sub)) +
-    geom_point(aes(color = sub)) +
-    facet_grid(~ses, drop=TRUE, scales = 'free_x') +
+    geom_line(aes(group = sub, color = site), alpha = 0.7) +
+    geom_point(aes(color = site), alpha = 0.7) +
+    #stat_summary(fun.data =mean_cl_boot, size = 0.5, lwd = 1) +
+    facet_grid(~ses_label, drop=TRUE, scales = 'free_x') +
     theme_bw() +
-    theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1)) + 
-    labs(y = 'Mean FD', x = '')
+    theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1),
+          text = element_text(face = 'bold')) + 
+    labs(y = 'Mean FD', x = 'fMRI run', color = 'Site') +
+    scale_x_discrete(label = function(x) extract_after_task(x))
 
 
-
+ggsave(fd_plot_by_run, filename = 'plots/fd_plot_by_run.png', height = 7, width = 10)
 
 
 ```
