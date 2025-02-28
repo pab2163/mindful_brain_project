@@ -1,0 +1,130 @@
+---
+title: "sret_qa"
+author: "Paul Alexander Bloom"
+date: "2024-06-06"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+library(tidyverse)
+
+sret_files = Sys.glob('/Volumes/columbia/mbNF_MDD/DATA/Tasks/self_reference/sub-remind*/*.csv')
+
+
+
+# little function to pull the participant ID from the file path to the  file
+get_id = function(path){ 
+  id = tail(stringr::str_split(path, pattern = '/')[[1]], n=1) %>% 
+    as.character()
+  return(id)
+}
+
+f = read.csv('/Volumes/AUERBACHLAB/Columbia/mbNF_MDD/DATA/Tasks/self_reference/sub-remind2018/sub-remind2018_ses-nf_task-selfref_run-2_events.csv')
+
+# get a vector of ids
+ids = sapply(sret_files, get_id)
+
+
+# Pull all behavioral files into one data frame
+for (i in 1:length(sret_files)){
+  print(i)
+  tmp_file = read.csv(sret_files[i])
+  tmp_file$run = ids[i]
+  if(i == 1){
+    sret_df=tmp_file
+  }else{
+    sret_df = plyr::rbind.fill(sret_df, tmp_file)
+  }
+  
+}
+
+c = sret_df %>%
+  group_by(participant, session) %>%
+  count()
+```
+
+```{r}
+
+sret_df = mutate(sret_df, subid = str_extract(run, ".+?(?=_)"),
+                     run_num = str_extract(run, "run-[0-9]")
+)
+
+
+
+sret_response_rate = sret_df %>% dplyr::filter(!is.na(trial_num)) %>%
+  group_by(participant, session, run_num) %>%
+  mutate(n_trials_run = sum(trial_type == 'word_presentation')) %>%
+  ungroup() %>%
+  dplyr::filter(trial_type == 'response') %>%
+  group_by(participant, session, run_num) %>%
+  summarize(responses= length(unique(word)),
+            total_trials_run = n_trials_run[1],
+            response_rate = responses/total_trials_run,
+            mean_rt = mean(response_time),
+            endorse_positive_self = sum(response_endorse[condition=='self' & word_valence == 'positive'])/
+              sum(condition=='self' & word_valence == 'positive'),
+            endorse_negative_self = sum(response_endorse[condition=='self' & word_valence == 'negative'])/
+              sum(condition=='self' & word_valence == 'negative'),
+            endorse_positive_semantic = sum(response_endorse[condition=='semantic' & word_valence == 'positive'])/
+              sum(condition=='semantic' & word_valence == 'positive'),
+            endorse_negative_semantic = 1- (sum(response_endorse[condition=='semantic' & word_valence == 'negative'])/
+              sum(condition=='semantic' & word_valence == 'negative'))
+              )
+
+ggplot(sret_response_rate, aes(x = interaction(run_num, session), y = response_rate)) +
+  geom_point(position = position_dodge(0.2), aes(color = participant)) + 
+  geom_line(aes(group = participant, color = participant), position = position_dodge(0.2)) +
+  ylim(0, 1) +
+  theme_bw() +
+  stat_summary(fun.data = mean_cl_boot) +
+  labs(y = 'Trialwise Response Rate')
+
+ggplot(sret_response_rate, aes(x = interaction(run_num, session), y = mean_rt)) +
+  geom_point(position = position_dodge(0.2), aes(color = participant)) + 
+  geom_line(aes(group = participant, color = participant), position = position_dodge(0.2)) +
+  theme_bw() +
+  stat_summary(fun.data = mean_cl_boot) +
+  labs(y = 'Mean Reaction Time')
+
+
+sret_response_rate %>%
+  pivot_longer(contains('endorse')) %>%
+  ggplot(data=., aes(x = interaction(run_num, session), y = value)) +
+  geom_point(position = position_dodge(0.2), aes(color = participant)) + 
+  geom_line(aes(group = participant, color = participant), position = position_dodge(0.2)) +
+  theme_bw() +
+  stat_summary(fun.data = mean_cl_boot) +
+  labs(y = 'Proportion Endorsement') +
+  facet_wrap(~name)
+
+
+
+sret_df %>%
+  group_by(participant, session, run_num) %>%
+  summarise(mean_rt = )
+
+unique(sret_df$participant)
+```
+
+
+```{r}
+response_check = sret_df %>%
+  dplyr::filter(!is.na(trial_num)) %>%
+  dplyr::select(participant, session, trial_type, trial_num, run_num, word, response_endorse) %>%
+  pivot_wider(id_cols = c(participant, session, run_num, trial_num, word), 
+              names_from = trial_type, 
+              values_from = response_endorse)
+
+
+
+
+sret_df %>%
+  dplyr::filter(!is.na(trial_num), !is.na(response_time)) %>%
+  group_by(participant, session, run) %>%
+  summarise(mean_rt = mean(response_time))
+
+```
