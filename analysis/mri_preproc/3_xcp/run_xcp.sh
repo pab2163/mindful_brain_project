@@ -20,4 +20,9 @@ docker run -it \
     --band-stop-min 6 \
     --min-time 0  \
     --smoothing 4 \
-    --dummy_scans auto 
+    --dummy_scans auto \
+    --abcc-qc n \
+    --nuisance-regressors 36P \
+    --min-coverage auto \
+    --output-type censored \
+    --warp-surfaces-native2std n
