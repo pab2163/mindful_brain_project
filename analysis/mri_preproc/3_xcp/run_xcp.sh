@@ -3,11 +3,11 @@ docker run -it \
    -v /neurodata/mindful_brain_project/work:/work \
    -v /neurodata/mindful_brain_project/data/xcp:/output_dir \
    pennlinc/xcp_d:latest \
-   fmri_dir \
-   output_dir \
+   /fmri_dir \
+   /output_dir \
    participant \
     --participant-label sub-remind2002 \
-    --work_dir work \
+    --work_dir /work \
     --mode none \
     --input-type fmriprep \
     --file-format nifti \
