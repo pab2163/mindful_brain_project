@@ -23,6 +23,6 @@ docker run -it \
     --dummy_scans auto \
     --abcc-qc n \
     --nuisance-regressors 36P \
-    --min-coverage auto \
+    --min-coverage 0 \
     --output-type censored \
     --warp-surfaces-native2std n
