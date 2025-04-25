@@ -9,7 +9,7 @@
 PARTICIPANTS=('fake', 'fake2', 'fake3')
 
 for PARTICIPANT in "${PARTICIPANTS[@]}"; do
-    docker run -tid \
+    docker run -tid --name=fmriprep_no_sdc \
         -v /neurodata/mindful_brain_project/data/bids_data/:/data:ro \
         -v /neurodata/mindful_brain_project/data/fmriprep/:/out \
         -v /neurodata//neurodata/mindful_brain_project/data/fmriprep/fmriprep-23.2.1/sourcedata/freesurfer:/freesurfer \
@@ -23,5 +23,5 @@ for PARTICIPANT in "${PARTICIPANTS[@]}"; do
         --fs-no-reconall  \
         --fs-subjects-dir /freesurfer \
         --ignore fieldmaps \
-    docker wait 
+    docker wait fmriprep_no_sdc
 done
