@@ -8,7 +8,7 @@ PARTICIPANTS=("sub-remind2002", "sub-remind2018", "sub-remind2021",
 
 
 for PARTICIPANT in "${PARTICIPANTS[@]}"; do
-    docker run --rm -it --name=fmriprep_no_sdc \
+    docker run --rm -it \
         -v /neurodata/mindful_brain_project/data/bids_data/:/data:ro \
         -v /neurodata/mindful_brain_project/data/fmriprep/:/out \
         -v /neurodata//neurodata/mindful_brain_project/data/fmriprep/fmriprep-23.2.1/sourcedata/freesurfer:/freesurfer \
@@ -22,5 +22,4 @@ for PARTICIPANT in "${PARTICIPANTS[@]}"; do
         --fs-no-reconall  \
         --fs-subjects-dir /freesurfer \
         --ignore fieldmaps 
-    docker wait fmriprep_no_sdc
 done
