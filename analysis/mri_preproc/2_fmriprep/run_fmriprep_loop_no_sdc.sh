@@ -1,12 +1,11 @@
 #!/bin/bash
 
 
-# PARTICIPANTS=("sub-remind2002", "sub-remind2018", "sub-remind2021",
-#               "sub-remind2037", "sub-remind2055", "sub-remind2058", 
-#               "sub-remind2059", "sub-remind2071", "sub-remind3007", 
-#               "sub-remind3010")
+PARTICIPANTS=("sub-remind2002", "sub-remind2018", "sub-remind2021",
+              "sub-remind2037", "sub-remind2055", "sub-remind2058", 
+              "sub-remind2059", "sub-remind2071", "sub-remind3007", 
+              "sub-remind3010")
 
-PARTICIPANTS=('fake', 'fake2', 'fake3')
 
 for PARTICIPANT in "${PARTICIPANTS[@]}"; do
     docker run --rm -it --name=fmriprep_no_sdc \
@@ -22,6 +21,6 @@ for PARTICIPANT in "${PARTICIPANTS[@]}"; do
         -w /work --fs-license-file /fslicense.txt \
         --fs-no-reconall  \
         --fs-subjects-dir /freesurfer \
-        --ignore fieldmaps \
+        --ignore fieldmaps 
     docker wait fmriprep_no_sdc
 done
