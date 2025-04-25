@@ -21,7 +21,7 @@ for PARTICIPANT in "${PARTICIPANTS[@]}"; do
         --participant-label "$input_subject" \
         -w /work --fs-license-file /fslicense.txt \
         --fs-no-reconall  \
-        --fs-subjects-dir /freesurfer 
+        --fs-subjects-dir /freesurfer \
         --ignore fieldmaps \
     docker wait 
 done
