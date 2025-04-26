@@ -8,18 +8,18 @@ PARTICIPANTS=(sub-remind2002 sub-remind2018 sub-remind2021 \
 
 for PARTICIPANT in "${PARTICIPANTS[@]}"; do
     echo "$PARTICIPANT" 
-    # docker run --rm -it \
-    #     -v /neurodata/mindful_brain_project/data/bids_data/:/data:ro \
-    #     -v /neurodata/mindful_brain_project/data/fmriprep/:/out \
-    #     -v /neurodata/mindful_brain_project/data/fmriprep/fmriprep-23.2.1/sourcedata/freesurfer:/freesurfer \
-    #     -v /neurodata/license.txt:/fslicense.txt:ro \
-    #     -v /neurodata/work:/work \
-    #     nipreps/fmriprep:23.2.1 \
-    #     /data /out/fmriprep-23.2.1-ignorefieldmaps \
-    #     participant \
-    #     --participant-label "$PARTICIPANT" \
-    #     -w /work --fs-license-file /fslicense.txt \
-    #     --fs-no-reconall  \
-    #     --fs-subjects-dir /freesurfer \
-    #     --ignore fieldmaps 
+    docker run --rm -it \
+        -v /neurodata/mindful_brain_project/data/bids_data/:/data:ro \
+        -v /neurodata/mindful_brain_project/data/fmriprep/:/out \
+        -v /neurodata/mindful_brain_project/data/fmriprep/fmriprep-23.2.1/sourcedata/freesurfer:/freesurfer \
+        -v /neurodata/license.txt:/fslicense.txt:ro \
+        -v /neurodata/work:/work \
+        nipreps/fmriprep:23.2.1 \
+        /data /out/fmriprep-23.2.1-ignorefieldmaps \
+        participant \
+        --participant-label "$PARTICIPANT" \
+        -w /work --fs-license-file /fslicense.txt \
+        --fs-no-reconall  \
+        --fs-subjects-dir /freesurfer \
+        --ignore fieldmaps 
 done
