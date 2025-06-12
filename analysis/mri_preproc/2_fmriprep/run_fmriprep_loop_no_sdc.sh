@@ -1,10 +1,9 @@
 #!/bin/bash
 
 
-PARTICIPANTS=(sub-remind2002 sub-remind2018 sub-remind2021 \
-              sub-remind2037 sub-remind2055 sub-remind2058 \
-              sub-remind2059 sub-remind2071 sub-remind3007 \
-              sub-remind3010)
+# completed: 2002, 2018, 2021
+PARTICIPANTS=(sub-remind2110)
+
 
 for PARTICIPANT in "${PARTICIPANTS[@]}"; do
     echo "$PARTICIPANT" 
