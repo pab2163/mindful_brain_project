@@ -12,4 +12,5 @@ self_reference/stimtime_generation/
 self_reference/reMIND/
 */pilot_data
 *.Rhistory
-analysis/pilot/data/
+analysis/pilot/data/*.nii.gz
+murfi-rt-PyProject/scripts/img/
