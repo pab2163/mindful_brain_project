@@ -361,6 +361,10 @@ then
 
     # Correlate (spatially) ICA components (not thresholded) with DMN & CEN template files
     rm -f ${correlfile}
+    echo ${examplefunc_mask}
+    echo ${infile}
+    echo ${template2example_func}
+    echo ${correlfile}
     fslcc --noabs -p 8 -t -1 -m ${examplefunc_mask} ${infile} ${template2example_func}>>${correlfile}
 
     # Split ICs to separate files
@@ -499,26 +503,77 @@ then
 fi
 
 
-
-if [ ${step} = cleanup ]
+if [ ${step} = cleanup_backup ]
 then
     input_string=$(zenity --forms --title="Delete files?" \
     --separator=" " \
     --text="`printf "Are you sure you want to clean up the directory and delete files for ${subj}?\nThe entire img folder will be deleted, as well as raw bold data from the rest directory"`" \
     --cancel-label "Exit" --ok-label "Delete files")
     ret=$?
-
     # If user selects the Exit button, then quit MURFI
     if [[ $ret == 1 ]];
     then
         exit 0
     fi
-
     # Delete img folder and large bold files from the rest folder
     rm -rf $subj_dir/img
     rm -f $subj_dir/rest/*bold.nii.gz
     rm -f $subj_dir/rest/*bold_mcflirt.nii.gz
     rm -f $subj_dir/rest/*bold_mcflirt_masked.nii.gz
+    
+    # After cleanup_backup, prompt for username and password for rsync
+    credentials=$(zenity --forms --title="Rsync Authentication" \
+    --separator="|" \
+    --text="Enter your credentials for data transfer, password will be asked in terminal:" \
+    --add-entry="Username:" \
+    --cancel-label "Skip Transfer" --ok-label "Transfer Data")
+    ret=$?
+    
+    # If user cancels, skip the rsync transfer
+    if [[ $ret == 1 ]];
+    then
+        echo "Data transfer cancelled by user"
+        exit 0
+    fi
+    
+    # Parse the credentials
+    username=$(echo "$credentials" | cut -d'|' -f1)
+    password=$(echo "$credentials" | cut -d'|' -f2)
+    
+    # Check if username is provided
+    if [[ -z "$username" ]]; then
+        zenity --error --text="Username is required for data transfer"
+        exit 1
+    fi
+    
+    # Export password for sshpass (if using sshpass)
+    export SSHPASS="$password"
+    
+    # Perform rsync with authentication
+    echo "Starting data transfer..."
+    
+    # Option 1: Using sshpass (if available)
+    if command -v sshpass &> /dev/null; then
+        sshpass -e rsync -avrz --chmod=g+rwx --perms "$subj_dir" "${username}@xfer.discovery.neu.edu:/work/remind/sourcedata/sys76/"
+        rsync_ret=$?
+    else
+        # Option 2: Standard rsync (will prompt for password)
+        echo "Note: You will be prompted for your password during transfer"
+        rsync -avrz --chmod=g+rwx --perms "$subj_dir" "${username}@xfer.discovery.neu.edu:/work/remind/sourcedata/sys76/"
+        rsync_ret=$?
+    fi
+    
+    # Check rsync result
+    if [[ $rsync_ret == 0 ]]; then
+        zenity --info --text="Data transfer completed successfully!"
+    else
+        zenity --error --text="Data transfer failed. Please check your credentials and network connection."
+        exit 1
+    fi
+    
+    # Clear password from environment
+    unset SSHPASS
+    
 fi
 
 

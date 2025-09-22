@@ -1,5 +1,7 @@
 #!/bin/sh
 
+export FSLOUTPUTTYPE=NIFTI_GZ # added by JZ 11/19/2024
+
 if [[ -z $MURFI_SUBJECT_NAME ]];
 then
 	input_string=$(zenity --forms --title="MURFI GUI" \
@@ -18,7 +20,7 @@ else
 	input_string=$(zenity --forms --title="MURFI GUI" \
 	--text="PARTICIPANT NAME: ${MURFI_SUBJECT_NAME}" \
 	--separator=" " \
-	--add-combo="Step" --combo-values "setup|resting_state|2vol|extract_rs_networks|feedback|process_roi_masks|register|cleanup|backup_reg_mni_masks_to_2vol" \
+	--add-combo="Step" --combo-values "setup|resting_state|2vol|extract_rs_networks|feedback|process_roi_masks|register|cleanup_backup|backup_reg_mni_masks_to_2vol" \
 	--cancel-label "Exit" --ok-label "Run Selected Step")
 	ret=$?
 	# parse zenity output using space as delimiter
