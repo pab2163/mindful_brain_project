@@ -10,6 +10,11 @@
 #Step 3: create masks
 #Step 4: run murfi for realtime
 
+
+# Add this line to your script before any FSL commands
+export FSLOUTPUTTYPE=NIFTI
+
+
 subj=$1
 step=$2
 ses='ses-lo1'
@@ -24,8 +29,8 @@ fsl_scripts=../scripts/fsl_scripts
 
 
 # Set template files
-template_dmn='DMNax_brainmaskero2_lps.nii.gz'
-template_cen='CENa_brainmaskero2_lps.nii.gz'
+template_dmn='DMNax_brainmaskero2_lps.nii'
+template_cen='CENa_brainmaskero2_lps.nii'
 SCRIPT_PATH=$(dirname $(realpath -s $0))
 template_lps_path=${SCRIPT_PATH}/MNI152_T1_2mm_LPS_brain
 #echo $template_lps_path
@@ -33,7 +38,7 @@ template_lps_path=${SCRIPT_PATH}/MNI152_T1_2mm_LPS_brain
 # Set paths & check that computers are properly connected with scanner via Ethernet
 if [ ${step} = setup ]
 then
-    #clear
+    clear
     echo "++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++"
     echo "+ Wellcome to MURFI real-time Neurofeedback"
     echo "+ running " ${step}
@@ -57,7 +62,7 @@ if [ ${step} = 2vol ]
 then
     clear
     echo "ready to receive 2 volume scan"
-    singularity exec murfi2.1.sif murfi -f $subj_dir/xml/2vol.xml
+    singularity exec /home/rt/singularity-images/murfi-sif_latest.sif murfi -f $subj_dir/xml/2vol.xml
 fi
 
 
@@ -68,7 +73,7 @@ clear
     echo "ready to receive rtdmn feedback scan"
     export MURFI_SUBJECTS_DIR="${absolute_path}/subjects/"
     export MURFI_SUBJECT_NAME=$subj 
-    singularity exec murfi2.1.sif murfi -f $subj_dir_absolute/xml/rtdmn.xml
+    singularity exec /home/rt/singularity-images/murfi-sif_latest.sif murfi -f $subj_dir_absolute/xml/rtdmn.xml
 fi
 
 
@@ -79,7 +84,7 @@ clear
     echo "ready to receive resting state scan"
     export MURFI_SUBJECTS_DIR="${absolute_path}/subjects/"
     export MURFI_SUBJECT_NAME=$subj
-    singularity exec murfi2.1.sif murfi -f $subj_dir/xml/rest.xml
+    singularity exec /home/rt/singularity-images/murfi-sif_latest.sif murfi -f $subj_dir/xml/rest.xml
 
 fi
 
@@ -129,8 +134,8 @@ clear
         echo "Pre-processing images before ICA..."
 
         # merge individual volumes to make 1 file for each resting state run
-        rest_runA_filename=$subj_dir_absolute/rest/$subj'_'$ses'_task-rest_run-01_bold.nii.gz'
-        rest_runB_filename=$subj_dir_absolute/rest/$subj'_'$ses'_task-rest_run-02_bold.nii.gz' 
+        rest_runA_filename=$subj_dir_absolute/rest/$subj'_'$ses'_task-rest_run-01_bold.nii'
+        rest_runB_filename=$subj_dir_absolute/rest/$subj'_'$ses'_task-rest_run-02_bold.nii' 
 
         # Merge all volumes in each run 
         volsA=$(find ${subj_dir_absolute}/img/ -type f \( -iname "img-0000${rest_runA_num}*" \))
@@ -159,61 +164,61 @@ clear
         echo "+ started at: $(date)"
 
         # realign volumes pre-FEAT
-        mcflirt -in $rest_runA_filename -out $subj_dir_absolute/rest/$subj'_'$ses'_task-rest_run-01_bold_mcflirt.nii.gz'
-        mcflirt -in $rest_runB_filename -out $subj_dir_absolute/rest/$subj'_'$ses'_task-rest_run-02_bold_mcflirt.nii.gz'
+        mcflirt -in $rest_runA_filename -out $subj_dir_absolute/rest/$subj'_'$ses'_task-rest_run-01_bold_mcflirt.nii'
+        mcflirt -in $rest_runB_filename -out $subj_dir_absolute/rest/$subj'_'$ses'_task-rest_run-02_bold_mcflirt.nii'
 
         # get median volume of 1st run
-        fslmaths $subj_dir_absolute/rest/$subj'_'$ses'_task-rest_run-01_bold_mcflirt.nii.gz' \
-            -Tmedian $subj_dir_absolute/rest/$subj'_'$ses'_task-rest_run-01_bold_mcflirt_median.nii.gz'
+        fslmaths $subj_dir_absolute/rest/$subj'_'$ses'_task-rest_run-01_bold_mcflirt.nii' \
+            -Tmedian $subj_dir_absolute/rest/$subj'_'$ses'_task-rest_run-01_bold_mcflirt_median.nii'
 
         # get median volume of 2st run
-        fslmaths $subj_dir_absolute/rest/$subj'_'$ses'_task-rest_run-02_bold_mcflirt.nii.gz' \
-            -Tmedian $subj_dir_absolute/rest/$subj'_'$ses'_task-rest_run-02_bold_mcflirt_median.nii.gz'
+        fslmaths $subj_dir_absolute/rest/$subj'_'$ses'_task-rest_run-02_bold_mcflirt.nii' \
+            -Tmedian $subj_dir_absolute/rest/$subj'_'$ses'_task-rest_run-02_bold_mcflirt_median.nii'
                 
         # calculate registration matrix of median of 2nd run to median of 1st run
         flirt -cost leastsq -dof 6  -noresample -noresampblur \
-            -in $subj_dir_absolute/rest/$subj'_'$ses'_task-rest_run-02_bold_mcflirt_median.nii.gz' \
-            -ref $subj_dir_absolute/rest/$subj'_'$ses'_task-rest_run-01_bold_mcflirt_median.nii.gz' \
-            -out $subj_dir_absolute/rest/$subj'_'$ses'_task-rest_run2_median_to_run1_median.nii.gz' \
+            -in $subj_dir_absolute/rest/$subj'_'$ses'_task-rest_run-02_bold_mcflirt_median.nii' \
+            -ref $subj_dir_absolute/rest/$subj'_'$ses'_task-rest_run-01_bold_mcflirt_median.nii' \
+            -out $subj_dir_absolute/rest/$subj'_'$ses'_task-rest_run2_median_to_run1_median.nii' \
             -omat $subj_dir_absolute/rest/$subj'_'$ses'_task-rest_run2_median_to_run1_median.mat' 
 
 
         # check registration of median of 2nd run to median of 1st run
-        slices $subj_dir_absolute/rest/$subj'_'$ses'_task-rest_run-01_bold_mcflirt_median.nii.gz' \
-            $subj_dir_absolute/rest/$subj'_'$ses'_task-rest_run2_median_to_run1_median.nii.gz' \
+        slices $subj_dir_absolute/rest/$subj'_'$ses'_task-rest_run-01_bold_mcflirt_median.nii' \
+            $subj_dir_absolute/rest/$subj'_'$ses'_task-rest_run2_median_to_run1_median.nii' \
             -o $subj_dir_absolute/qc/flirt_median_rest_check.gif 
 
         # use registration matrix previously calculated to warp entire 2nd run to median of 1st run
         flirt -noresample -noresampblur -interp nearestneighbour \
-            -in  $subj_dir_absolute/rest/$subj'_'$ses'_task-rest_run-02_bold_mcflirt.nii.gz' \
-            -ref $subj_dir_absolute/rest/$subj'_'$ses'_task-rest_run-01_bold_mcflirt_median.nii.gz'  \
-            -out $subj_dir_absolute/rest/$subj'_'$ses'_task-rest_run-02_bold_mcflirt_run1space.nii.gz' \
+            -in  $subj_dir_absolute/rest/$subj'_'$ses'_task-rest_run-02_bold_mcflirt.nii' \
+            -ref $subj_dir_absolute/rest/$subj'_'$ses'_task-rest_run-01_bold_mcflirt_median.nii'  \
+            -out $subj_dir_absolute/rest/$subj'_'$ses'_task-rest_run-02_bold_mcflirt_run1space.nii' \
             -init $subj_dir_absolute/rest/$subj'_'$ses'_task-rest_run2_median_to_run1_median.mat' \
             -applyxfm
 
         # skullstrip median of 1st run & check the generated mask
-        bet $subj_dir_absolute/rest/$subj'_'$ses'_task-rest_run-01_bold_mcflirt_median.nii.gz' \
-            $subj_dir_absolute/rest/$subj'_'$ses'_task-rest_run-01_bold_mcflirt_median_bet.nii.gz' \
+        bet $subj_dir_absolute/rest/$subj'_'$ses'_task-rest_run-01_bold_mcflirt_median.nii' \
+            $subj_dir_absolute/rest/$subj'_'$ses'_task-rest_run-01_bold_mcflirt_median_bet.nii' \
             -R -f 0.4 -g 0 -m 
 
-        slices $subj_dir_absolute/rest/$subj'_'$ses'_task-rest_run-01_bold_mcflirt_median.nii.gz' \
-            $subj_dir_absolute/rest/$subj'_'$ses'_task-rest_run-01_bold_mcflirt_median_bet.nii.gz' \
+        slices $subj_dir_absolute/rest/$subj'_'$ses'_task-rest_run-01_bold_mcflirt_median.nii' \
+            $subj_dir_absolute/rest/$subj'_'$ses'_task-rest_run-01_bold_mcflirt_median_bet.nii' \
             -o $subj_dir_absolute/qc/rest_skullstrip_check_run1.gif
 
         # mask both runs by the mask from skullstriped median of 1st run
-        fslmaths $subj_dir_absolute/rest/$subj'_'$ses'_task-rest_run-01_bold_mcflirt.nii.gz' \
-            -mas $subj_dir_absolute/rest/$subj'_'$ses'_task-rest_run-01_bold_mcflirt_median_bet_mask.nii.gz' \
-            $subj_dir_absolute/rest/$subj'_'$ses'_task-rest_run-01_bold_mcflirt_masked.nii.gz'
+        fslmaths $subj_dir_absolute/rest/$subj'_'$ses'_task-rest_run-01_bold_mcflirt.nii' \
+            -mas $subj_dir_absolute/rest/$subj'_'$ses'_task-rest_run-01_bold_mcflirt_median_bet_mask.nii' \
+            $subj_dir_absolute/rest/$subj'_'$ses'_task-rest_run-01_bold_mcflirt_masked.nii'
 
-        fslmaths $subj_dir_absolute/rest/$subj'_'$ses'_task-rest_run-02_bold_mcflirt_run1space.nii.gz' \
-            -mas $subj_dir_absolute/rest/$subj'_'$ses'_task-rest_run-01_bold_mcflirt_median_bet_mask.nii.gz' \
-            $subj_dir_absolute/rest/$subj'_'$ses'_task-rest_run-02_bold_mcflirt_run1space_masked.nii.gz'
+        fslmaths $subj_dir_absolute/rest/$subj'_'$ses'_task-rest_run-02_bold_mcflirt_run1space.nii' \
+            -mas $subj_dir_absolute/rest/$subj'_'$ses'_task-rest_run-01_bold_mcflirt_median_bet_mask.nii' \
+            $subj_dir_absolute/rest/$subj'_'$ses'_task-rest_run-02_bold_mcflirt_run1space_masked.nii'
 
 
         
-        ica_run1_input=$subj_dir_absolute/rest/$subj'_'$ses'_task-rest_run-01_bold_mcflirt_masked.nii.gz'
-        ica_run2_input=$subj_dir_absolute/rest/$subj'_'$ses'_task-rest_run-02_bold_mcflirt_run1space_masked.nii.gz'
-        reference_vol_for_ica=$subj_dir_absolute/rest/$subj'_'$ses'_task-rest_run-01_bold_mcflirt_median_bet.nii.gz'
+        ica_run1_input=$subj_dir_absolute/rest/$subj'_'$ses'_task-rest_run-01_bold_mcflirt_masked.nii'
+        ica_run2_input=$subj_dir_absolute/rest/$subj'_'$ses'_task-rest_run-02_bold_mcflirt_run1space_masked.nii'
+        reference_vol_for_ica=$subj_dir_absolute/rest/$subj'_'$ses'_task-rest_run-01_bold_mcflirt_median_bet.nii'
 
         # update FEAT template with paths and # of volumes of resting state run
         cp $fsl_scripts/basic_ica_template.fsf $subj_dir_absolute/rest/$subj'_'$ses'_task-rest_'$run'_bold'.fsf
@@ -231,7 +236,7 @@ clear
         echo "Using run ${rest_runA_num} for single-run ICA"
 
         # merge individual volumes to make 1 file for each resting state run
-        rest_runA_filename=$subj_dir_absolute/rest/$subj'_'$ses'_task-rest_run-01_bold'.nii.gz
+        rest_runA_filename=$subj_dir_absolute/rest/$subj'_'$ses'_task-rest_run-01_bold'.nii
         volsA=$(find ${subj_dir_absolute}/img/ -type f \( -iname "img-0000${rest_runA_num}*" \))
         fslmerge -tr $rest_runA_filename $volsA 1.2
 
@@ -242,28 +247,28 @@ clear
         echo "+ started at: $(date)"
 
          # realign volumes pre-FEAT
-        mcflirt -in $rest_runA_filename -out $subj_dir_absolute/rest/$subj'_'$ses'_task-rest_run-01_bold_mcflirt.nii.gz'
+        mcflirt -in $rest_runA_filename -out $subj_dir_absolute/rest/$subj'_'$ses'_task-rest_run-01_bold_mcflirt.nii'
 
         # get median volume of 1st run
-        fslmaths $subj_dir_absolute/rest/$subj'_'$ses'_task-rest_run-01_bold_mcflirt.nii.gz' \
-            -Tmedian $subj_dir_absolute/rest/$subj'_'$ses'_task-rest_run-01_bold_mcflirt_median.nii.gz'
+        fslmaths $subj_dir_absolute/rest/$subj'_'$ses'_task-rest_run-01_bold_mcflirt.nii' \
+            -Tmedian $subj_dir_absolute/rest/$subj'_'$ses'_task-rest_run-01_bold_mcflirt_median.nii'
      
         # skullstrip median of 1st run & check the generated mask
-        bet $subj_dir_absolute/rest/$subj'_'$ses'_task-rest_run-01_bold_mcflirt_median.nii.gz' \
-            $subj_dir_absolute/rest/$subj'_'$ses'_task-rest_run-01_bold_mcflirt_median_bet.nii.gz' \
+        bet $subj_dir_absolute/rest/$subj'_'$ses'_task-rest_run-01_bold_mcflirt_median.nii' \
+            $subj_dir_absolute/rest/$subj'_'$ses'_task-rest_run-01_bold_mcflirt_median_bet.nii' \
             -R -f 0.4 -g 0 -m 
 
-        slices $subj_dir_absolute/rest/$subj'_'$ses'_task-rest_run-01_bold_mcflirt_median.nii.gz' \
-            $subj_dir_absolute/rest/$subj'_'$ses'_task-rest_run-01_bold_mcflirt_median_bet.nii.gz' \
+        slices $subj_dir_absolute/rest/$subj'_'$ses'_task-rest_run-01_bold_mcflirt_median.nii' \
+            $subj_dir_absolute/rest/$subj'_'$ses'_task-rest_run-01_bold_mcflirt_median_bet.nii' \
             -o $subj_dir_absolute/qc/rest_skullstrip_check_run1.gif
 
         # mask run1 by the mask from skullstriped median of 1st run
-        fslmaths $subj_dir_absolute/rest/$subj'_'$ses'_task-rest_run-01_bold_mcflirt.nii.gz' \
-            -mas $subj_dir_absolute/rest/$subj'_'$ses'_task-rest_run-01_bold_mcflirt_median_bet_mask.nii.gz' \
-            $subj_dir_absolute/rest/$subj'_'$ses'_task-rest_run-01_bold_mcflirt_masked.nii.gz'
+        fslmaths $subj_dir_absolute/rest/$subj'_'$ses'_task-rest_run-01_bold_mcflirt.nii' \
+            -mas $subj_dir_absolute/rest/$subj'_'$ses'_task-rest_run-01_bold_mcflirt_median_bet_mask.nii' \
+            $subj_dir_absolute/rest/$subj'_'$ses'_task-rest_run-01_bold_mcflirt_masked.nii'
         
-        ica_run1_input=$subj_dir_absolute/rest/$subj'_'$ses'_task-rest_run-01_bold_mcflirt_masked.nii.gz'
-        reference_vol_for_ica=$subj_dir_absolute/rest/$subj'_'$ses'_task-rest_run-01_bold_mcflirt_median_bet.nii.gz'
+        ica_run1_input=$subj_dir_absolute/rest/$subj'_'$ses'_task-rest_run-01_bold_mcflirt_masked.nii'
+        reference_vol_for_ica=$subj_dir_absolute/rest/$subj'_'$ses'_task-rest_run-01_bold_mcflirt_median_bet.nii'
 
         # update FEAT template with paths and # of volumes of resting state run
         cp fsl_scripts/basic_ica_template_single_run.fsf $subj_dir_absolute/rest/$subj'_'$ses'_task-rest_'$run'_bold'.fsf
@@ -309,14 +314,14 @@ then
     # Make output file to store correlations with template networks
     correlfile=$ica_directory/template_rsn_correlations_with_ICs.txt
     touch ${correlfile}
-    template_networks='template_networks.nii.gz'
+    template_networks='template_networks.nii'
 
 
     # If single-session, then ICA was done in native space, and registration is needed
     if [ $ica_version == 'single_run' ]
     then
         # ICs in native space
-        infile=$ica_directory/filtered_func_data.ica/melodic_IC.nii.gz 
+        infile=$ica_directory/filtered_func_data.ica/melodic_IC.nii 
 
     else # Multi run
         # ICs in "template" space - template is median of first resting state run used in ICA
@@ -325,12 +330,12 @@ then
     fi
 
     # Create filepaths for registration files
-    examplefunc=$subj_dir_absolute/rest/$subj'_'$ses'_task-rest_run-01_bold_mcflirt_median_bet.nii.gz'
-    examplefunc_mask=$subj_dir_absolute/rest/$subj'_'$ses'_task-rest_run-01_bold_mcflirt_median_bet_mask.nii.gz'
-    #standard=${ica_directory}/reg/standard.nii.gz
+    examplefunc=$subj_dir_absolute/rest/$subj'_'$ses'_task-rest_run-01_bold_mcflirt_median_bet.nii'
+    examplefunc_mask=$subj_dir_absolute/rest/$subj'_'$ses'_task-rest_run-01_bold_mcflirt_median_bet_mask.nii'
+    #standard=${ica_directory}/reg/standard.nii
     example_func2mni_lps_mat=${ica_directory}/reg/example_func2mni_lps.mat
     example_func2mni_lps=${ica_directory}/reg/example_func2mni_lps
-    mni_lps2xample_func=${ica_directory}/reg/mni_lps2example_func.nii.gz
+    mni_lps2xample_func=${ica_directory}/reg/mni_lps2example_func.nii
     mni_lps2example_func_mat=${ica_directory}/reg/mni_lps2example_func.mat
 
     # Register example func to LPS MNI template, then calculate inverse
@@ -341,13 +346,13 @@ then
 
     # Set paths for files needed for the next few steps 
     ## Unthresholded masks in native space
-    dmn_uthresh=$ica_directory/dmn_uthresh.nii.gz
-    cen_uthresh=$ica_directory/cen_uthresh.nii.gz
+    dmn_uthresh=$ica_directory/dmn_uthresh.nii
+    cen_uthresh=$ica_directory/cen_uthresh.nii
 
     ## Paths for registration files
-    template2example_func=${ica_directory}/reg/template_networks2example_func.nii.gz
-    dmn2example_func=${ica_directory}/reg/template_dmn2example_func.nii.gz
-    cen2example_func=${ica_directory}/reg/template_cen2example_func.nii.gz
+    template2example_func=${ica_directory}/reg/template_networks2example_func.nii
+    dmn2example_func=${ica_directory}/reg/template_dmn2example_func.nii
+    cen2example_func=${ica_directory}/reg/template_cen2example_func.nii
 
 
     # WARP LPS MNI brain template to resting-state run native space
@@ -371,8 +376,8 @@ then
     python rsn_get.py ${subj} ${ica_version}
 
     ## Thresholded masks in MNI space
-    dmn_thresh=$ica_directory/dmn_thresh.nii.gz
-    cen_thresh=$ica_directory/cen_thresh.nii.gz
+    dmn_thresh=$ica_directory/dmn_thresh.nii
+    cen_thresh=$ica_directory/cen_thresh.nii
 
 
     # Hard code the number of voxels desired for each mask
@@ -402,8 +407,8 @@ then
     echo "Number of voxels in cen mask: $(fslstats ${cen_thresh} -V | head -c 5)"
 
     # copy masks to participant's mask directory
-    cp ${dmn_thresh} ${subj_dir}/mask/dmn_native_rest.nii.gz
-    cp ${cen_thresh} ${subj_dir}/mask/cen_native_rest.nii.gz
+    cp ${dmn_thresh} ${subj_dir}/mask/dmn_native_rest.nii
+    cp ${cen_thresh} ${subj_dir}/mask/cen_native_rest.nii
 
 
     # Display masks with FSLEYES
@@ -422,7 +427,7 @@ then
     clear
     echo "++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++"
     echo "Registering masks to study_ref"
-    latest_ref=$(ls -t $subj_dir/xfm/series*.nii | head -n1)
+    latest_ref=$(ls -t $subj_dir/xfm/series*_ref.nii | head -n1)
     latest_ref="${latest_ref::-4}"
     study_ref=${subj_dir}/xfm/study_ref.nii
 
@@ -463,15 +468,15 @@ then
     fi
     
     # # warp masks in RESTING STATE ICA SPACE (median of rest run1) into 2VOL native space (studyref)
-    examplefunc=$subj_dir_absolute/rest/$subj'_'$ses'_task-rest_run-01_bold_mcflirt_median_bet.nii.gz'
+    examplefunc=$subj_dir_absolute/rest/$subj'_'$ses'_task-rest_run-01_bold_mcflirt_median_bet.nii'
     flirt -in $examplefunc -ref ${latest_ref}_brain -out $subj_dir/xfm/epi2reg/rest2studyref_brain -omat $subj_dir/xfm/epi2reg/rest2studyref.mat
 
     # make registration image for inspection, and open it
     slices $subj_dir/xfm/epi2reg/rest2studyref_brain ${latest_ref}_brain -o $subj_dir/qc/rest_warp_to_2vol_native_check.gif
 
     # If paths to personalized masks exist, then run MURFI. Otherwise, prompt user about whether to use template masks instead
-    dmn_thresh="../subjects/${subj}/mask/dmn_native_rest.nii.gz"
-    cen_thresh="../subjects/${subj}/mask/cen_native_rest.nii.gz"   
+    dmn_thresh="../subjects/${subj}/mask/dmn_native_rest.nii"
+    cen_thresh="../subjects/${subj}/mask/cen_native_rest.nii"   
 
     # For each mask (REST native space), swap register to 2vol native space
     # Everything should  be LPS here
@@ -480,16 +485,16 @@ then
         echo "+ REGISTERING ${mask_name} TO study_ref" 
 
         # warp masks from resting state space to 2vol space
-        flirt -in $subj_dir/mask/${mask_name}_native_rest.nii.gz -ref ${latest_ref} -out $subj_dir/mask/${mask_name} -init $subj_dir/xfm/epi2reg/rest2studyref.mat -applyxfm -interp nearestneighbour -datatype short
+        flirt -in $subj_dir/mask/${mask_name}_native_rest.nii -ref ${latest_ref} -out $subj_dir/mask/${mask_name} -init $subj_dir/xfm/epi2reg/rest2studyref.mat -applyxfm -interp nearestneighbour -datatype short
         
         # erode 2vvol brain mask one voxel
         fslmaths ${latest_ref}_brain_mask -ero ${latest_ref}_brain_mask_ero1
 
         # binarize masks based on eroded 2vol brain mask
-        fslmaths $subj_dir/mask/${mask_name}.nii.gz -mul ${latest_ref}_brain_mask_ero1 $subj_dir/mask/${mask_name}.nii.gz -odt short
+        fslmaths $subj_dir/mask/${mask_name}.nii -mul ${latest_ref}_brain_mask_ero1 $subj_dir/mask/${mask_name}.nii -odt short
 
 
-        gunzip -f $subj_dir/mask/${mask_name}.nii.gz
+        #gunzip -f $subj_dir/mask/${mask_name}.nii
     done
 
     echo "+ INSPECT"
@@ -516,9 +521,83 @@ then
 
     # Delete img folder and large bold files from the rest folder
     rm -rf $subj_dir/img
+    rm -f $subj_dir/rest/*bold.nii
+    rm -f $subj_dir/rest/*bold_mcflirt.nii
+    rm -f $subj_dir/rest/*bold_mcflirt_masked.nii
+fi
+
+if [ ${step} = cleanup_backup ]
+then
+    input_string=$(zenity --forms --title="Delete files?" \
+    --separator=" " \
+    --text="`printf "Are you sure you want to clean up the directory and delete files for ${subj}?\nThe entire img folder will be deleted, as well as raw bold data from the rest directory"`" \
+    --cancel-label "Exit" --ok-label "Delete files")
+    ret=$?
+    # If user selects the Exit button, then quit MURFI
+    if [[ $ret == 1 ]];
+    then
+        exit 0
+    fi
+    # Delete img folder and large bold files from the rest folder
+    rm -rf $subj_dir/img
     rm -f $subj_dir/rest/*bold.nii.gz
     rm -f $subj_dir/rest/*bold_mcflirt.nii.gz
     rm -f $subj_dir/rest/*bold_mcflirt_masked.nii.gz
+    
+    # After cleanup_backup, prompt for username and password for rsync
+    credentials=$(zenity --forms --title="Rsync Authentication" \
+    --separator="|" \
+    --text="Enter your credentials for data transfer, password will be asked in terminal:" \
+    --add-entry="Username:" \
+    --cancel-label "Skip Transfer" --ok-label "Transfer Data")
+    ret=$?
+    
+    # If user cancels, skip the rsync transfer
+    if [[ $ret == 1 ]];
+    then
+        echo "Data transfer cancelled by user"
+        exit 0
+    fi
+    
+    # Parse the credentials
+    username=$(echo "$credentials" | cut -d'|' -f1)
+    password=$(echo "$credentials" | cut -d'|' -f2)
+    
+    # Check if username is provided
+    if [[ -z "$username" ]]; then
+        zenity --error --text="Username is required for data transfer"
+        exit 1
+    fi
+    
+    # Export password for sshpass (if using sshpass)
+    export SSHPASS="$password"
+    
+    # Perform rsync with authentication
+    echo "Starting data transfer..."
+    
+    # Option 1: Using sshpass (if available)
+    if command -v sshTempPa55word002
+pass &> /dev/null; then
+        sshpass -e rsync -avrz --chmod=g+rwx --perms "$subj_dir" "${username}@xfer.discovery.neu.edu:/work/remind/sourcedata/murfi/"
+        rsync_ret=$?
+    else
+        # Option 2: Standard rsync (will prompt for password)
+        echo "Note: You will be prompted for your password during transfer"
+        rsync -avrz --chmod=g+rwx --perms "$subj_dir" "${username}@xfer.discovery.neu.edu:/work/remind/sourcedata/murfi/"
+        rsync_ret=$?
+    fi
+    
+    # Check rsync result
+    if [[ $rsync_ret == 0 ]]; then
+        zenity --info --text="Data transfer completed successfully!"
+    else
+        zenity --error --text="Data transfer failed. Please check your credentials and network connection."
+        exit 1
+    fi
+    
+    # Clear password from environment
+    unset SSHPASS
+    
 fi
 
 
@@ -527,15 +606,15 @@ fi
 if [ ${step} = backup_reg_mni_masks_to_2vol ]
 then
     clear
-    mni_template=MNI152_T1_2mm_LPS_brain.nii.gz
-    dmn_mni=DMNax_brainmaskero2_lps.nii.gz
-    cen_mni=CENa_brainmaskero2_lps.nii.gz
+    mni_template=MNI152_T1_2mm_LPS_brain.nii
+    dmn_mni=DMNax_brainmaskero2_lps.nii
+    cen_mni=CENa_brainmaskero2_lps.nii
 
     two_vol_ref=$(ls -t $subj_dir/xfm/series*.nii | head -n1)
     two_vol_ref="${two_vol_ref::-4}"
 
-    two_vol_ref_bet=${subj_dir}/xfm/two_vol_ref_bet.nii.gz
-    two_vol_ref2mni=${subj_dir}/xfm/two_vol_ref2mni.nii.gz
+    two_vol_ref_bet=${subj_dir}/xfm/two_vol_ref_bet.nii
+    two_vol_ref2mni=${subj_dir}/xfm/two_vol_ref2mni.nii
     two_vol_ref2mni_mat=${subj_dir}/xfm/two_vol_ref2mni.mat
     mni2_two_vol_ref_mat=${subj_dir}/xfm/mni2_two_vol_ref.mat
 

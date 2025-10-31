@@ -13,3 +13,21 @@ self_reference/reMIND/
 */pilot_data
 *.Rhistory
 analysis/pilot/data/
+# Large neuroimaging data files
+*.nii
+*.nii.gz
+*.img
+*.hdr
+
+# Singularity images
+*.sif
+
+# Subject data folders
+murfi-rt-PyProject/subjects/*/rest/*.nii
+murfi-rt-PyProject/subjects/*/rest/*.nii.gz
+murfi-rt-PyProject/subjects/*/img/
+
+# ICA analysis outputs (large intermediate files)
+murfi-rt-PyProject/subjects/*/rest/*_rs_network.ica/
+murfi-rt-PyProject/subjects/*/rest/rs_network.gica/
+

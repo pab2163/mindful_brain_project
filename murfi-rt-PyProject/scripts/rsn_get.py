@@ -22,12 +22,12 @@ ica_version=sys.argv[2]
 
 if ica_version == 'multi_run':
     ica_directory=f'../subjects/{subjID}/rest/rs_network.gica/groupmelodic.ica/'
-    dmn_component=f'{ica_directory}/dmn_uthresh.nii.gz'
-    cen_component=f'{ica_directory}/cen_uthresh.nii.gz' 
+    dmn_component=f'{ica_directory}/dmn_uthresh.nii'
+    cen_component=f'{ica_directory}/cen_uthresh.nii' 
 elif ica_version == 'single_run':
     ica_directory=f'../subjects/{subjID}/rest/rs_network.ica/'
-    dmn_component=f'{ica_directory}/dmn_uthresh.nii.gz'
-    cen_component=f'{ica_directory}/cen_uthresh.nii.gz' 
+    dmn_component=f'{ica_directory}/dmn_uthresh.nii'
+    cen_component=f'{ica_directory}/cen_uthresh.nii' 
 
 # Define file paths for file with correlations and IC output files
 correlfile=f'{ica_directory}/template_rsn_correlations_with_ICs.txt' 
@@ -53,8 +53,8 @@ cen_info = fslcc_info[fslcc_info.yeo_network_number == 2]
 dmn_strongest_ic = dmn_info[dmn_info.correlation_abs == dmn_info.correlation_abs.max()].head(1)
 cen_strongest_ic = cen_info[cen_info.correlation_abs == cen_info.correlation_abs.max()].head(1)
 
-dmn_ic_selection = int(dmn_strongest_ic.ic_number)-1
-cen_ic_selection  = int(cen_strongest_ic.ic_number)-1
+dmn_ic_selection = int(dmn_strongest_ic.ic_number.iloc[0])-1
+cen_ic_selection  = int(cen_strongest_ic.ic_number.iloc[0])-1
 
 print('DMN:', dmn_strongest_ic)
 print('CEN:', cen_strongest_ic)
@@ -63,18 +63,18 @@ print(f'DMN: melodic_IC_{dmn_ic_selection}')
 print(f'CEN: melodic_IC_{cen_ic_selection}')
 
 # Pull the correct IC nifti files
-dmnfuncfile=split_outfile+'%0.4d.nii.gz' % dmn_ic_selection
-cenfuncfile=split_outfile+'%0.4d.nii.gz' % cen_ic_selection
+dmnfuncfile=split_outfile+'%0.4d.nii' % dmn_ic_selection
+cenfuncfile=split_outfile+'%0.4d.nii' % cen_ic_selection
 
 # Copy IC nifti files to new location as unthreshold DMN/CEN components
 os.system('cp %s %s' %(dmnfuncfile,dmn_component))
 os.system('cp %s %s' %(cenfuncfile,cen_component))
 
 # If either IC was loading negatively on the respective network, flip the sign of all voxels by multiplying by -1
-if float(dmn_strongest_ic.correlation) < 0:
+if float(dmn_strongest_ic.correlation.iloc[0]) < 0:
     print('Flipping IC Loadings for DMN')
     os.system(f'fslmaths {dmn_component} -mul -1 {dmn_component}')
 
-if float(cen_strongest_ic.correlation) < 0:
+if float(cen_strongest_ic.correlation.iloc[0]) < 0:
     print('Flipping IC Loadings for CEN')
     os.system(f'fslmaths {cen_component} -mul -1 {cen_component}')
