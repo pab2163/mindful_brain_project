@@ -203,9 +203,13 @@ write.csv(best_stratification, file = 'emote_240_words_stratified.csv', row.name
 
 * Participants with even ID #s will see set1 pre (runs 1-2), set2 post (runs 3-4). Vice versa for participants with odd ID #s
 ```{r}
+best_stratification = read_csv(file = 'emote_240_words_stratified.csv')
+
+
 run_groups = c(rep(1, 30), rep(2, 30))
 
-for (seed in 1:200){
+# create more word list splits to avoid ID issues
+for (seed in 201:999){
     set.seed(seed)
     word_shuffle = best_stratification %>%
         dplyr::select(word, valence_condition, set) %>%
@@ -230,7 +234,7 @@ for (seed in 1:200){
     sum(b == 30)
     assertthat::assert_that(sum(b == 30) == 8, msg = 'Word valence not split evenly across all runs!')
 
-    write.csv(word_shuffle, paste0('word_list_splits/word_order_', seed, '.csv'), row.names = FALSE)
+    write.csv(word_shuffle, paste0('../word_list_splits/word_order_', seed, '.csv'), row.names = FALSE)
 }
 ```
 
