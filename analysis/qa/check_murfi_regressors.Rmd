@@ -1,0 +1,35 @@
+---
+title: "check_murfi_regressors"
+author: "Paul A. Bloom"
+date: "2025-02-18"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+library(tidyverse)
+library(R.matlab)
+
+mat_file =read.table('/Volumes/columbia/mbNF_MDD/DATA/MRI/MURFI/remind2021/img/design-00015.mat')
+names(mat_file)=c('regulation', 'trend_order0', 'trend_order1', 'motion_diff_tx', 'motion_diff_ty', 'motion_diff_tz', 'motion_diff_rx', 'motion_diff_ry', 'motion_diff_rz')
+
+mat_file=mutate(mat_file, volume = 1:n())
+
+
+mat_file_long = mat_file %>%
+    pivot_longer(-volume) %>%
+    group_by(name) %>%
+    mutate(value_z = scale(value)) %>%
+    ungroup()
+
+
+
+mat_file_long %>%
+    ggplot(data = ., aes(x = volume, y = value_z)) +
+    geom_line() +
+    facet_grid(rows = vars(name))
+
+```

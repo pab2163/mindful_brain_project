@@ -1,7 +1,7 @@
 ---
-title: "qa_metricwire_EW"
+title: "qa_metricwire"
 output: html_document
-date: "2024-12-10"
+date: "2024-2-27"
 ---
 
 ```{r setup, include=FALSE}
@@ -18,10 +18,10 @@ theme_set(theme_bw())
 
 ```{r}
 # read in files
-redcap_id= read.csv('/Volumes/columbia/mbNF_MDD/DATA/QA_Checks/metricwire/data/REMINDMindfulnessBas-MetricwireKey_DATA_2025-01-07_2057.csv')
+redcap_id= read.csv('/Volumes/columbia/mbNF_MDD/DATA/QA_Checks/metricwire/data/REMINDMindfulnessBas-MetricwireKey_DATA_2025-02-27_1947.csv')
 redcap_id = mutate(redcap_id, metricwire_id = trimws(metricwire_id))
 
-ema=read.csv('/Volumes/columbia/mbNF_MDD/DATA/QA_Checks/metricwire/data/1736283383581_Mindful Brain Project Data.csv')
+ema=read.csv('/Volumes/columbia/mbNF_MDD/DATA/QA_Checks/metricwire/data/1740588024050_Mindful Brain Project Data.csv')
 
 # select on participants in redcap (real participants)
 ema = dplyr::filter(ema, User.Id %in% redcap_id$metricwire_id)

@@ -51,15 +51,15 @@ def infotodict(seqinfo):
         'sub-{subject}/{session}/func/sub-{subject}_{session}_task-feedback_run-{item:02d}_bold')
     # fieldmaps
     fmap_rest = create_key(
-        'sub-{subject}/{session}/fmap/sub-{subject}_{session}_acq-rest_dir-{dir}_epi')
+        'sub-{subject}/{session}/fmap/sub-{subject}_{session}_acq-rest_dir-{dir}_run-{item:02d}_epi')
     fmap_selfref = create_key(
-        'sub-{subject}/{session}/fmap/sub-{subject}_{session}_acq-selfref_dir-{dir}_epi')
+        'sub-{subject}/{session}/fmap/sub-{subject}_{session}_acq-selfref_dir-{dir}_run-{item:02d}_epi')
     fmap_realtime = create_key(
-        'sub-{subject}/{session}/fmap/sub-{subject}_{session}_acq-realtime_dir-{dir}_epi')
+        'sub-{subject}/{session}/fmap/sub-{subject}_{session}_acq-realtime_dir-{dir}_run-{item:02d}_epi')
     fmap_restpre = create_key(
-        'sub-{subject}/{session}/fmap/sub-{subject}_{session}_acq-restpre_dir-{dir}_epi')
+        'sub-{subject}/{session}/fmap/sub-{subject}_{session}_acq-restpre_dir-{dir}_run-{item:02d}_epi')
     fmap_restpost = create_key(
-        'sub-{subject}/{session}/fmap/sub-{subject}_{session}_acq-restpost_dir-{dir}_epi')
+        'sub-{subject}/{session}/fmap/sub-{subject}_{session}_acq-restpost_dir-{dir}_run-{item:02d}_epi')
 
 
     info = {
@@ -96,7 +96,7 @@ def infotodict(seqinfo):
             info[twovol].append(s.series_id)
 
         # Resting state (AP and PA).
-        elif s.dim4 > 100 and 'task-rest' in s.protocol_name and not s.is_motion_corrected and not 'task-restpre' in s.protocol_name and not 'task-restpost' in s.protocol_name:
+        elif s.dim4 > 100 and 'task-rest' in s.protocol_name and not s.is_motion_corrected:
             info[rest].append(s.series_id)
         elif s.dim4 > 100 and 'task-restpre' in s.protocol_name and not s.is_motion_corrected:
             info[restpre].append(s.series_id)
@@ -104,31 +104,31 @@ def infotodict(seqinfo):
             info[restpost].append(s.series_id)
        
         # Fieldmaps (AP and PA).
-        elif 'fmap' in s.protocol_name and 'rest' in s.protocol_name and not 'restpre' in s.protocol_name and not 'restpost' in s.protocol_name:
+        elif 'fmap' in s.protocol_name and 'acq-rest' in s.protocol_name and not 'acq-restpre' in s.protocol_name and not 'acq_restpost' in s.protocol_name:
             if 'AP' in s.protocol_name:
                 info[fmap_rest].append({'dir': 'AP', 'item': s.series_id})
             elif 'PA' in s.protocol_name:
                 info[fmap_rest].append({'dir': 'PA', 'item': s.series_id})
 
-        elif 'fmap' in s.protocol_name and 'restpre' in s.protocol_name:
+        elif 'fmap' in s.protocol_name and 'acq-restpre' in s.protocol_name:
             if 'AP' in s.protocol_name:
                 info[fmap_restpre].append({'dir': 'AP', 'item': s.series_id})
             elif 'PA' in s.protocol_name:
                 info[fmap_restpre].append({'dir': 'PA', 'item': s.series_id})
 
-        elif 'fmap' in s.protocol_name and 'restpost' in s.protocol_name:
+        elif 'fmap' in s.protocol_name and 'acq-restpost' in s.protocol_name:
             if 'AP' in s.protocol_name:
                 info[fmap_restpost].append({'dir': 'AP', 'item': s.series_id})
             elif 'PA' in s.protocol_name:
                 info[fmap_restpost].append({'dir': 'PA', 'item': s.series_id})
 
-        elif 'fmap' in s.protocol_name and 'realtime' in s.protocol_name:
+        elif 'fmap' in s.protocol_name and 'acq-realtime' in s.protocol_name:
             if 'AP' in s.protocol_name:
                 info[fmap_realtime].append({'dir': 'AP', 'item': s.series_id})
             elif 'PA' in s.protocol_name:
                 info[fmap_realtime].append({'dir': 'PA', 'item': s.series_id})
 
-        elif 'fmap' in s.protocol_name and 'selfref' in s.protocol_name:
+        elif 'fmap' in s.protocol_name and 'acq-selfref' in s.protocol_name:
             if 'AP' in s.protocol_name:
                 info[fmap_selfref].append({'dir': 'AP', 'item': s.series_id})
             elif 'PA' in s.protocol_name:
@@ -151,9 +151,3 @@ def infotodict(seqinfo):
             info[feedback].append(s.series_id)
 
     return info
-
-# To autopopulate the IntendedFor field in BIDS fmap json files
-POPULATE_INTENDED_FOR_OPTS = {
-        'matching_parameters': ['ImagingVolume', 'Shims'],
-        'criterion': 'Closest'
-}
