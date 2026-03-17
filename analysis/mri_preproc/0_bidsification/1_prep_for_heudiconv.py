@@ -55,10 +55,13 @@ def organize_dicoms(main_path, dicom_out_path, subject):
             if runs_to_exclude:
                 exclude_runs(bids_ignore_runs, subject, site, session)
 
-            # find all the zipped dicom folders, unzip them to new directory
+            # find all zipped dicom folders or raw dicom files, process into output directory
             zip_dicom_list = list(Path(label).rglob("*dicom.[z][i][p]"))
-            print(zip_dicom_list)
-            unzip_dicoms(zip_dicom_list, sub_out_path, session)
+            raw_dicom_list = list(Path(label).rglob("*.dcm"))
+
+            print(f"Found {len(zip_dicom_list)} zipped DICOM archive(s), {len(raw_dicom_list)} raw DICOM file(s)")
+
+            process_dicoms(zip_dicom_list, raw_dicom_list, sub_out_path, session)
 
     # For NEU data, folders are separated by session. There is no need to unzip, but moving files is needed
     if 'remind3' in subject:
@@ -139,18 +142,30 @@ def exclude_runs(run_list, subject, site, session):
         except OSError as e:
             print(f"Error deleting folder '{run_path}': {e}")
             
-def unzip_dicoms(dicom_list, sub_out_path, session):
+def process_dicoms(dicom_list, raw_dicom_list, sub_out_path, session):
     '''
-    Given a list of zipped dicom files, unzip them into the designated subject/session folder
-    Does not unzip files set to be ignored
+    Given a list of zipped dicom files and/or raw .dcm files, copy/unzip them
+    into the designated subject/session folder (flat structure).
+    Does not process files set to be ignored.
     '''
-    
+    out_dir = Path(sub_out_path) / session
+    out_dir.mkdir(parents=True, exist_ok=True)
+
+    # Handle zipped DICOMs (old structure)
     for dicom_zip in dicom_list:
-        if not any([x in str(dicom_zip) for x in ignore_keys]):
-            print(f"unzipping: {str(dicom_zip).split('/')[-2]}")
-            os.system(f'unzip {dicom_zip} -d {sub_out_path}/{session}')
+        if not any(x in str(dicom_zip) for x in ignore_keys):
+            print(f"Unzipping: {str(dicom_zip).split('/')[-2]}")
+            os.system(f'unzip {dicom_zip} -d {out_dir}')
         else:
             print(f"IGNORE: {str(dicom_zip).split('/')[-2]}")
+
+    # Handle raw DICOMs (new structure) — flat copy into output dir
+    for dcm_file in raw_dicom_list:
+        if not any(x in str(dcm_file) for x in ignore_keys):
+            print(f"Copying: {dcm_file.name}")
+            shutil.copy2(dcm_file, out_dir / dcm_file.name)
+        else:
+            print(f"IGNORE: {dcm_file.name}")
 
 def ensure_list(value):
     """Ensures that the input is a list, converting it to a single-item list if not."""
