@@ -30,3 +30,8 @@ materials/posthoc_ica_scripts/masks/
 materials/posthoc_ica_scripts/sub_fsfs/
 materials/posthoc_ica_scripts/template_networks.nii.gz
 analysis/pilot/scripts/pilot_figure_for_jaacap_reg_report.png
+analysis/mri_preproc/2_fmriprep/._run_fmriprep_1_subject copy.sh
+analysis/mri_preproc/2_fmriprep/._run_fmriprep_1_subject.sh
+analysis/mri_preproc/2_fmriprep/._test_fmriprep_syn_1_subject.sh
+analysis/mri_preproc/3_xcp/
+analysis/mri_preproc/4_fsl/

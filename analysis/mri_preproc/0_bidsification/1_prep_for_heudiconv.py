@@ -57,7 +57,7 @@ def organize_dicoms(main_path, dicom_out_path, subject):
 
             # find all zipped dicom folders or raw dicom files, process into output directory
             zip_dicom_list = list(Path(label).rglob("*dicom.[z][i][p]"))
-            raw_dicom_list = list(Path(label).rglob("*.dcm"))
+            raw_dicom_list = list(Path(label).rglob("*.MR.dcm"))
 
             print(f"Found {len(zip_dicom_list)} zipped DICOM archive(s), {len(raw_dicom_list)} raw DICOM file(s)")
 
