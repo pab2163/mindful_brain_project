@@ -21,6 +21,7 @@ cwd=$(pwd)
 absolute_path=$(dirname $cwd)
 subj_dir_absolute="${absolute_path}/subjects/$subj"
 fsl_scripts=../scripts/fsl_scripts
+DICOM_FOLDER=/BOLD_DICOM
 
 
 # Set template files
@@ -57,7 +58,7 @@ if [ ${step} = 2vol ]
 then
     clear
     echo "ready to receive 2 volume scan"
-    singularity exec murfi2.1.sif murfi -f $subj_dir/xml/2vol.xml
+    singularity exec -B ${DICOM_FOLDER} murfi-sif_latest.sif murfi -f $subj_dir/xml/2vol.xml
 fi
 
 
@@ -68,7 +69,7 @@ clear
     echo "ready to receive rtdmn feedback scan"
     export MURFI_SUBJECTS_DIR="${absolute_path}/subjects/"
     export MURFI_SUBJECT_NAME=$subj 
-    singularity exec murfi2.1.sif murfi -f $subj_dir_absolute/xml/rtdmn.xml
+    singularity exec -B ${DICOM_FOLDER} murfi-sif_latest.sif murfi -f $subj_dir_absolute/xml/rtdmn.xml
 fi
 
 
@@ -79,7 +80,7 @@ clear
     echo "ready to receive resting state scan"
     export MURFI_SUBJECTS_DIR="${absolute_path}/subjects/"
     export MURFI_SUBJECT_NAME=$subj
-    singularity exec murfi2.1.sif murfi -f $subj_dir/xml/rest.xml
+    singularity exec -B ${DICOM_FOLDER} murfi-sif_latest.sif murfi -f $subj_dir/xml/rest.xml
 
 fi
 

@@ -4,6 +4,9 @@
 </study>
 
 <scanner>
+  <option name="imageSource">     DICOM  </option>
+  <!-- for real-->
+  <option name="inputDicomDir">   /BOLD_DICOM  </option>
   <option name="disabled">     false </option>
   <option name="tr">             1.2 </option>
   <option name="measurements">   150 </option>
